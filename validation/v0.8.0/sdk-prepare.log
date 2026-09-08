@@ -1,0 +1,10 @@
+{
+  "sdk_version": "VERSION_MAJOR 1\nVERSION_MINOR 7\nVERSION_REVISION 0",
+  "wlif_before_sha256": "9f8e59078241d993982df7aa192a3cf52a492b8883967812f0cae49533913cc9",
+  "wlif_after_sha256": "f0145192521f4f2873c6a403f691ec4b41e0b9e648b56df9e177fd9888a2762c",
+  "standalone_unchanged": true,
+  "vendor_bdf_sha256": "c4550702d2409dbdc1b2ce6e0f81a77840d7de7887def0359a8cdb4e8d9eac41",
+  "app": "L2BRIDGE_HSPI",
+  "regulatory_status": "Vendor compatibility/certification must be confirmed; not established by this script."
+}
+Prepared: /mnt/data/_firmware_work/prepared_sx_v08_final

@@ -1,0 +1,28 @@
+Internal ctest changing into directory: /mnt/data/_firmware_work/sanitized_release
+Test project /mnt/data/_firmware_work/sanitized_release
+      Start  1: packetizer
+ 1/11 Test  #1: packetizer .......................   Passed    0.08 sec
+      Start  2: h264
+ 2/11 Test  #2: h264 .............................   Passed    0.07 sec
+      Start  3: l2_protocol
+ 3/11 Test  #3: l2_protocol ......................   Passed    0.07 sec
+      Start  4: hspi
+ 4/11 Test  #4: hspi .............................   Passed    0.08 sec
+      Start  5: hspi_transport
+ 5/11 Test  #5: hspi_transport ...................   Passed    0.07 sec
+      Start  6: clip
+ 6/11 Test  #6: clip .............................   Passed    0.11 sec
+      Start  7: mac
+ 7/11 Test  #7: mac ..............................   Passed    0.07 sec
+      Start  8: hspi_faults
+ 8/11 Test  #8: hspi_faults ......................   Passed    0.07 sec
+      Start  9: native_records
+ 9/11 Test  #9: native_records ...................   Passed    0.24 sec
+      Start 10: esp_adapter
+10/11 Test #10: esp_adapter ......................   Passed    1.41 sec
+      Start 11: sx_endpoint
+11/11 Test #11: sx_endpoint ......................   Passed    0.08 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Total Test time (real) =   2.37 sec

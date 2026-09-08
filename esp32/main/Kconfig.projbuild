@@ -1,0 +1,74 @@
+menu "HaLow Stage1 / SX-NEWAH-EVK"
+config STAGE1_WIRING_CONFIRMED
+    bool "Pre-confirm wiring at boot (otherwise type wiring-confirm)"
+    default n
+config STAGE1_RF_ENABLE
+    bool "Pre-confirm RF at boot (otherwise type rf-confirm; Duty stays enabled)"
+    default n
+config STAGE1_SPI_SCLK
+    int "SCLK GPIO (example only)"
+    range 0 48
+    default 12
+config STAGE1_SPI_MOSI
+    int "MOSI GPIO (example only)"
+    range 0 48
+    default 11
+config STAGE1_SPI_MISO
+    int "MISO GPIO (example only)"
+    range 0 48
+    default 13
+config STAGE1_SPI_CS
+    int "CS GPIO (example only)"
+    range 0 48
+    default 10
+config STAGE1_SPI_IRQ
+    int "EIRQ GPIO (active-high LEVEL); -1 for diagnostic polling"
+    range -1 48
+    default -1
+config STAGE1_RESET_GPIO
+    int "RESET GPIO, -1 for manual EVK reset"
+    range -1 48
+    default -1
+config STAGE1_RESET_ACTIVE_LOW
+    bool "RESET is active-low at the chosen EVK connection"
+    default n
+    help
+        Bare SX-NEWAH RST is ACTIVE-HIGH. Check EVK path for inversion.
+config STAGE1_SPI_CLOCK
+    int "SPI clock (Hz)"
+    range 1000000 25000000
+    default 5000000
+config STAGE1_SSID
+    string "AP-100AH SSID"
+    default "halow-stage1"
+config STAGE1_PASSWORD
+    string "WPA3-SAE password (do not commit sdkconfig)"
+    default ""
+config STAGE1_OPEN_NETWORK
+    bool "Use OPEN instead of WPA3-SAE (isolated bench only)"
+    default n
+config STAGE1_IP
+    string "ESP IPv4 (example; match AP/PC subnet)"
+    default "192.168.50.2"
+config STAGE1_NETMASK
+    string "IPv4 netmask"
+    default "255.255.255.0"
+config STAGE1_GATEWAY
+    string "IPv4 gateway (0.0.0.0 on isolated same-subnet bench)"
+    default "0.0.0.0"
+config STAGE1_PC_IP
+    string "Receiver PC Ethernet IPv4"
+    default "192.168.50.10"
+config STAGE1_UDP_PORT
+    int "Receiver UDP port (NRCV, not RTP)"
+    range 1024 65535
+    default 50000
+config STAGE1_PACE_BPS
+    int "UDP pacing ceiling (bit/s including NRCV padding, NOT RF airtime)"
+    range 50000 5000000
+    default 400000
+config STAGE1_FRAME_LATE_MS
+    int "Maximum permitted frame lateness"
+    range 50 1000
+    default 250
+endmenu

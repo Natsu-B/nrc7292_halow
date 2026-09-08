@@ -1,0 +1,12 @@
+FILE components/nrc7292/src/nrc7292.c
+EXIT 0
+FILE esp32/main/app_main.c
+EXIT 0
+FILE esp32/main/clip_source.c
+EXIT 0
+FILE components/nrc7292/hspi/nrc-hspi.c
+EXIT 0
+FILE components/nrc7292/src/nrc_l2_protocol.c
+EXIT 0
+FILE sx_newah/L2BRIDGE_HSPI/l2bridge_main.c
+EXIT 0

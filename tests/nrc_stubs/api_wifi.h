@@ -1,0 +1,7 @@
+#pragma once
+#include "nrc_sdk.h"
+typedef int tWIFI_STATUS;typedef int tWIFI_COUNTRY_CODE;typedef enum{WIFI_EVT_CONNECT_SUCCESS=0,WIFI_EVT_DISCONNECT=1}tWIFI_EVENT_ID;typedef void(*event_callback_fn)(int,tWIFI_EVENT_ID,int,void*);typedef enum{WIFI_SEC_OPEN=0,WIFI_SEC_WPA2,WIFI_SEC_WPA3_OWE,WIFI_SEC_WPA3_SAE}tWIFI_SECURITY;
+#define WIFI_SUCCESS 0
+int nrc_wifi_get_mac_address(int,char*);tWIFI_COUNTRY_CODE nrc_wifi_country_from_string(const char*);int nrc_wifi_set_country(int,tWIFI_COUNTRY_CODE);int nrc_wifi_add_network(int);int nrc_wifi_set_rate_control(int,bool);int nrc_wifi_set_tx_power(uint8_t,uint8_t);int nrc_wifi_set_ssid(int,char*);int nrc_wifi_set_bssid(int,char*);int nrc_wifi_set_security(int,int,char*);int nrc_wifi_set_sae_pwe(int,int);int nrc_wifi_set_channel_freq(int,uint16_t);int nrc_wifi_set_channel_freq_bw(int,uint16_t,uint8_t);int nrc_wifi_register_event_handler(int,event_callback_fn);int nrc_wifi_connect(int,uint32_t);int nrc_wifi_disconnect(int,uint32_t);int nrc_wifi_get_rssi(int,int8_t*);int nrc_wifi_get_average_rssi(int,int8_t*);int nrc_wifi_get_snr(int,uint8_t*);int nrc_wifi_get_mcs_info(int,uint8_t*,uint8_t*);int nrc_wifi_get_channel_bandwidth(int,uint8_t*);int nrc_wifi_enable_duty_cycle(uint32_t,uint32_t,uint32_t);int nrc_wifi_disable_duty_cycle(void);bool nrc_wifi_tx_avaliable_duty_cycle(void);
+
+int nrc_wifi_set_tx_time(uint16_t,uint32_t);int nrc_wifi_set_cca_threshold(int,int);

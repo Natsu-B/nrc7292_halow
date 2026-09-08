@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "browser": "144.0.7559.96",
+  "tests": [
+    {
+      "clip": "test_mjpeg.bin",
+      "displayed": 12,
+      "codec": 2
+    }
+  ],
+  "page_errors": [],
+  "scope": "Real renderer, simulated IPC; no Electron main/packaging or RF",
+  "webcodecs_tested": false
+}

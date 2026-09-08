@@ -1,0 +1,65 @@
+{
+  "name": "halow-stage1-receiver",
+  "version": "0.7.0",
+  "description": "Standalone HaLow NRCV video receiver for ESP32-S3/P4",
+  "author": "HaLow Stage1 Project",
+  "license": "MIT",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.cjs",
+    "dist:win": "electron-builder --win portable --x64",
+    "dist:linux": "electron-builder --linux AppImage --x64",
+    "dist:mac": "electron-builder --mac zip"
+  },
+  "devDependencies": {
+    "electron": "44.2.0",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "org.halow.stage1.receiver",
+    "productName": "HaLow Receiver",
+    "artifactName": "HaLow-Receiver-${version}-${os}-${arch}.${ext}",
+    "asar": true,
+    "files": [
+      "src/**",
+      "ui/**",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "../assets/test_h264.bin",
+        "to": "sample_h264.bin"
+      },
+      {
+        "from": "../assets/test_mjpeg.bin",
+        "to": "sample_mjpeg.bin"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "AudioVideo"
+    },
+    "mac": {
+      "target": [
+        "zip"
+      ],
+      "category": "public.app-category.video"
+    }
+  }
+}

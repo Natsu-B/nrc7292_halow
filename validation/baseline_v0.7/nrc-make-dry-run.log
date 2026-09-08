@@ -1,0 +1,9 @@
+echo "BDFILE = ./bdf/nrc7292/stage1_vendor.dat"
+cp -f ./bdf/nrc7292/stage1_vendor.dat ./bdf/bd.dat
+xxd --include ./bdf/bd.dat > ./bdf/bd.h
+sed  -i '1i const' ./bdf/bd.h
+sed -i '/unsigned int/i const' ./bdf/bd.h
+sed -i '1i #ifndef __BD_H__' ./bdf/bd.h
+sed -i '2i #define __BD_H__' ./bdf/bd.h
+echo "#endif" >> ./bdf/bd.h
+make -j16 -f make/Makefile.nrc7292.sdk.release ALIAS=xip+2m+stage1_vendor.dat --

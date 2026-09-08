@@ -1,0 +1,3 @@
+MAKE DRY RUN ONLY. NOT A TARGET BUILD.
+echo "BDFILE = ./bdf/nrc7292/stage1_vendor.dat"
+Original dry-run had 12 lines.

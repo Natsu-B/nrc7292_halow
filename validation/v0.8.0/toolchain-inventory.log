@@ -1,0 +1,13 @@
+Host: Linux x86_64
+MISSING idf.py
+MISSING xtensa-esp32s3-elf-gcc
+MISSING xtensa-esp-elf-gcc
+MISSING arm-none-eabi-gcc
+MISSING arm-none-eabi-g++
+PRESENT cmake: /usr/bin/cmake
+PRESENT ninja: /usr/bin/ninja
+PRESENT python3: /opt/pyvenv/bin/python3
+PRESENT node: /opt/nvm/versions/node/v22.16.0/bin/node
+IDF_PATH=unset
+
+Missing compilers mean target binaries were NOT built. Native tests do not replace target builds.

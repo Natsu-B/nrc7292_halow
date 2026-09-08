@@ -1,0 +1,16 @@
+# Generated builds and credentials
+esp32/build/
+esp32/sdkconfig
+esp32/sdkconfig.old
+receiver/node_modules/
+receiver/dist/
+.native-build/
+*.h264.capture
+*.mjpg.capture
+__pycache__/
+*.pyc
+# Local candidate outputs / serial logs; do not commit credentials or target blobs.
+.build-*/
+*.pcap
+*.pcapng
+firmware_candidates/

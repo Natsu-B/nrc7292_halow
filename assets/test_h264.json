@@ -1,0 +1,11 @@
+{
+  "codec": "H264",
+  "width": 640,
+  "height": 360,
+  "fps": 10,
+  "frames": 120,
+  "duration_ms": 12000,
+  "max_frame_bytes": 9444,
+  "payload_bps": 175366,
+  "bytes": 265001
+}

@@ -1,0 +1,57 @@
+name: Build Stage1 candidates
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: bash tools/run_tests.sh /tmp/halow-native
+  receiver-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: receiver
+      - run: npm test
+        working-directory: receiver
+      - run: npm run dist:win
+        working-directory: receiver
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-receiver-candidate
+          path: receiver/dist/*.exe
+  esp32-s3:
+    needs: native-tests
+    runs-on: ubuntu-latest
+    container: espressif/idf:v5.5.2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build diagnostics-default S3 image
+        shell: bash
+        run: |
+          . /opt/esp/idf/export.sh
+          cd esp32
+          idf.py set-target esp32s3
+          idf.py build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: esp32s3-diagnostics-candidate
+          if-no-files-found: error
+          path: |
+            esp32/build/*.bin
+            esp32/build/*.elf
+            esp32/build/bootloader/bootloader.bin
+            esp32/build/partition_table/partition-table.bin
+            esp32/build/flasher_args.json
+            assets/video.bin
+# This workflow is provided, NOT executed by the authoring environment.
+# Do not upload the Silex confidential SDK/binaries/BDF into a public repository.

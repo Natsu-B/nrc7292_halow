@@ -1,0 +1,8 @@
+Authoring environment: native validation only
+cc: /usr/bin/cc
+node: /opt/nvm/versions/node/v22.16.0/bin/node
+npm: /opt/nvm/versions/node/v22.16.0/bin/npm
+cmake: /usr/bin/cmake
+ninja: /usr/bin/ninja
+ffmpeg: /usr/bin/ffmpeg
+idf.py: xtensa-esp32s3-elf-gcc: arm-none-eabi-gcc: electron: 

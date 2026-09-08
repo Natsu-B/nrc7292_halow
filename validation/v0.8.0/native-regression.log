@@ -1,0 +1,131 @@
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/_firmware_work/native_release
+[1/3] Building C object CMakeFiles/test_esp_adapter.dir/mnt/data/_firmware_work/halow_stage1_v0.8.0/components/nrc7292/src/nrc7292.c.o
+[2/3] Building C object CMakeFiles/test_esp_adapter.dir/test_esp_adapter.c.o
+[3/3] Linking C executable test_esp_adapter
+Internal ctest changing into directory: /mnt/data/_firmware_work/native_release
+Test project /mnt/data/_firmware_work/native_release
+      Start  1: packetizer
+ 1/11 Test  #1: packetizer .......................   Passed    0.01 sec
+      Start  2: h264
+ 2/11 Test  #2: h264 .............................   Passed    0.01 sec
+      Start  3: l2_protocol
+ 3/11 Test  #3: l2_protocol ......................   Passed    0.01 sec
+      Start  4: hspi
+ 4/11 Test  #4: hspi .............................   Passed    0.01 sec
+      Start  5: hspi_transport
+ 5/11 Test  #5: hspi_transport ...................   Passed    0.02 sec
+      Start  6: clip
+ 6/11 Test  #6: clip .............................   Passed    0.03 sec
+      Start  7: mac
+ 7/11 Test  #7: mac ..............................   Passed    0.01 sec
+      Start  8: hspi_faults
+ 8/11 Test  #8: hspi_faults ......................   Passed    0.01 sec
+      Start  9: native_records
+ 9/11 Test  #9: native_records ...................   Passed    0.05 sec
+      Start 10: esp_adapter
+10/11 Test #10: esp_adapter ......................   Passed    1.27 sec
+      Start 11: sx_endpoint
+11/11 Test #11: sx_endpoint ......................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Total Test time (real) =   1.47 sec
+
+> halow-stage1-receiver@0.7.0 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: CRC32 standard vector and serial wrap
+ok 1 - CRC32 standard vector and serial wrap
+  ---
+  duration_ms: 3.46647
+  type: 'test'
+  ...
+# Subtest: NRCV rejects inconsistent lengths, flags and excessive allocation
+ok 2 - NRCV rejects inconsistent lengths, flags and excessive allocation
+  ---
+  duration_ms: 1.864708
+  type: 'test'
+  ...
+# Subtest: reassembly supports reverse packet order and duplicate suppression
+ok 3 - reassembly supports reverse packet order and duplicate suppression
+  ---
+  duration_ms: 5.177794
+  type: 'test'
+  ...
+# Subtest: incomplete reference frame discards following delta until a new keyframe
+ok 4 - incomplete reference frame discards following delta until a new keyframe
+  ---
+  duration_ms: 7.018538
+  type: 'test'
+  ...
+# Subtest: frame number and packet sequence wrap keep order
+ok 5 - frame number and packet sequence wrap keep order
+  ---
+  duration_ms: 1.055433
+  type: 'test'
+  ...
+# Subtest: pending frame allocation is bounded
+ok 6 - pending frame allocation is bounded
+  ---
+  duration_ms: 23.198993
+  type: 'test'
+  ...
+# Subtest: on-flash real H264 and MJPEG clips validate every CRC
+ok 7 - on-flash real H264 and MJPEG clips validate every CRC
+  ---
+  duration_ms: 118.028972
+  type: 'test'
+  ...
+# Subtest: radio telemetry checksum
+ok 8 - radio telemetry checksum
+  ---
+  duration_ms: 0.581158
+  type: 'test'
+  ...
+# Subtest: late packets from a retired stream cannot reset the current session
+ok 9 - late packets from a retired stream cannot reset the current session
+  ---
+  duration_ms: 0.918841
+  type: 'test'
+  ...
+# Subtest: localhost UDP reconstructs all real H264 access units byte for byte
+ok 10 - localhost UDP reconstructs all real H264 access units byte for byte
+  ---
+  duration_ms: 495.912843
+  type: 'test'
+  ...
+# Subtest: unexpected source IP is ignored
+ok 11 - unexpected source IP is ignored
+  ---
+  duration_ms: 42.057302
+  type: 'test'
+  ...
+# Subtest: invalid listening configuration is refused
+ok 12 - invalid listening configuration is refused
+  ---
+  duration_ms: 1.599757
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 896.697049
+C packetizer -> Node receiver: 277 packets / 120 frames, all bytes match
+C packetizer -> Node receiver: 344 packets / 60 frames, all bytes match
+PASS: API-stub C syntax and real Node/renderer JavaScript syntax. Not a target link or Electron launch.
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.007s
+
+OK
+PASS: seven native transport originals and host/target L2 source identity
+
+Native tests finished. This does NOT build ESP or NRC firmware.

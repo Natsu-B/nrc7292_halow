@@ -1,0 +1,5 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/work/v7_asan
+[1/2] Building C object CMakeFiles/test_clip.dir/test_clip.c.o
+[2/2] Linking C executable test_clip

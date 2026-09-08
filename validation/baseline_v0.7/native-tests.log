@@ -1,0 +1,20 @@
+Internal ctest changing into directory: /mnt/data/work/v7_tests
+Test project /mnt/data/work/v7_tests
+    Start 1: packetizer
+1/7 Test #1: packetizer .......................   Passed    0.00 sec
+    Start 2: h264
+2/7 Test #2: h264 .............................   Passed    0.00 sec
+    Start 3: l2_protocol
+3/7 Test #3: l2_protocol ......................   Passed    0.00 sec
+    Start 4: hspi
+4/7 Test #4: hspi .............................   Passed    0.00 sec
+    Start 5: hspi_transport
+5/7 Test #5: hspi_transport ...................   Passed    0.00 sec
+    Start 6: clip
+6/7 Test #6: clip .............................   Passed    0.01 sec
+    Start 7: mac
+7/7 Test #7: mac ..............................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 7
+
+Total Test time (real) =   0.02 sec

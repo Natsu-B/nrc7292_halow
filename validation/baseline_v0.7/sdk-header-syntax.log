@@ -1,0 +1,34 @@
+In file included from sdk/include/nrc_sdk.h:43,
+                 from sdk/apps/L2BRIDGE_HSPI/l2bridge_main.c:6:
+sdk/include/nrc_types.h:34:37: error: conflicting types for ‘int32_t’; have ‘long int’
+   34 | typedef signed long                 int32_t;
+      |                                     ^~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/sys/types.h:155,
+                 from /usr/include/stdlib.h:514,
+                 from sdk/include/nrc_sdk.h:30:
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:26:19: note: previous declaration of ‘int32_t’ with type ‘int32_t’ {aka ‘int’}
+   26 | typedef __int32_t int32_t;
+      |                   ^~~~~~~
+sdk/include/nrc_types.h:35:37: error: conflicting types for ‘uint32_t’; have ‘long unsigned int’
+   35 | typedef unsigned long               uint32_t;
+      |                                     ^~~~~~~~
+In file included from /usr/include/stdint.h:37,
+                 from /usr/lib/gcc/x86_64-linux-gnu/14/include/stdint.h:9,
+                 from sdk/include/nrc_sdk.h:31:
+/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:26:20: note: previous declaration of ‘uint32_t’ with type ‘uint32_t’ {aka ‘unsigned int’}
+   26 | typedef __uint32_t uint32_t;
+      |                    ^~~~~~~~
+sdk/include/nrc_types.h:36:37: error: conflicting types for ‘int64_t’; have ‘long long int’
+   36 | typedef signed long long            int64_t;
+      |                                     ^~~~~~~
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:27:19: note: previous declaration of ‘int64_t’ with type ‘int64_t’ {aka ‘long int’}
+   27 | typedef __int64_t int64_t;
+      |                   ^~~~~~~
+sdk/include/nrc_types.h:37:37: error: conflicting types for ‘uint64_t’; have ‘long long unsigned int’
+   37 | typedef unsigned long long          uint64_t;
+      |                                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:27:20: note: previous declaration of ‘uint64_t’ with type ‘uint64_t’ {aka ‘long unsigned int’}
+   27 | typedef __uint64_t uint64_t;
+      |                    ^~~~~~~~
+
+Native-header syntax command exit=1; not an Arm ABI/link test.
