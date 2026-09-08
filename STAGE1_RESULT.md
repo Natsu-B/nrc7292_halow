@@ -1,6 +1,6 @@
 # Stage-1 実機結果
 
-更新: 2026-09-09。SA、ジャンパー配置、CN2 USB単独給電がメーカー対応構成であることを確認済み。FlashToolの自動migrationを調査中のためSX書込みは保留。
+更新: 2026-09-09 08:30 JST。ROM/RAM通信と工場領域取得に成功。この個体のFlashTool移行条件を確認し、MAC WRITE OFFでStandalone書込みへ進める状態。
 
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
@@ -184,3 +184,16 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - `logs/sx_factory_backup_20260909.log`: 同一起動から限定領域の二重読取りを開始したが、追加target CRC要求0x95の段階でtimeout。最初のsector読取り相当の応答は得られたものの、CRC前に保存していなかったためfactory sectorのバックアップは未成立。RAM map復元も未確認のため通信を停止。
 - 0x95 handlerは非整列RX payloadから32bit LDRする。停止状況と整合する有力原因だが、fault PCは取得していないため原因確定とはしない。先行の静的監査はNV書込みの不在を確認したものであり、実行安全性PASSではなかった。0x95をツールの許可対象から除外して再使用しない。
 - 修正版は二重読取り一致の時点で0600のファイルを保存し、host SHA256を記録する。機器側CRCをPASSと扱わない。修正・offline検証後にDownload設定のまま電源再投入を人間へ依頼する。
+
+## 2026-09-09 08:15以降の取得と書込み判断
+
+- 人間がDownload設定のまま電源再投入（返答 `ok`）。`logs/sx_rom_probe_reboot_20260909.log`でROM PING再PASS。
+- `logs/sx_factory_backup_retry_20260909.log`: `acquisition_result=PASS`。map `0xf000`、SYS_CONFIG `0xfe000`、RF_CAL `0xff000` の各4096 bytesを2回ずつ読み、byte一致。RAM mapも復元一致。機器側CRCはNOT_TESTEDなのでmanifest全体はPARTIALという保守的表記。未取得の容量外DEVICE_INFOを含むfull flash backupではない。
+- 保存先 `/home/hotaru/silex/_codex_work/private_sx_backups/20260909-081543-554105/`。ファイル0600、Git外。SYS/RFの内部nrct record CRCも別途hostで照合一致。RF countryはJP。
+- 固定RAM stack metadataからJEDEC `0xef6014` を取得。loader報告容量は1MiB。SPI Flashの電圧型番からESP/SX host I/O電圧を推定しない。
+- `logs/sx_legacy_marker_20260909.log`: GUIが実際に参照するliteral offset `0xffffe000` の44bytesを読み、marker `nrcnrt` 不在、RAM map復元一致。物理SYS先頭と同一ではなかったため、アドレスaliasの推測は採用しない。MAC移行条件は実参照先でも不成立。
+- RF移行条件も不成立。既存SYS versionは2で、0x46再保存の再構成はCRCを含め44bytes全部が同一、残りsectorもFF。通常GUIのMAC0/MAC1 WRITE OFFで論理工場MAC・JP校正値を保持できる条件を確認した。工場領域へ一切erase/programが無いと主張するものではない。
+- XIP firmware/bootloaderの書込み範囲はSYS/RFと重ならず、消去対象に含まれる `0xf000` は既に全FF。FW_INFO `0xf5000` の更新はfirmware管理情報。
+- Standalone書込み保留を解除し、人間用HUMAN_ACTION_1を更新。Codex自身によるSX flashは未実施。
+- 後続IP試験用に `192.168.10.20/32` の有線host routeをNetworkManager一時profileへ追加。`ip route get`はenp0s31f6/source192.168.10.250。Wi-Fi default routeは維持。
+- 期限切れのネットワーク受信許可は、既存 `tools/prepare_privileged.sh` の再実行を人間作業へまとめた（まだ再実行完了とは記録しない）。

@@ -1,15 +1,8 @@
 # HUMAN ACTION REQUIRED #1
 
-現在の人間作業: 停止したRAM bootloaderの電源再投入（約10秒）。ROM PINGとRAM bootは実機で成功済み。
+想定拘束時間: 5～10分。現在の人間作業はSilex Standalone FWの書込み。
 
-1. SXのCN2 USBを抜いて電源OFF。
-2. SW1は1番から `L H H L L H`（Download）のまま。
-3. CN2 USBを再接続。
-4. FlashToolは起動せず、`download rebooted` と入力。
-
-CRC要求0x95でRAM bootloaderの応答が停止したため、電源再投入が必要。修正版では同要求を禁止した（offline 12 tests PASS）。Codexが `python3 tools/sx_read_factory.py ram-read-factory` で限定領域を二重読取りして保存する。flash program/erase/migration要求は送信しない。
-
-状態: 書込みは保留。提供FlashToolの自動Flash migrationが工場データへ与える影響を確認中。以下の書込み手順は参考であり、まだSTARTを押さない。
+状態: **書込み手順へ進める。** ROM/RAM起動、12KiBの工場領域二重読取り、工場レコードCRCを確認済み。実際の旧MAC参照先にも移行markerがなく、RF移行条件も不成立。version更新は既存レコードとbyte一致する。この個体と指定の配布物について、MAC0/MAC1 WRITE OFFで工場MAC・JP校正値を保持する条件を確認した。
 
 ## A. 確認済みの構成
 
@@ -17,16 +10,23 @@ CRC要求0x95でRAM bootloaderの応答が停止したため、電源再投入�
 - ESPの3.3V電源線はSXに接続不要。
 - CN8の5–6/7–8は装着済み。JP2はロゴ正立時の右側（2–3、3.3V設定位置）。電圧実測ではないが、追加写真やテスターは要求しない。
 - SXはCN2のUSBから給電。CN1のACアダプタ接続は不要。提供Standaloneガイドp13にUSBのみの給電例、JP Startupガイドp8にもUSB給電可と明記。
-- SW1は当初 `L H L L L H`（Hosted）。2026-09-09、ユーザーがSAへの変更を報告済み。
+- SW1は現在Download `L H H L L H`。RAM診断終了後なので、GUIの前にCN2抜き差しでROMから起動し直す。
 - APは192.168.10.10、有線疎通済み、SSIDはhalow_demo_video。securityは未取得。
-- 特権処理のscriptは実行済み。今回のSX書込みにsudoは不要。
+- SX書込みのGUIにsudoは不要。以前のネットワーク試験用許可は03:40に期限切れなので、無線試験用に下記scriptを一度実行する。
 
-現状: SA/CN8確認後もSXのUSB-UARTは115200bpsで受信0 byte。既存FWの種類は未判定。
-CN2単独給電はメーカーが認める構成であり、無応答の原因と断定しない。
+ネットワーク試験の準備（通常ユーザーのデスクトップ端末で実行。このscript内でsudoを要求する）:
+
+```sh
+/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tools/prepare_privileged.sh
+```
+
+AP接続EthernetだけにUDP50000/ICMPの一時受信許可を追加し、4時間後に自動解除する。恒久NixOS設定は変更しない。
+
+SAでは既存FWの応答がなかったが、Download ROMと対応RAM bootloaderは実機で応答済み。CN2単独給電で進める。
 
 ## B. Silex Standaloneを書込み、起動を確認
 
-SXへの書込み操作は人間が行う。ESP側はCodexが診断FWでSPI未開始にする。
+SXへの書込み操作は人間が行う。ESPは診断FWでSPI未開始。CodexのSXモニター/読取りツールは終了済み。
 
 1. SXのCN2 USBを抜いて電源OFF。
 2. SW1 Download: `L H H L L H`。
@@ -56,6 +56,6 @@ SHA256: `7e93f02fb67a0d6504998a7372dc01cdcaf47c800c70f5b8224844dc85170ccf`
 XIP bootloader SHA256: `51da4440d881fd77fdb91c11dcc8d19d81ffbfb76f68c2eaff07fc6826886be4`
 
 Bootloader指定はSilex提供Standalone Start-Up Guideの指定に照合済み。
-CN8 console jumpers 5–6、7–8も同ガイド記載。USB-UARTブリッジの認識だけではUART配線の疎通は証明されない。
+工場バックアップ: `/home/hotaru/silex/_codex_work/private_sx_backups/20260909-081543-554105/`。取得内容と書込み範囲の判断は `docs/SX_FLASHTOOL_FACTORY_WRITE_AUDIT_20260909.md` に記録。
 
 無線のscan/association/IP試験はCodexが行い、JP Duty/LBTは維持する。

@@ -3,13 +3,15 @@
 想定拘束時間: 5～10分。StandaloneによるRF独立確認後、人間がまだ作業可能な場合に実施。
 23:27 JSTにguarded custom FW完成。Standalone起動・RF試験は未完了なので、現在は手順の準備のみ。
 
-状態: 書込みは保留。PC側FlashToolにもMAC/RF calの自動migration処理が見つかり、影響を確認中。custom firmware内のmigration guardとは別の処理のため、確認が済むまでSTARTを押さない。
+状態: **StandaloneによるRF確認待ち。** 実機バックアップと旧MAC参照先を確認し、この個体ではMAC/RF移行条件が不成立、version再保存も同一byteであることを確認済み。MAC0/MAC1 WRITE OFFを維持する。先にHUMAN_ACTION_1のStandalone試験を行う。
 
 対象（XIP FIRMWARE）:
 
 `/home/hotaru/silex/_codex_work/prepared_sx_20260908_guarded/out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin`
 
 サイズ: 832972 bytes
+
+実配置は `0x10000..0xdb5cc`（末尾を含まない）、4KiB丸めでも `0xdc000` まで。1MiB内に収まり、通常起動の工場参照先はSYS `0xfe000` / RF `0xff000`。ファイル名の `_2M` だけを理由に再buildする必要はないことをELFとsourceで照合済み。
 
 SHA256: `c05ec7b2bdf3dc94ccba87ac8d543bdd2db1cc4e5ee7ae770df2f57d89fe6a01`
 

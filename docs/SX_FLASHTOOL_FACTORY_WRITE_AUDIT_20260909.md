@@ -7,7 +7,10 @@ root の実機試験では0x95送信後から応答が止まり、RAM pointer復
 0x95は使用禁止・再送しない。先行する44byte読取りとは切り分ける。**
 この文書の監査担当は実機操作をしていないが、root実行結果を末尾へ追記している。
 
-**判定: 現在の SX 内部データが不明なため、通常の START による書込みは HOLD。**
+**2026-09-09 08:15 取得データによる判定: RF_CAL の移行はスキップされ、
+version 更新は現在の SYS_CONFIG record と同一の内容を再保存する。
+MAC 移行だけは、handler の実際の読取りアドレスが取得済み sector と異なるため未判定。**
+下記「実機 factory record に基づく判定」に取得値と残る一条件を示す。
 MAC WRITE OFF は指定した MAC の書込みを止めるが、ツールが先に実行する
 MAC/RF calibration migration を止めない。custom firmware 側の migration guard は
 別処理であり、FlashTool / 2nd bootloader の書込みを防げない。
@@ -63,7 +66,7 @@ RF cal 分岐:
 5. 先頭 byte が 1 でなければこの RF cal 分岐をスキップする。
 
 したがって、工場データの値が保持される可能性と、工場領域へ一切書かないことは別である。
-現機の marker / RF_CAL / map は未取得なので、両分岐がスキップされるとは判定できない。
+初回監査時には現機の marker / RF_CAL / map が未取得だった。取得後の判定は末尾に記す。
 RF_CAL と外部 BDF ファイルは同一物ではなく、BDF の不変確認だけでもこの処理は除外できない。
 
 ## XIP upload の範囲
@@ -77,7 +80,7 @@ Java accelerated 側の呼出し引数を確認した。
 - map loader `0x10488d08` は `0xf000` の record を読み、無効なら RAM に既定値を設定する。
   この関数内には map の flash 保存呼出しはない。
 
-今回の禁止事項を満たすと断定できる既存 GUI の組合せは見つかっていない。
+初回監査時には、今回の禁止事項を満たすと断定できる既存 GUI の組合せは見つからなかった。
 read-only の独立した bootloader 問合せを今後検討する場合も、通常 START を流用せず、
 RAM ロード前後の自動処理と送信 command を別途確認する必要がある。
 この監査ではそのためのツール作成・実機実行はしていない。
@@ -96,7 +99,7 @@ RAM ロード前後の自動処理と送信 command を別途確認する必要�
 
 ## Linux 起動・ポート・電源順序
 
-これらは操作方法の確認であり、上記 HOLD を解除するものではない。
+これらは操作方法の確認であり、工場値の保持判定は末尾の実機データに基づく。
 
 - 配布 `_README_LINUX` は graphical 環境で `java -jar FirmwareFlashTool.exe` を指定する。
 - serial dropdown は jSerialComm `getCommPorts()` → `getSystemPortName()` の一覧。
@@ -332,6 +335,61 @@ M3でも実行時設定などにより非整列faultが起き得る。
 そこから実機実行の安全性を判断したのは誤りだった。0x95は削除し、再試験しない。
 44byte READ `0x54` と RAM STORE `0x23` はbyte copyで、同じ非整列word-loadを使わない。
 今後、二回一致した取得byteを保存する際もtarget CRC未検証であることを明記する。
+
+## 実機 factory record に基づく判定（2026-09-09 08:15 取得）
+
+root が取得した保存先:
+`/home/hotaru/silex/_codex_work/private_sx_backups/20260909-081543-554105`。
+この監査担当は保存ファイルだけを解析した。各 sector は二回の読取りが一致し、RAM map
+復元も成功した。target CRC command は使用していない。以下の CRC は、保存済み record
+に対して PC 上で `zlib.crc32(record[8:12 + payload_length])` を計算した結果である。
+credentials や実 MAC 値はこの文書へ転記しない。
+
+| 保存 sector | 取得データによる確認 |
+| --- | --- |
+| `memory_map_sector.bin`, offset `0xf000` | 4096 bytes 全体が `0xff`。現存する map record はない。 |
+| `sys_config_sector.bin`, offset `0xfe000` | `nrct`、payload length 32、CRC `d0453c34` 一致。version 2、cal_use 1。MAC0 は非零、MAC1 は全零。record 後の sector 残部は全 `0xff`。 |
+| `rf_cal_sector.bin`, offset `0xff000` | `nrct`、payload length 124、CRC `0624a7cf` 一致。**payload** version 1、country `JP`。record 後の sector 残部は全 `0xff`。 |
+
+実行中 loader から取得した geometry は 1 MiB、別の固定 RAM 読取りで得た JEDEC は
+`0xef6014`。RAM map の SYS_CONFIG / RF_CAL はそれぞれ `0xfe000` / `0xff000`。
+FW_INFO は `0xf5000`。map 内には 1 MiB を超える未使用項目もあるため、それらを容量の
+根拠にせず、取得範囲も拡張していない。
+
+RF migration `0x44` は **raw sector** 先頭が 1 の場合にだけ書く。実機の先頭は `nrct` の
+`n` (`0x6e`) なので、この分岐はスキップされる。JP calibration payload は変更されない。
+payload の version 1 と raw sector 先頭を混同してはならない。
+
+続いて必ず実行される version command `0x46` は handler `0x10489cf2` から
+`0x1048901c(2)` を呼ぶ。現在の record を CRC 検証して payload 32 bytes を読み、先頭の
+version word だけを 2 に設定し、record 保存 `0x10488c58` へ渡す。実機は既に version 2
+なので、実ファイルからこの処理を再構成すると **44-byte record 全体が元と一致する**。
+SYS_CONFIG sector の erase/write は発生するが、MAC0 / MAC1 / cal_use / hw_version を
+含めた論理値と CRC は変わらない。これは工場 MAC 値の変更には当たらない。
+
+XIP bootloader の erase `0..0x10000` に含まれる `0xf000` は既に空であり、現在の map
+record を失わない。UART firmware の書込み要求は `0x10000..0xe0bfc`、sector 丸めでも
+`0xe1000` までなので、SYS_CONFIG / RF_CAL とは重ならない。
+
+### MAC 移行について残る正確な条件
+
+取得した `0xfe000` sector の byte 8..13 は marker `nrcnrt` と一致しない。ただし、これだけで
+実際の MAC migration がスキップされると断定した先行メッセージは訂正する。
+handler の literal `0x10489cc8` は **`0xffffe008`**、MAC source literal `0x10489ccc` は
+**`0xffffe000`**。raw callback `0x10489616` → `0x104885bc` は単に `0x11000000` を加えて
+byte 読取りするため、実際の CPU source は **`0x10ffe008` / `0x10ffe000`** になる。
+取得済み sector の CPU source `0x110fe000` とは異なる。
+
+SDK header は SFC base `0x11000000` のみを示し、この二つの CPU アドレスが同一 flash
+内容を読むという alias の証拠は確認できていない。1 MiB の JEDEC 容量だけでは、この
+CPU mapping の同一性を証明できない。SDK header の `half_addr_sf` が translation unit
+ごとに static 初期値 0 であることは負の literal の原因候補だが、断定はしない。
+
+既存 GUI を MAC0 / MAC1 WRITE OFF で使う最終条件は、上記の **実際の MAC source**
+で marker が不一致、または一致しても移行元 MAC が現在の MAC0 と同一と確認できること。
+RF / SYS record の未取得や CRC 不明を理由とする保留は解消済みで、残るのはこのアドレス
+一条件だけである。別アドレスの読取りを追加する場合は root が判断し、この監査担当は
+target への送信を行わない。
 
 CPUの一般仕様の一次資料:
 [Newracom NRC7292 brochure](https://newracom.com/hubfs/Products/Product%20Brochure%20%28NRC7292%29%28NEWRACOM%29.pdf?hsLang=en)、
