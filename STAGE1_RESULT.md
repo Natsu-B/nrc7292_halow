@@ -1,13 +1,13 @@
 # Stage-1 実機結果
 
-更新: 2026-09-09 05:52 JST。ユーザーがSAへSW1変更済み。SXのUART応答とI/O設定確認を継続中。
+更新: 2026-09-09。SA、ジャンパー配置、CN2 USB単独給電がメーカー対応構成であることを確認済み。FlashToolの自動migrationを調査中のためSX書込みは保留。
 
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
 | USB ESP32-S3 | PASS | 303a:1001、serial/MAC 90:70:69:10:C7:B4、esptoolでESP32-S3 rev0.2 |
 | USB SX-NEWAH | PASS（USB-UARTのみ） | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。SX MCU応答は未確認 |
 | Ethernet AP-100AH | PASS | ARPから192.168.10.10 / 1c:bc:ec:1b:30:feを検出、HTTP200、画面にAP-100AHと表示 |
-| SX standalone boot | NOT_CONFIRMED | SA切替後、再enumerateした同一USB serialへ115200 8N1で改行/help/sf sizeを送信したが受信0 byte。CN8配線/現行FWは未確定 |
+| SX standalone boot | NOT_CONFIRMED | SA/CN8確認後も115200 8N1で改行/sx show scan results/sf sizeに受信0 byte。現行FW未確定 |
 | SX → AP association | NOT_TESTED | Standalone boot未確認 |
 | AP → PC Ethernet | PASS | 実IP192.168.10.10へのping3/3、0% loss。候補IP失敗はアドレス違いだった |
 | custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
@@ -15,7 +15,7 @@
 | ESP build | PASS | ESP-IDF v5.5.2 / esp32s3、最終339536 bytes |
 | ESP flash | PASS | by-idをesptool再照合、書込み後hash一致 |
 | ESP boot | PASS | 実boot log、GPIO表示、console応答 |
-| CE0 GPIO6 probe | NOT_TESTED | GND確認済み。EVK信号電圧/SA起動待ち。未確認時probe拒否は実測 |
+| CE0 GPIO6 probe | NOT_TESTED | GNDとI/Oジャンパー配置確認済み。SXのFW準備を優先、ESPはSPI未開始 |
 | CE1 GPIO5 probe | NOT_TESTED | 同上。両CS同時Low禁止の切替はhost regressionで検証 |
 | HSPI 1MHz | NOT_TESTED | 5MHz両候補失敗時のfallback実装済み |
 | HSPI 5MHz | NOT_TESTED | 電気試験未開始 |
@@ -119,7 +119,7 @@ host検証: 12 C tests、12 receiver tests、実parserを使うC→Node互換、
 
 初回確認→SX Standalone boot→scan/association→custom SX書込み→ESP polling probeの順で再開する。
 
-SW1はSAへ変更済み。次は実基板のJP2とCN8のジャンパー配置を照合する。
+SW1はSAへ変更済み。JP2/CN8のユーザー確認も完了。CN2 USB単独給電はメーカー対応構成であり、CN1追加は不要。LED状態と既存FW起動を確認し、書込みが必要な場合は下記migration問題の解決後に人間へ依頼する。
 GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線は接続不要。
 書込みが必要になった場合だけ `tools/open_sx_flashtool.sh` をデスクトップ端末から実行する。
 同梱Linux説明書に従うJava GUI方式で、Codex自身はSXへflashしない。
@@ -137,3 +137,27 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - 前回の一時受信許可timerは03:40に満了。新たな特権変更は行っていない。
 
 参考: [Silex Power Measurement](https://www.silextechnology.com/hubfs/Resource%20PDF/142-20159-120%20SX-NEWAH%20Power_Measurement.pdf)、提供 `WA107660XA` p6、提供JP Startupガイドの基板写真。
+
+## 2026-09-09 05:55以降のジャンパー確認
+
+- ユーザー回答: CN8の5–6/7–8は両方装着、JP2はSilexロゴを正立させた向きで右側に装着。
+- JP基板写真の右側はSW1寄り/「3」側。公式電力測定資料のJP2 2–3・I/O3.3V構成に一致するため、3.3V設定位置として確認済みに変更。電圧の実測値を得たとはしない。
+- 追加写真やテスターは要求しない。
+- `logs/sx_confirmed_jumpers.log`: 確認後もUART受信0 byte。
+- `logs/esp_before_sx_flash.log`: `diag`は`opened:false`。書込みに備えてSPI未開始を維持。
+- SX Standalone binとSilex bootloader2個のSHA256を再確認。CodexはSXへflashせず、人間用手順を更新。
+
+## CN2単独給電についての確認
+
+- ユーザーから、SXはUSB CN2のみ接続、CN1追加が必要かとの質問。
+- 提供Silex StandaloneガイドWA107660XA p13はUSBまたはACアダプタによる給電を明記し、USB接続・CN1未接続の写真を掲載。JP StartupガイドWA107280XD p8もCN2をUSB power Connectorと記載し、USB給電可能と明記。
+- CN1の追加接続は不要。ESPから3.3Vを追加配線する必要もない。
+- Codexが一時的に提示した「CN2ではUSB-UARTだけに給電される可能性」という仮説は、この資料確認により撤回。CN2の接続方式だけを無応答の原因とはしない。
+- SX本体の起動は依然未確認。USB-UART認識とSX MCUのboot成功を分けて記録する。
+
+## FlashTool書込みを保留した理由
+
+- 提供FirmwareFlashToolのJava bytecodeに、MAC WRITEチェックより前に`cmd_sf_migration()`を呼ぶ経路を確認。
+- 同処理はコマンド0x44を送信し0x45応答を期待し、MAC address/RF cal migration done/skippedの分岐を持つ。MAC WRITE OFFだけで自動移行も停止するとはいえない。
+- 実際に移行される条件と提供2ND bootloader側の処理は調査中。工場MAC/BDFを勝手に変更しない指示を守るため、SXへの書込み依頼を保留。ツール起動/書込みは未実施。
+- これはcustom SX firmware内に実装済みの起動時migration抑止とは別の、PC書込みツール側の処理。

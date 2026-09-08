@@ -1,36 +1,44 @@
 # HUMAN ACTION REQUIRED #1
 
-想定拘束時間: 10～20分。開始時刻 2026-09-08 23:11 JST、最初の30分枠は23:41まで。
+想定拘束時間: 5～10分。SX Standalone firmwareの書込み操作だけを人間が行う。
 
-## A. 一度だけ確認
+状態: 書込みは保留。提供FlashToolの自動Flash migrationが工場データへ与える影響を確認中。以下は確認用手順であり、まだSTARTを押さない。
+
+## A. 確認済みの構成
 
 - SX/APアンテナ接続、ESP/SX GND共通は人間確認済み。再確認不要。
-- ESPの3.3V電源線はSXに接続不要。残る確認はSX-EVK host I/Oの電圧設定（出荷時から変更していないか）。
+- ESPの3.3V電源線はSXに接続不要。
+- CN8の5–6/7–8は装着済み。JP2はロゴ正立時の右側（2–3、3.3V設定位置）。電圧実測ではないが、追加写真やテスターは要求しない。
+- SXはCN2のUSBから給電。CN1のACアダプタ接続は不要。提供Standaloneガイドp13にUSBのみの給電例、JP Startupガイドp8にもUSB給電可と明記。
 - SW1は当初 `L H L L L H`（Hosted）。2026-09-09、ユーザーがSAへの変更を報告済み。
-- APの既知IP、SSID、security（分かる範囲）。
-- 特権処理は `tools/prepare_privileged.sh` を通常ユーザーの端末で実行。sudoはこのscriptが1回だけ要求する。
+- APは192.168.10.10、有線疎通済み、SSIDはhalow_demo_video。securityは未取得。
+- 特権処理のscriptは実行済み。今回のSX書込みにsudoは不要。
 
-Scriptはenp0s31f6限定90秒のpcap、UDP50000/ICMP echoの一時受信許可を設定。
-許可は4時間後またはrebootで解除。恒久NixOS設定変更なし。
+現状: SA/CN8確認後もSXのUSB-UARTは115200bpsで受信0 byte。既存FWの種類は未判定。
+CN2単独給電はメーカーが認める構成であり、無応答の原因と断定しない。
 
-現状: SA切替後もSXのUSB-UARTは115200bpsで受信0 byte。既存FWの種類は未判定。
-まず実基板写真でCN8の5–6/7–8とI/O用JP2を確認する。テスターは手元になし。
-既存Standaloneが起動すれば再書込み不要。
-
-## B. Standaloneを書込む必要がある場合
+## B. Silex Standaloneを書込み、起動を確認
 
 SXへの書込み操作は人間が行う。ESP側はCodexが診断FWでSPI未開始にする。
 
-1. SX電源OFF。
+1. SXのCN2 USBを抜いて電源OFF。
 2. SW1 Download: `L H H L L H`。
-3. デスクトップ端末で `tools/open_sx_flashtool.sh` を実行（Java GUI、sudo/Wine不要）。同梱 `_README_LINUX` の `java -jar` 方式。
+3. CN2 USBをPCへ接続して電源ON。デスクトップ端末で以下を実行（Java GUI、sudo/Wine不要）。
+
+   ```sh
+   /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tools/open_sx_flashtool.sh
+   ```
+
 4. 2ND BOOTLOADER: `/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot.bin`
 5. XIP BOOTLOADER: `/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot_xip.bin`
 6. XIP FIRMWARE: `/home/hotaru/silex/nrc7292_xip_fw_sx_uart.bin`
-7. MAC ADDRESSのWRITEはOFF。工場MAC/BDFを変更しない。
-8. 通常のSilex手順で電源ON・書込み。完了後SX電源OFF。
-9. SW1 SA: `L L L H L H`。SX電源ON。
-10. `standalone ready` と入力。
+7. XIP BOOTLOADERとXIP FIRMWAREのUploadをON。MAC ADDRESSはMAC0/MAC1ともWRITEをOFF。工場MAC/BDFを変更しない。
+8. Refresh後、起動scriptが表示したSXの実デバイス名に対応するポートを選択。GUIでは`ttyUSB0`等が表示されるが、番号を固定で選ばずscriptのby-id照合結果と一致させる。
+9. STARTを押し、進捗100%の完了を確認してFlashToolを閉じる。
+10. CN2 USBを抜いて電源OFF。SW1 SA: `L L L H L H`。CN2 USBを再接続して電源ON。
+11. `standalone ready` と入力。
+
+**SW1は上記Silex指定を使用する。FlashTool内のDIPイラストはpin1が逆とSilexガイドp7に注意書きがある。**
 
 Standalone firmware: 855036 bytes
 
