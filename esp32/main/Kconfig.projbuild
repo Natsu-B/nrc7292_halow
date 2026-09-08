@@ -6,25 +6,29 @@ config STAGE1_RF_ENABLE
     bool "Pre-confirm RF at boot (otherwise type rf-confirm; Duty stays enabled)"
     default n
 config STAGE1_SPI_SCLK
-    int "SCLK GPIO (example only)"
+    int "SCLK GPIO -> EVK GPIO11"
     range 0 48
-    default 12
+    default 9
 config STAGE1_SPI_MOSI
-    int "MOSI GPIO (example only)"
+    int "MOSI GPIO -> EVK GPIO10"
     range 0 48
-    default 11
+    default 7
 config STAGE1_SPI_MISO
-    int "MISO GPIO (example only)"
+    int "MISO GPIO <- EVK GPIO9"
     range 0 48
-    default 13
+    default 8
 config STAGE1_SPI_CS
-    int "CS GPIO (example only)"
+    int "CE0 GPIO -> EVK GPIO8"
     range 0 48
-    default 10
+    default 6
+config STAGE1_SPI_CS_ALT
+    int "CE1 GPIO -> EVK GPIO7"
+    range 0 48
+    default 5
 config STAGE1_SPI_IRQ
     int "EIRQ GPIO (active-high LEVEL); -1 for diagnostic polling"
     range -1 48
-    default -1
+    default 4
 config STAGE1_RESET_GPIO
     int "RESET GPIO, -1 for manual EVK reset"
     range -1 48
