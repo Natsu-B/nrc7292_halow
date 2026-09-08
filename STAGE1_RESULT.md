@@ -161,3 +161,11 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - 同処理はコマンド0x44を送信し0x45応答を期待し、MAC address/RF cal migration done/skippedの分岐を持つ。MAC WRITE OFFだけで自動移行も停止するとはいえない。
 - 実際に移行される条件と提供2ND bootloader側の処理は調査中。工場MAC/BDFを勝手に変更しない指示を守るため、SXへの書込み依頼を保留。ツール起動/書込みは未実施。
 - これはcustom SX firmware内に実装済みの起動時migration抑止とは別の、PC書込みツール側の処理。
+- 調査結果: `docs/SX_FLASHTOOL_FACTORY_WRITE_AUDIT_20260909.md`。提供2ND bootloaderの条件付きMAC/RF_CAL書込みへ到達することを確認。通常/acceleratedとも同処理を呼び、GUIの既存設定での回避経路は未発見。
+
+## LEDとUSBケーブルの追加確認
+
+- ユーザー観察: 基板の下から1番目・4番目のLEDが点灯。提供資料に個々のLED機能表がないため、特定の電源railやNRC firmware起動成功へ結び付けない。
+- ユーザーが通信可能と確認できるUSBケーブルへ交換。SX CP2102Nの同じUSB serial/by-idを認識しており、デバイスの再列挙時刻は06:10。
+- `logs/sx_led_confirmed_20260909.log`: UART 115200 8N1、改行/help/sf sizeに受信0 byte。
+- 起動直後の出力を捕捉するため同一by-idの受信待機を開始し、SW1 SAのままCN2抜き差し1回を人間へ依頼。FlashToolは未起動、ESP SPIも未開始。
