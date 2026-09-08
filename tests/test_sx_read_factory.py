@@ -62,6 +62,8 @@ class FakeSerial:
                 struct.pack_into('<I', data, 16, 0xbf2654)
                 struct.pack_into('<I', data, 28, 0x1048a22f)
                 data = bytes(data)
+            elif offset == sx.LEGACY_MAC_OFFSET:
+                data = self.flash[0xfe000:0xfe000 + 44]
             else:
                 if self.fail_second_sector and offset == 0xfe000:
                     raise sx.ProtocolError('Synthetic later-sector failure')
@@ -242,6 +244,25 @@ class FactoryReadTests(unittest.TestCase):
             sx.load_resume(path, identity)
             newer = str(int((sx.time.monotonic() + 3600) * 1e6))
             rejected(lambda: sx.load_resume(path, dict(identity, usec_initialized=newer)))
+
+    def test_legacy_marker_only_exact_literal_and_original_pointer(self):
+        serial = FakeSerial()
+        with tempfile.TemporaryDirectory() as source, tempfile.TemporaryDirectory() as output:
+            physical = serial.flash[0xfe000:0xff000]
+            sx.private_write(Path(source) / 'sys_config_sector.bin', physical)
+            resume = {'manifest': str(Path(source) / 'manifest.json'), 'map': serial.map,
+                      'record': {'files': [{'name': 'sys_config_sector.bin', 'repeat_match': True,
+                                           'sha256': hashlib.sha256(physical).hexdigest()}]}}
+            result = sx.resume_legacy_marker(serial, self.boot, Path(output), resume)
+            self.assertEqual(result['result'], 'PASS')
+            self.assertTrue(result['matches_physical_sys'])
+            self.assertFalse(result['legacy_marker_nrcnrt'])
+            self.assertTrue(result['pointer_restored'])
+            self.assertEqual((Path(output) / 'legacy_literal_ffffe000.bin').stat().st_mode & 0o777, 0o600)
+        commands = [command for command, _, _, _ in serial.commands]
+        self.assertEqual(commands, [0x21, 0x58, 0x23, 0x54, 0x23, 0x58])
+        pointers = [struct.unpack('<I', payload)[0] for command, _, _, payload in serial.commands if command == 0x23]
+        self.assertEqual(pointers, [sx.LEGACY_MAC_OFFSET, 0xfe000])
 
 
 if __name__ == '__main__':

@@ -34,6 +34,7 @@ MAP_ADDRESS = 0x10498034
 SYS_CONFIG_POINTER = MAP_ADDRESS + 32
 GEOMETRY_OFFSET = 0xff49806c  # +0x11000000 wraps to fixed sf_info_t RAM0x1049806c.
 JEDEC_STACK_OFFSET = 0xff4b7fb8  # Fixed wait frame in this exact loader only.
+LEGACY_MAC_OFFSET = 0xffffe000  # Exact vendor migration literal; may be unmapped.
 PRIVATE_ROOT = Path('/home/hotaru/silex/_codex_work/private_sx_backups')
 FLASH_SIZES = (0x100000, 0x200000, 0x400000, 0x1000000)
 MAP_FIELDS = ('profile_version', 'firmware', 'firmware_info', 'core_dump',
@@ -391,12 +392,16 @@ def load_resume(path, identity):
     if info.st_uid != os.getuid() or info.st_mode & 0o077 or info.st_size > 65536:
         raise ValueError('Resume manifest must be a private0600 file owned by this user')
     manifest = json.loads(path.read_text())
-    if (manifest.get('event'), manifest.get('result'), manifest.get('pointer_restored'),
-        manifest.get('boot_sha256')) != ('sx_ram_info', 'PASS', True, BOOT_SHA256):
-        raise ValueError('Resume requires a successful audited RAM-info manifest with restored pointer')
+    good_info = manifest.get('event') == 'sx_ram_info' and manifest.get('result') == 'PASS'
+    good_factory = (manifest.get('event') == 'sx_factory_read'
+                    and manifest.get('acquisition_result') == 'PASS'
+                    and manifest.get('result') in ('PASS', 'PARTIAL'))
+    if not (good_info or good_factory) or manifest.get('pointer_restored') is not True or manifest.get('boot_sha256') != BOOT_SHA256:
+        raise ValueError('Resume requires successful audited acquisition with restored pointer')
     saved_map = (path.parent / 'ram_memory_map.bin').read_bytes()
     saved_geometry = (path.parent / 'loader_geometry.bin').read_bytes()
-    if len(saved_map) != 56 or hashlib.sha256(saved_map).hexdigest() != manifest.get('map_sha256'):
+    if len(saved_map) != 56 or (manifest.get('map_sha256') is not None
+                               and hashlib.sha256(saved_map).hexdigest() != manifest['map_sha256']):
         raise ValueError('Saved RAM map length/hash mismatch')
     if len(saved_geometry) != 16 or struct.unpack('<4I', saved_geometry) != tuple(
             manifest['geometry'][key] for key in ('block_size', 'sector_size', 'page_size', 'total_size')):
@@ -415,7 +420,51 @@ def load_resume(path, identity):
         if manifest_monotonic < 0 or int(initialized) / 1e6 > manifest_monotonic:
             raise ValueError('USB enumeration is newer than the saved RAM-info manifest')
     return {'manifest': str(path), 'map': saved_map, 'geometry': manifest['geometry'],
-            'usb_identity': identity}
+            'usb_identity': identity, 'record': manifest}
+
+
+def resume_legacy_marker(serial, boot, directory, resume):
+    """One exact potentially unmapped vendor address; never widens this read API."""
+    entries = [entry for entry in resume['record'].get('files', [])
+               if entry.get('name') == 'sys_config_sector.bin']
+    if len(entries) != 1 or entries[0].get('repeat_match') is not True:
+        raise ValueError('Legacy marker check requires the twice-matched physical SYS sector backup')
+    entry = entries[0]
+    reference = (Path(resume['manifest']).parent / 'sys_config_sector.bin').read_bytes()
+    if len(reference) != 4096 or hashlib.sha256(reference).hexdigest() != entry.get('sha256'):
+        raise ValueError('Physical SYS sector backup length/hash mismatch')
+    policy = ReadPolicy(boot)
+    reader = Reader(serial, policy)
+    manifest = {'event': 'sx_legacy_marker', 'result': 'FAIL', 'flash_write_commands': 0,
+                'resumed_from': resume['manifest'], 'directory': str(directory),
+                'pointer_restored': False, 'legacy_marker_nrcnrt': None, 'matches_physical_sys': None}
+    original_map = None
+    checkpoint_manifest(directory, manifest)
+    try:
+        reader.resume(resume['map'])
+        original_map = resume['map']
+        original_offset = struct.unpack_from('<I', original_map, 32)[0]
+        policy.allowed_offsets = {original_offset, LEGACY_MAC_OFFSET}
+        raw = reader.read44(LEGACY_MAC_OFFSET)
+        private_write(directory / 'legacy_literal_ffffe000.bin', raw)
+        manifest['legacy_marker_nrcnrt'] = raw[8:14] == b'nrcnrt'
+        manifest['matches_physical_sys'] = raw == reference[:44]
+        manifest['result'] = 'PASS'
+        checkpoint_manifest(directory, manifest)
+    finally:
+        if original_map is not None:
+            try:
+                reader.set_pointer(struct.unpack_from('<I', original_map, 32)[0])
+                if reader.memory_map() != original_map:
+                    raise ProtocolError('Legacy marker RAM map restoration mismatch')
+                manifest['pointer_restored'] = True
+            except (OSError, ProtocolError, ValueError):
+                manifest['result'] = 'FAIL'
+                manifest['restore_error'] = 'RAM restoration unconfirmed; power-cycle before GUI or any other action'
+        checkpoint_manifest(directory, manifest)
+    if not manifest['pointer_restored']:
+        raise ProtocolError('RAM restoration unconfirmed; power-cycle before GUI or any other action')
+    return manifest
 
 
 def read_factory(serial, boot, flash_size, directory, resume=None, identity=None):
@@ -528,7 +577,7 @@ def read_info(serial, boot, directory, identity=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['probe', 'ram-info', 'ram-read-factory', 'resume-read-factory'], nargs='?', default='probe')
+    parser.add_argument('action', choices=['probe', 'ram-info', 'ram-read-factory', 'resume-read-factory', 'resume-legacy-marker'], nargs='?', default='probe')
     parser.add_argument('--port', default=SX_PORT)
     parser.add_argument('--boot', type=Path, default=BOOT_PATH)
     parser.add_argument('--flash-size', type=lambda value: int(value, 0), choices=FLASH_SIZES,
@@ -547,12 +596,12 @@ def main():
             ReadPolicy(boot)  # Reject an unpinned image before opening serial.
             directory = private_directory(args.output_root)
         identity = check_identity(args.port)
-        if args.action == 'resume-read-factory':
+        if args.action in ('resume-read-factory', 'resume-legacy-marker'):
             if args.resume_manifest is None:
-                parser.error('resume-read-factory requires --resume-manifest')
+                parser.error('resume action requires --resume-manifest')
             resume = load_resume(args.resume_manifest, identity)
         elif args.resume_manifest is not None:
-            parser.error('--resume-manifest is only valid for resume-read-factory')
+            parser.error('--resume-manifest is only valid for a resume action')
         serial = Serial(args.port, baud=460800 if resume else 115200)
         if check_identity(args.port) != identity:
             raise ValueError('USB enumeration changed while opening serial')
@@ -560,6 +609,8 @@ def main():
             result = probe(serial)
         elif args.action == 'ram-info':
             result = read_info(serial, boot, directory, identity)
+        elif args.action == 'resume-legacy-marker':
+            result = resume_legacy_marker(serial, boot, directory, resume)
         else:
             result = read_factory(serial, boot, args.flash_size, directory, resume, identity)
         print(json.dumps(result, sort_keys=True))
@@ -567,7 +618,8 @@ def main():
     except (OSError, ValueError, ProtocolError, subprocess.CalledProcessError) as error:
         print(json.dumps({'event': {'probe': 'sx_rom_probe', 'ram-info': 'sx_ram_info',
                                    'ram-read-factory': 'sx_factory_read',
-                                   'resume-read-factory': 'sx_factory_read'}[args.action],
+                                   'resume-read-factory': 'sx_factory_read',
+                                   'resume-legacy-marker': 'sx_legacy_marker'}[args.action],
                           'result': 'FAIL', 'error': str(error),
                           'received_bytes': serial.received if serial else 0,
                           'ram_loaded': False if args.action == 'probe' else 'see private manifest',

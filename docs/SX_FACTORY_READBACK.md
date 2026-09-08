@@ -16,6 +16,9 @@ python3 tools/sx_read_factory.py ram-read-factory
 
 # ram-info 後、同じUSB enumerationのloaderが起動したままなら再ロードせず続行。
 python3 tools/sx_read_factory.py resume-read-factory --resume-manifest /absolute/private/manifest.json
+
+# 現機factory取得後、vendor migrationの正確なlegacy literalだけを調べる専用診断。
+python3 tools/sx_read_factory.py resume-legacy-marker --resume-manifest /absolute/private/factory-manifest.json
 ```
 
 RAM action は最初に ROM と 115200 baud で通信し、指定の 2nd bootloader を
@@ -64,6 +67,13 @@ legacy MAC sector の各 4096 bytes。全 flash のバックアップではな�
 loaderのwait frameでsaved r4=0 / LR=`0x1048a22f`が一致した場合だけsaved r5を
 raw IDとして記録する。sentinel不一致はUNKNOWNとし、取得済みbackupを失敗にしない。
 このIDからflash読取り範囲を自動拡大しない。元mapの復元確認は必須。
+
+`resume-legacy-marker` は、取得完了・pointer復元済みのfactory manifestを使う。
+`0xffffe000`というvendorの正確なliteralを44bytesだけ読み、`nrcnrt` markerの有無と
+取得済みphysical SYS先頭44bytesとの一致だけを端末に出す。rawは0600で保存する。
+この加算結果はCPU `0x10ffe000` であり、通常のSYS CPU `0x110fe000`とのaliasは
+未確認。未マップならloaderが停止する可能性があるため、当該診断後の電源再投入が
+予定されている実機担当者だけが明示的に実行する。任意addressの指定機能はない。
 
 raw files は Git の外の `/home/hotaru/silex/_codex_work/private_sx_backups/` 配下へ、
 directory mode 0700 / file mode 0600 で保存する。端末には読取内容や MAC / 認証情報を
