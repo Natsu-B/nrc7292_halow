@@ -1,0 +1,1 @@
+{"event": "sx_factory_read", "result": "FAIL", "error": "No valid vendor response before timeout", "received_bytes": 14612, "ram_loaded": "see private manifest", "directory": "/home/hotaru/silex/_codex_work/private_sx_backups/20260909-074902-486311", "flash_write_commands": 0}

@@ -1,0 +1,1 @@
+{"baud": 115200, "event": "sx_rom_probe", "flash_write_commands": 0, "ram_loaded": false, "received_bytes": 16, "result": "PASS"}

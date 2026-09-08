@@ -5,9 +5,9 @@
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
 | USB ESP32-S3 | PASS | 303a:1001、serial/MAC 90:70:69:10:C7:B4、esptoolでESP32-S3 rev0.2 |
-| USB SX-NEWAH | PASS（USB-UARTのみ） | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。SX MCU応答は未確認 |
+| USB SX-NEWAH | PASS | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。Download modeでROM PONG 16 bytes、RAM bootloader応答も確認 |
 | Ethernet AP-100AH | PASS | ARPから192.168.10.10 / 1c:bc:ec:1b:30:feを検出、HTTP200、画面にAP-100AHと表示 |
-| SX standalone boot | NOT_CONFIRMED | SA/CN8確認後も115200 8N1で改行/sx show scan results/sf sizeに受信0 byte。現行FW未確定 |
+| SX standalone boot | NOT_CONFIRMED | SA/CN8/USBケーブル確認後の06:22電源再接続を捕捉。115200 8N1のboot出力と改行/help/sf sizeは受信0 byte。現行FW未確定 |
 | SX → AP association | NOT_TESTED | Standalone boot未確認 |
 | AP → PC Ethernet | PASS | 実IP192.168.10.10へのping3/3、0% loss。候補IP失敗はアドレス違いだった |
 | custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
@@ -169,3 +169,18 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - ユーザーが通信可能と確認できるUSBケーブルへ交換。SX CP2102Nの同じUSB serial/by-idを認識しており、デバイスの再列挙時刻は06:10。
 - `logs/sx_led_confirmed_20260909.log`: UART 115200 8N1、改行/help/sf sizeに受信0 byte。
 - 起動直後の出力を捕捉するため同一by-idの受信待機を開始し、SW1 SAのままCN2抜き差し1回を人間へ依頼。FlashToolは未起動、ESP SPIも未開始。
+- ユーザーが再接続を実施。`logs/sx_power_boot_20260909.log`には切断と06:22:10の同一by-id再openを記録。UART受信データは0 byte。USB再列挙前の最初期出力は捕捉できない場合があるため、ログ不在だけで故障と断定しない。
+- `logs/sx_after_power_cycle_20260909.log`: 再接続後の改行/help/sf sizeにも受信0 byte。モニターは停止してポートを解放。
+- 次の切り分けはROM PING。通常のFlashTool STARTは使わず、工場arrayを書かないRAM読取り経路も準備する。実行前に送信command/addressを静的・offlineで確認する。
+- `logs/sx_rom_probe_sa_20260909.log`: SA設定で115200 bpsのROM PINGは受信0 byte/timeout。RAM load/flash commandとも0。SAでROM応答がないことはROM故障の証明ではない。
+- PING専用ツールを準備した後、SW1 Download `L H H L L H`への切替とCN2再接続を人間へ依頼。通常FlashToolのSTARTは引き続き保留。
+
+## 2026-09-09 07:42以降のROM/RAM実機確認
+
+- 人間がDownload設定で再起動し、`download ready` と回答。
+- `logs/sx_rom_probe_download_20260909.log`: ROM PING PASS。115200 bps、PONG 16 bytes。これによりPC→USB-UART→NRC本体の通信を確認。StandaloneやHSPIの成功ではない。
+- `logs/sx_ram_info_20260909.log`: 固定SHAのSilex 2ND bootloaderをRAMへロード・実行し、460800 bpsのRAM map/geometry読取りPASS。元のRAM mapも復元一致。SX flashへのprogram/erase/migration要求は送信していない。
+- loaderは1MiBを報告したが、未知JEDEC時の既定値である可能性がある。mapには容量外のFOTA/DEVICE_INFO領域もあり、物理flash容量1MiBとはまだ断定しない。
+- `logs/sx_factory_backup_20260909.log`: 同一起動から限定領域の二重読取りを開始したが、追加target CRC要求0x95の段階でtimeout。最初のsector読取り相当の応答は得られたものの、CRC前に保存していなかったためfactory sectorのバックアップは未成立。RAM map復元も未確認のため通信を停止。
+- 0x95 handlerは非整列RX payloadから32bit LDRする。停止状況と整合する有力原因だが、fault PCは取得していないため原因確定とはしない。先行の静的監査はNV書込みの不在を確認したものであり、実行安全性PASSではなかった。0x95をツールの許可対象から除外して再使用しない。
+- 修正版は二重読取り一致の時点で0600のファイルを保存し、host SHA256を記録する。機器側CRCをPASSと扱わない。修正・offline検証後にDownload設定のまま電源再投入を人間へ依頼する。

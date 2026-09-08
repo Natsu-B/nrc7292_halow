@@ -1,8 +1,15 @@
 # HUMAN ACTION REQUIRED #1
 
-想定拘束時間: 5～10分。SX Standalone firmwareの書込み操作だけを人間が行う。
+現在の人間作業: 停止したRAM bootloaderの電源再投入（約10秒）。ROM PINGとRAM bootは実機で成功済み。
 
-状態: 書込みは保留。提供FlashToolの自動Flash migrationが工場データへ与える影響を確認中。以下は確認用手順であり、まだSTARTを押さない。
+1. SXのCN2 USBを抜いて電源OFF。
+2. SW1は1番から `L H H L L H`（Download）のまま。
+3. CN2 USBを再接続。
+4. FlashToolは起動せず、`download rebooted` と入力。
+
+CRC要求0x95でRAM bootloaderの応答が停止したため、電源再投入が必要。修正版では同要求を禁止した（offline 12 tests PASS）。Codexが `python3 tools/sx_read_factory.py ram-read-factory` で限定領域を二重読取りして保存する。flash program/erase/migration要求は送信しない。
+
+状態: 書込みは保留。提供FlashToolの自動Flash migrationが工場データへ与える影響を確認中。以下の書込み手順は参考であり、まだSTARTを押さない。
 
 ## A. 確認済みの構成
 
