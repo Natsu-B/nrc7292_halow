@@ -6,15 +6,15 @@
 
 - SX/APアンテナ接続、ESP/SX GND共通は人間確認済み。再確認不要。
 - ESPの3.3V電源線はSXに接続不要。残る確認はSX-EVK host I/Oの電圧設定（出荷時から変更していないか）。
-- SW1現在値は人間確認済み `L H L L L H`（Hosted）。
+- SW1は当初 `L H L L L H`（Hosted）。2026-09-09、ユーザーがSAへの変更を報告済み。
 - APの既知IP、SSID、security（分かる範囲）。
 - 特権処理は `tools/prepare_privileged.sh` を通常ユーザーの端末で実行。sudoはこのscriptが1回だけ要求する。
 
 Scriptはenp0s31f6限定90秒のpcap、UDP50000/ICMP echoの一時受信許可を設定。
 許可は4時間後またはrebootで解除。恒久NixOS設定変更なし。
 
-現状: SXのUSB-UARTは識別済みだが115200bpsでは受信0 byte。既存FWの種類は未判定。
-SXの電源OFF→SA `L L L H L H`→電源ONのboot logを確認する。
+現状: SA切替後もSXのUSB-UARTは115200bpsで受信0 byte。既存FWの種類は未判定。
+まず実基板写真でCN8の5–6/7–8とI/O用JP2を確認する。テスターは手元になし。
 既存Standaloneが起動すれば再書込み不要。
 
 ## B. Standaloneを書込む必要がある場合

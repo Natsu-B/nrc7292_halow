@@ -119,7 +119,7 @@ host検証: 12 C tests、12 receiver tests、実parserを使うC→Node互換、
 
 初回確認→SX Standalone boot→scan/association→custom SX書込み→ESP polling probeの順で再開する。
 
-次の人間操作はSX電源OFF→SW1 SA `L L L H L H`→電源ON、EVK I/O設定が出荷時のままかの回答。
+SW1はSAへ変更済み。次は実基板のJP2とCN8のジャンパー配置を照合する。
 GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線は接続不要。
 書込みが必要になった場合だけ `tools/open_sx_flashtool.sh` をデスクトップ端末から実行する。
 同梱Linux説明書に従うJava GUI方式で、Codex自身はSXへflashしない。
