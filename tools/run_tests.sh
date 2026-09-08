@@ -16,6 +16,7 @@ python3 "$ROOT/tests/test_flash_tools.py"
 python3 "$ROOT/tests/test_hw_tools.py"
 python3 "$ROOT/tests/test_find_usb.py"
 python3 "$ROOT/tests/test_sx_console.py"
+python3 "$ROOT/tests/test_sx_read_factory.py"
 node "$ROOT/tests/test_video_cycle.cjs"
 python3 "$ROOT/tools/check_native_sources.py"
 printf '\nNative tests finished. This does NOT build ESP or NRC firmware.\n'
