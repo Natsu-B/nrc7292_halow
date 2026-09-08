@@ -1,13 +1,13 @@
 # Stage-1 実機結果
 
-更新: 2026-09-08 23:50 JST。SXのSA起動待ち。
+更新: 2026-09-09 05:52 JST。ユーザーがSAへSW1変更済み。SXのUART応答とI/O設定確認を継続中。
 
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
 | USB ESP32-S3 | PASS | 303a:1001、serial/MAC 90:70:69:10:C7:B4、esptoolでESP32-S3 rev0.2 |
 | USB SX-NEWAH | PASS（USB-UARTのみ） | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。SX MCU応答は未確認 |
 | Ethernet AP-100AH | PASS | ARPから192.168.10.10 / 1c:bc:ec:1b:30:feを検出、HTTP200、画面にAP-100AHと表示 |
-| SX standalone boot | NOT_TESTED | 115200 8N1で受信0 byte。SW1/現行FW未確認 |
+| SX standalone boot | NOT_CONFIRMED | SA切替後、再enumerateした同一USB serialへ115200 8N1で改行/help/sf sizeを送信したが受信0 byte。CN8配線/現行FWは未確定 |
 | SX → AP association | NOT_TESTED | Standalone boot未確認 |
 | AP → PC Ethernet | PASS | 実IP192.168.10.10へのping3/3、0% loss。候補IP失敗はアドレス違いだった |
 | custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
@@ -123,3 +123,17 @@ host検証: 12 C tests、12 receiver tests、実parserを使うC→Node互換、
 GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線は接続不要。
 書込みが必要になった場合だけ `tools/open_sx_flashtool.sh` をデスクトップ端末から実行する。
 同梱Linux説明書に従うJava GUI方式で、Codex自身はSXへflashしない。
+
+## 2026-09-09 再開
+
+- ユーザーがSW1変更を報告。SXの同一by-idは05:43に再enumerate。GND/アンテナ確認は再要求していない。
+- I/O設定は「変更していないはずだが自信なし」、テスターなしと回答。
+- ESPの実 `diag` は `opened:false`。SPI出力はまだ開始していない。
+- SX UART再試行は受信0 byte（`logs/sx_sa_20260909.log`）。UART未接続とFW未起動をまだ区別できない。
+- Silex提供Standaloneガイドp6はCN8の5–6/7–8がコンソールに必須と明記。ユーザーへ装着状態を問い合わせ。
+- I/O用JP2は公式電力測定資料の2–3接続が3.3V試験構成。提供JP基板写真の同位置にも照合。ただしUS/JPのPCB型番が異なるため、実基板写真でJP2/CN8を照合してから判断する。
+- MISO浮遊/EIRQ LowのADC値では電源電圧は判定できないため、そのような推定は使用しない。
+- AP `192.168.10.10` への有線pingは2/2で再成功。AP設定変更/resetなし。
+- 前回の一時受信許可timerは03:40に満了。新たな特権変更は行っていない。
+
+参考: [Silex Power Measurement](https://www.silextechnology.com/hubfs/Resource%20PDF/142-20159-120%20SX-NEWAH%20Power_Measurement.pdf)、提供 `WA107660XA` p6、提供JP Startupガイドの基板写真。
