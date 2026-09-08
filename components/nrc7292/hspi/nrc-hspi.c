@@ -839,8 +839,11 @@ static int hspi_ready (hspi_info_t *info)
 		return -1;
 
     diagnostics.chip_id = regs.sys.chip_id;
+    diagnostics.modem_id = regs.sys.modem_id;
     diagnostics.sw_id = regs.sys.sw_id;
     diagnostics.board_id = regs.sys.board_id;
+    memcpy(diagnostics.signature, regs.msg, 8);
+    diagnostics.signature[8] = '\0';
     if (regs.sys.chip_id != 0x7292U) return -1;
 	hspi_regs_print_all(&regs);
 
@@ -888,9 +891,22 @@ static int hspi_ready (hspi_info_t *info)
 	return -1;
 }
 
+int nrc_hspi_set_eirq_mode(enum HSPI_EIRQ_MODE mode)
+{
+    if (!HSPI_ACTIVE()) return -1;
+    switch (mode) {
+    case HSPI_EIRQ_MODE_LOW:
+    case HSPI_EIRQ_MODE_HIGH:
+    case HSPI_EIRQ_MODE_RISING:
+    case HSPI_EIRQ_MODE_FALLING:
+        return hspi_eirq_enable(mode, HSPI_EIRQ_ALL);
+    default:
+        return hspi_eirq_disable();
+    }
+}
+
 static int hspi_open (hspi_ops_t *ops, enum HSPI_EIRQ_MODE mode)
 {
-	int ret;
 
     memset(&diagnostics, 0, sizeof(diagnostics));
     tx_sequence = 0; rx_expected = 0; rx_sequence_valid = 0;
@@ -905,20 +921,7 @@ static int hspi_open (hspi_ops_t *ops, enum HSPI_EIRQ_MODE mode)
 		return -1;
 	}
 
-	switch (mode)
-	{
-		case HSPI_EIRQ_MODE_LOW:
-		case HSPI_EIRQ_MODE_HIGH:
-		case HSPI_EIRQ_MODE_RISING:
-		case HSPI_EIRQ_MODE_FALLING:
-			ret = hspi_eirq_enable(mode, HSPI_EIRQ_ALL);
-			break;
-
-		default:
-			ret = hspi_eirq_disable();
-	}
-
-	return ret;
+    return nrc_hspi_set_eirq_mode(mode);
 }
 
 static void hspi_close (void)

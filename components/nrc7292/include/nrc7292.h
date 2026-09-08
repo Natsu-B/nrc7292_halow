@@ -37,6 +37,7 @@ typedef struct {
     gpio_num_t pin_mosi;
     gpio_num_t pin_miso;
     gpio_num_t pin_cs;
+    gpio_num_t pin_cs_idle; /* Other wired CS, always driven high. */
     gpio_num_t pin_eirq;
     gpio_num_t pin_reset;
 
@@ -64,6 +65,7 @@ typedef struct {
         .pin_mosi = GPIO_NUM_NC,                                                 \
         .pin_miso = GPIO_NUM_NC,                                                 \
         .pin_cs = GPIO_NUM_NC,                                                   \
+        .pin_cs_idle = GPIO_NUM_NC,                                              \
         .pin_eirq = GPIO_NUM_NC,                                                 \
         .pin_reset = GPIO_NUM_NC,                                                \
         .pin_power_enable = GPIO_NUM_NC,                                         \
@@ -86,10 +88,15 @@ typedef struct {
     nrc_hspi_diagnostics_t native;
     nrc_hspi_queue_info_t queues;
     uint32_t irq_count;
+    uint32_t irq_high_count;
+    int eirq_level;
+    bool eirq_enabled;
 } nrc7292_diagnostics_t;
 /* rx_task_priority/stack_size configure the single I/O task. tx_task_* fields
  * are retained for source compatibility but no separate TX task is created. */
 esp_err_t nrc7292_get_diagnostics(nrc7292_handle_t handle, nrc7292_diagnostics_t *out);
+/* Enable the wired active-high level interrupt from the I/O task after polling. */
+esp_err_t nrc7292_enable_eirq(nrc7292_handle_t handle);
 /* Echo over HSPI only: no association and no RF frame is emitted. */
 esp_err_t nrc7292_loopback(nrc7292_handle_t handle, const void *data, size_t length, TickType_t timeout);
 
@@ -99,6 +106,7 @@ typedef struct {
     uint8_t mac[6];
     uint32_t features;
     nrc_l2_link_stats_t radio;
+    uint32_t radio_stats_age_ms; /* UINT32_MAX until a target sample arrives. */
     uint64_t ethernet_tx_frames;
     uint64_t ethernet_tx_bytes;
     uint64_t ethernet_rx_frames;
@@ -117,6 +125,8 @@ typedef struct {
 esp_err_t nrc7292_force_radio_off(const nrc7292_config_t *config);
 
 esp_err_t nrc7292_init(const nrc7292_config_t *config, nrc7292_handle_t *out);
+/* Poll ID, signature and geometry without EIRQ or L2 HELLO. Retains selected bus. */
+esp_err_t nrc7292_probe(nrc7292_handle_t handle, TickType_t timeout);
 esp_err_t nrc7292_start(nrc7292_handle_t handle, TickType_t hello_timeout);
 esp_err_t nrc7292_create_netif(nrc7292_handle_t handle, esp_netif_t **out_netif);
 esp_err_t nrc7292_configure_wifi(nrc7292_handle_t handle,

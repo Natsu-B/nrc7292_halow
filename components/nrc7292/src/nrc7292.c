@@ -48,7 +48,9 @@ struct nrc7292_device {
     EventGroupHandle_t events;
     TaskHandle_t io_task;
     atomic_bool running, hspi_ready, wifi_connected;
+    atomic_bool irq_requested;
     atomic_uint irq_count;
+    atomic_uint irq_high_count;
     uint16_t next_seq, pending_seq;
     uint8_t pending_type;
     int16_t pending_result;
@@ -57,6 +59,7 @@ struct nrc7292_device {
     nrc_l2_stream_decoder_t decoder;
     nrc_l2_hello_t hello;
     nrc_l2_link_stats_t radio;
+    int64_t radio_stats_received_us;
     nrc7292_diagnostics_t diag;
     uint64_t tx_frames, tx_bytes, rx_frames, rx_bytes;
     uint32_t tx_drops, crc_errors, framing_errors;
@@ -140,6 +143,8 @@ static void irq_isr(void *arg) {
      * The I/O task drains queues/clears the native latch and rearms it. */
     if (irq_is_level(&d->config)) gpio_intr_disable(d->config.pin_eirq);
     atomic_fetch_add_explicit(&d->irq_count, 1U, memory_order_relaxed);
+    if (gpio_get_level(d->config.pin_eirq))
+        atomic_fetch_add_explicit(&d->irq_high_count, 1U, memory_order_relaxed);
     if (d->io_task) vTaskNotifyGiveFromISR(d->io_task, &wake);
     if (wake) portYIELD_FROM_ISR();
 }
@@ -223,6 +228,9 @@ static void snapshot_native(struct nrc7292_device *d) {
     d->diag.native = native;
     d->diag.queues = q;
     d->diag.irq_count = atomic_load(&d->irq_count);
+    d->diag.irq_high_count = atomic_load(&d->irq_high_count);
+    d->diag.eirq_level = d->config.pin_eirq == GPIO_NUM_NC ? -1 : gpio_get_level(d->config.pin_eirq);
+    d->diag.eirq_enabled = d->irq_installed;
     d->crc_errors = d->decoder.crc_errors;
     d->framing_errors = d->decoder.framing_errors;
     unlock(d->state_mutex);
@@ -267,7 +275,7 @@ static void handle_message(const nrc_l2_message_view_t *m, void *context) {
     case NRC_L2_MSG_LINK_STATS: {
         nrc_l2_link_stats_t stats;
         if (!nrc_l2_link_stats_decode(m->payload, m->payload_length, &stats)) break;
-        lock(d->state_mutex); d->radio = stats; unlock(d->state_mutex);
+        lock(d->state_mutex); d->radio = stats; d->radio_stats_received_us = esp_timer_get_time(); unlock(d->state_mutex);
         set_link(d, stats.connected != 0); /* repairs a dropped state event */
         break;
     }
@@ -312,6 +320,12 @@ static void io_task(void *arg) {
     size_t offset = 0;
     bool failed = false;
     while (atomic_load(&d->running)) {
+        if (atomic_exchange(&d->irq_requested, false) && !d->irq_installed) {
+            d->config.eirq_mode = NRC7292_EIRQ_ACTIVE_HIGH_LEVEL;
+            if (nrc_hspi_set_eirq_mode(HSPI_EIRQ_MODE_HIGH) != 0 || configure_irq(d) != ESP_OK) {
+                failed = true; break;
+            }
+        }
         if (nrc_hspi_refresh_status() != 0) { failed = true; break; }
         int count = nrc_hspi_read((char *)d->rx_buffer, (int)d->config.rx_buffer_size);
         if (count < 0) { failed = true; break; }
@@ -429,20 +443,23 @@ static void release(struct nrc7292_device *d) {
     }
     if (d->spi) spi_bus_remove_device(d->spi);
     if (d->bus_ready) spi_bus_free(d->config.spi_host);
+    (void)set_output_level(d->config.pin_cs, 1);
+    (void)set_output_level(d->config.pin_cs_idle, 1);
     release_queue(d->control_q); release_queue(d->data_q);
     if (d->events) vEventGroupDelete(d->events);
     if (d->state_mutex) vSemaphoreDelete(d->state_mutex);
     if (d->command_mutex) vSemaphoreDelete(d->command_mutex);
-    if (s_active == d) s_active = NULL;
+    if (s_active == d) { nrc_hspi_close(); s_active = NULL; }
     free(d->spi_tx); free(d->spi_rx); free(d->rx_buffer); free(d);
 }
 static bool valid_config(const nrc7292_config_t *c) {
     if (!c || !GPIO_IS_VALID_OUTPUT_GPIO(c->pin_sclk) || !GPIO_IS_VALID_OUTPUT_GPIO(c->pin_mosi) ||
         !GPIO_IS_VALID_OUTPUT_GPIO(c->pin_cs) || !GPIO_IS_VALID_GPIO(c->pin_miso)) return false;
     if (c->pin_eirq != GPIO_NUM_NC && !GPIO_IS_VALID_GPIO(c->pin_eirq)) return false;
+    if (c->pin_cs_idle != GPIO_NUM_NC && !GPIO_IS_VALID_OUTPUT_GPIO(c->pin_cs_idle)) return false;
     if (c->pin_reset != GPIO_NUM_NC && !GPIO_IS_VALID_OUTPUT_GPIO(c->pin_reset)) return false;
     if (c->pin_power_enable != GPIO_NUM_NC && !GPIO_IS_VALID_OUTPUT_GPIO(c->pin_power_enable)) return false;
-    const gpio_num_t pins[] = {c->pin_sclk,c->pin_mosi,c->pin_miso,c->pin_cs,c->pin_eirq,c->pin_reset,c->pin_power_enable};
+    const gpio_num_t pins[] = {c->pin_sclk,c->pin_mosi,c->pin_miso,c->pin_cs,c->pin_cs_idle,c->pin_eirq,c->pin_reset,c->pin_power_enable};
     for (unsigned i = 0; i < sizeof(pins)/sizeof(pins[0]); ++i)
         for (unsigned j = i+1; j < sizeof(pins)/sizeof(pins[0]); ++j)
             if (pins[i] != GPIO_NUM_NC && pins[i] == pins[j]) return false;
@@ -461,6 +478,8 @@ esp_err_t nrc7292_init(const nrc7292_config_t *c, nrc7292_handle_t *out) {
     d->config = *c;
     atomic_init(&d->running, false); atomic_init(&d->hspi_ready, false);
     atomic_init(&d->wifi_connected, false); atomic_init(&d->irq_count, 0U);
+    atomic_init(&d->irq_requested, false);
+    atomic_init(&d->irq_high_count, 0U);
     d->spi_tx = heap_caps_malloc(HSPI_XFER_LEN_MAX, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
     d->spi_rx = heap_caps_malloc(HSPI_XFER_LEN_MAX, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
     d->rx_buffer = heap_caps_malloc(c->rx_buffer_size, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
@@ -470,11 +489,24 @@ esp_err_t nrc7292_init(const nrc7292_config_t *c, nrc7292_handle_t *out) {
     d->data_q = xQueueCreate(c->data_queue_depth, sizeof(tx_item_t *));
     if (!d->spi_tx || !d->spi_rx || !d->rx_buffer || !d->state_mutex || !d->command_mutex ||
         !d->events || !d->control_q || !d->data_q) { release(d); return ESP_ERR_NO_MEM; }
+    /* Latches go high before either CS becomes an output or joins the SPI bus. */
+    esp_err_t err = set_output_level(c->pin_cs, 1);
+    if (err == ESP_OK) err = set_output_level(c->pin_cs_idle, 1);
+    if (err == ESP_OK && c->pin_eirq != GPIO_NUM_NC) {
+        gpio_config_t input = {
+            .pin_bit_mask = 1ULL << (unsigned)c->pin_eirq, .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE, .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE,
+        };
+        err = gpio_config(&input);
+    }
+    if (err != ESP_OK) { release(d); return err; }
+    vTaskDelay(ms_ticks(10));
     spi_bus_config_t bus = {
         .mosi_io_num=c->pin_mosi, .miso_io_num=c->pin_miso, .sclk_io_num=c->pin_sclk,
         .quadwp_io_num=-1, .quadhd_io_num=-1, .max_transfer_sz=HSPI_XFER_LEN_MAX,
     };
-    esp_err_t err = spi_bus_initialize(c->spi_host, &bus, SPI_DMA_CH_AUTO);
+    err = spi_bus_initialize(c->spi_host, &bus, SPI_DMA_CH_AUTO);
     if (err != ESP_OK) { release(d); return err; }
     d->bus_ready = true;
     spi_device_interface_config_t device = {
@@ -487,21 +519,32 @@ esp_err_t nrc7292_init(const nrc7292_config_t *c, nrc7292_handle_t *out) {
     *out = d;
     return ESP_OK;
 }
-esp_err_t nrc7292_start(nrc7292_handle_t d, TickType_t timeout) {
-    if (!d || !timeout || s_active || d->io_task) return ESP_ERR_INVALID_STATE;
+esp_err_t nrc7292_probe(nrc7292_handle_t d, TickType_t timeout) {
+    if (!d || !timeout || (s_active && s_active != d) || d->io_task) return ESP_ERR_INVALID_STATE;
+    bool already_open = s_active == d;
     int64_t deadline = deadline_after(timeout);
     s_active = d;
-    esp_err_t err = power_up(d);
+    /* Re-read chip/signature/queues on every polling probe, without resetting
+     * an already open target or treating cached identity as live evidence. */
+    esp_err_t err = already_open ? ESP_OK : power_up(d);
     if (err != ESP_OK) { s_active = NULL; return err; }
     hspi_ops_t ops = {.printf=hprintf, .delay=NULL, .spi_transfer=spi_transfer};
     int opened = -1;
     do {
-        opened = nrc_hspi_open(&ops, target_irq(&d->config));
+        opened = nrc_hspi_open(&ops, HSPI_EIRQ_MODE_NONE);
         if (!opened) break;
         vTaskDelay(ms_ticks(100));
     } while (remaining(deadline));
     snapshot_native(d);
     if (opened) { nrc_hspi_close(); s_active = NULL; return ESP_ERR_TIMEOUT; }
+    return ESP_OK;
+}
+esp_err_t nrc7292_start(nrc7292_handle_t d, TickType_t timeout) {
+    if (!d || !timeout || d->io_task) return ESP_ERR_INVALID_STATE;
+    int64_t deadline = deadline_after(timeout);
+    esp_err_t err = nrc7292_probe(d, timeout);
+    if (err != ESP_OK) return err;
+    if (nrc_hspi_set_eirq_mode(target_irq(&d->config)) != 0) return ESP_FAIL;
     atomic_store(&d->running, true); atomic_store(&d->hspi_ready, true);
     xEventGroupClearBits(d->events, EV_IO_EXIT | EV_FAULT | EV_HELLO | EV_COMMAND);
     /* IRQ is installed while task is inactive. A notification before the task
@@ -576,11 +619,20 @@ esp_err_t nrc7292_get_diagnostics(nrc7292_handle_t d, nrc7292_diagnostics_t *out
     if (!d || !out) return ESP_ERR_INVALID_ARG;
     lock(d->state_mutex); *out=d->diag; unlock(d->state_mutex); return ESP_OK;
 }
+esp_err_t nrc7292_enable_eirq(nrc7292_handle_t d) {
+    if (!d || d->config.pin_eirq == GPIO_NUM_NC || !atomic_load(&d->hspi_ready))
+        return ESP_ERR_INVALID_STATE;
+    atomic_store(&d->irq_requested, true);
+    xTaskNotifyGive(d->io_task);
+    return ESP_OK;
+}
 esp_err_t nrc7292_get_link_stats(nrc7292_handle_t d, nrc7292_link_stats_t *s) {
     if (!d || !s) return ESP_ERR_INVALID_ARG;
     lock(d->state_mutex); memset(s,0,sizeof(*s));
     s->hspi_ready=atomic_load(&d->hspi_ready); s->wifi_connected=atomic_load(&d->wifi_connected);
     memcpy(s->mac,d->hello.mac,6); s->features=d->hello.features; s->radio=d->radio;
+    int64_t age_ms=(esp_timer_get_time()-d->radio_stats_received_us)/1000;
+    s->radio_stats_age_ms=!d->radio_stats_received_us || age_ms>UINT32_MAX ? UINT32_MAX : (uint32_t)age_ms;
     s->ethernet_tx_frames=d->tx_frames; s->ethernet_tx_bytes=d->tx_bytes;
     s->ethernet_rx_frames=d->rx_frames; s->ethernet_rx_bytes=d->rx_bytes;
     s->host_tx_queue_drops=d->tx_drops;

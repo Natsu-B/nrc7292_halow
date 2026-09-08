@@ -135,8 +135,11 @@ void*heap_caps_malloc(size_t n,unsigned caps) {(void)caps;return malloc(n);}
 
 /* GPIO model: a masked active-high level remains asserted until target RX is drained. */
 static void(*gpio_handler)(void*);static void*gpio_arg;static bool irq_enabled;static int irq_type;
+static int pin_level[49],active_cs,failed_cs=-1;
+static bool bus_initialized;
 esp_err_t gpio_config(const gpio_config_t*c){(void)c;return ESP_OK;}
-esp_err_t gpio_set_level(gpio_num_t p,uint32_t v){(void)p;(void)v;return ESP_OK;}
+esp_err_t gpio_set_level(gpio_num_t p,uint32_t v){assert(p>=0&&p<49);pin_level[p]=(int)v;return ESP_OK;}
+int gpio_get_level(gpio_num_t p){return p==4?mock.target_to_host_available>0:pin_level[p];}
 esp_err_t gpio_install_isr_service(int f){(void)f;return ESP_OK;}
 esp_err_t gpio_isr_handler_add(gpio_num_t p,void(*fn)(void*),void*a){(void)p;gpio_handler=fn;gpio_arg=a;return ESP_OK;}
 esp_err_t gpio_isr_handler_remove(gpio_num_t p){(void)p;gpio_handler=NULL;gpio_arg=NULL;return ESP_OK;}
@@ -171,12 +174,17 @@ static void target_command(const nrc_l2_message_view_t*m,void*context) {
         n=nrc_l2_command_result_encode(&r,payload,sizeof(payload));assert(n);target_response(NRC_L2_MSG_COMMAND_RESULT,m->sequence,payload,(uint16_t)n);
     }
 }
-esp_err_t spi_bus_initialize(spi_host_device_t h,const spi_bus_config_t*c,int dma){(void)h;(void)c;(void)dma;return ESP_OK;}
-esp_err_t spi_bus_add_device(spi_host_device_t h,const spi_device_interface_config_t*c,spi_device_handle_t*out){(void)h;assert(c->mode==0);*out=&mock;return ESP_OK;}
+esp_err_t spi_bus_initialize(spi_host_device_t h,const spi_bus_config_t*c,int dma){
+    (void)h;(void)dma;assert(!bus_initialized);assert(pin_level[5]==1&&pin_level[6]==1);
+    assert(c->sclk_io_num==9&&c->mosi_io_num==7&&c->miso_io_num==8);bus_initialized=true;return ESP_OK;
+}
+esp_err_t spi_bus_add_device(spi_host_device_t h,const spi_device_interface_config_t*c,spi_device_handle_t*out){(void)h;assert(c->mode==0);active_cs=c->spics_io_num;*out=&mock;return ESP_OK;}
 esp_err_t spi_bus_remove_device(spi_device_handle_t d){(void)d;return ESP_OK;}
-esp_err_t spi_bus_free(spi_host_device_t h){(void)h;return ESP_OK;}
+esp_err_t spi_bus_free(spi_host_device_t h){(void)h;assert(bus_initialized);bus_initialized=false;return ESP_OK;}
 esp_err_t spi_device_polling_transmit(spi_device_handle_t d,spi_transaction_t*t){
     assert(d==&mock);assert(t->length%8==0);
+    assert(pin_level[active_cs==6?5:6]==1);
+    if(active_cs==failed_cs){if(t->rx_buffer)memset(t->rx_buffer,0xff,t->length/8);return ESP_OK;}
     if(atomic_exchange(&inject_bus_error,false))return ESP_FAIL;
     if(mock.phase==PHASE_COMMAND)mock.host_to_target_available=atomic_load(&block_credits)?0:4;
     int ret=mock_spi_transfer((char*)t->tx_buffer,(char*)t->rx_buffer,(int)(t->length/8));
@@ -213,12 +221,30 @@ esp_err_t esp_netif_receive(esp_netif_t*n,void*p,size_t len,void*eb){
 int main(void){
     mock_init();nrc_l2_stream_decoder_init(&target_decoder);
     nrc7292_handle_t d=NULL; nrc7292_config_t c=NRC7292_CONFIG_DEFAULT();
-    c.pin_sclk=12;c.pin_mosi=11;c.pin_miso=13;c.pin_cs=10;c.pin_eirq=9;
-    c.eirq_mode=NRC7292_EIRQ_ACTIVE_HIGH_LEVEL;
+    c.pin_sclk=9;c.pin_mosi=7;c.pin_miso=8;c.pin_cs=6;c.pin_cs_idle=5;c.pin_eirq=4;
+    c.eirq_mode=NRC7292_EIRQ_DISABLED;
     nrc7292_config_t bad=c;bad.pin_mosi=bad.pin_miso;
     assert(nrc7292_init(&bad,&d)==ESP_ERR_INVALID_ARG);
+    bad=c;bad.pin_cs_idle=bad.pin_cs;assert(nrc7292_init(&bad,&d)==ESP_ERR_INVALID_ARG);
     assert(nrc7292_init(&c,&d)==ESP_OK);
-    assert(nrc7292_start(d,5000)==ESP_OK);assert(irq_type==GPIO_INTR_HIGH_LEVEL);
+    failed_cs=6;assert(nrc7292_probe(d,50)==ESP_ERR_TIMEOUT);
+    assert(!gpio_handler&&!task_count);assert(nrc7292_stop(d)==ESP_OK);
+    assert(!bus_initialized&&pin_level[5]==1&&pin_level[6]==1);
+    c.pin_cs=5;c.pin_cs_idle=6;
+    assert(nrc7292_init(&c,&d)==ESP_OK);assert(nrc7292_probe(d,500)==ESP_OK);
+    assert(!gpio_handler&&!task_count);
+    nrc7292_diagnostics_t probed;assert(nrc7292_get_diagnostics(d,&probed)==ESP_OK);
+    assert(probed.native.chip_id==0x7292&&!strcmp(probed.native.signature,"NRC-HSPI"));
+    /* A successful polling probe must not mask a later unplug/power-off. */
+    failed_cs=5;assert(nrc7292_probe(d,50)==ESP_ERR_TIMEOUT);
+    assert(!gpio_handler&&!task_count);
+    failed_cs=-1;assert(nrc7292_probe(d,500)==ESP_OK);
+    assert(nrc7292_start(d,5000)==ESP_OK);assert(!gpio_handler);
+    assert(nrc7292_enable_eirq(d)==ESP_OK);
+    for(unsigned i=0;i<1000;i++){
+        assert(nrc7292_get_diagnostics(d,&probed)==ESP_OK);if(probed.eirq_enabled)break;vTaskDelay(1);
+    }
+    assert(probed.eirq_enabled&&irq_type==GPIO_INTR_HIGH_LEVEL);
     uint8_t data[1518];
     for(unsigned i=0;i<128;i++){
         for(unsigned j=0;j<sizeof(data);j++)data[j]=(uint8_t)(i*73+j*17);
@@ -244,7 +270,7 @@ int main(void){
     assert(atomic_load(&ethernet_received)==2);
     assert(nrc7292_disconnect(d,3000)==ESP_OK);assert(!nrc7292_is_connected(d));
     nrc7292_diagnostics_t diag;assert(nrc7292_get_diagnostics(d,&diag)==ESP_OK);
-    assert(diag.irq_count>0);assert(diag.native.rx_slots>=320);assert(!diag.native.faulted);
+    assert(diag.irq_count>0&&diag.irq_high_count>0);assert(diag.native.rx_slots>=320);assert(!diag.native.faulted);
     atomic_store(&inject_bus_error,true);
     for(unsigned i=0;i<1000;i++){nrc7292_get_diagnostics(d,&diag);if(diag.native.faulted)break;vTaskDelay(1);}
     assert(diag.native.faulted);
