@@ -1,0 +1,40 @@
+arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907]
+Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+BDFILE = ./bdf/nrc7292/stage1_vendor.dat
+make -j16 -f make/Makefile.nrc7292.sdk.release ALIAS=xip+2m+stage1_vendor.dat --
+make[1]: Entering directory '/home/hotaru/silex/_codex_work/prepared_sx_20260908_guarded'
+CFLAGS: -x none -Werror -Wall -Wno-unused-value -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function -Wno-address-of-packed-member -fno-common -fno-exceptions -gdwarf-2 -ffunction-sections -fdata-sections -Os -Isdk/include -Isdk/apps/wifi_common -Isdk/apps/L2BRIDGE_HSPI -Ibdf -Ilib/modem -Ilib/modem/inc -Ilib/modem/inc/system -Ilib/modem/inc/wlan -Ilib/modem/inc/hal -Ilib/modem/inc/host -Ilib/modem/inc/util -Ilib/modem/inc/umac -Ilib/FreeRTOS/Source/include -Ilib/FreeRTOS/Config/nrc7292 -Ilib/FreeRTOS/Source -Ilib/FreeRTOS/Source/portable/GCC/ARM_CM3 -Ilib/FreeRTOS/Source/portable/MemMang -Ilib/lwip/include -Ilib/lwip/include/apps -Ilib/lwip/include/apps/ping -Ilib/lwip/include/apps/iperf -Ilib/lwip/include/apps/dhcpserver -Ilib/lwip/lwip/src/include -Ilib/lwip/port/include -Ilib/lwip/port/include/arch -Ilib/lwip/port/include/netif -Ilib/lwip/port/include/lwip-nat -Ilib/lwip/lwip/src/include/compat/posix -Ilib/lwip/lwip/src/apps/snmp -Ilib/lwip/lwip/src/apps/sntp -Ilib/mbedtls/port/include -Ilib/mbedtls/mbedtls/include -Ilib/mbedtls/include -Ilib/hostap -Ilib/hostap/tests -Ilib/hostap/tests/unit-test -Ilib/hostap/tests/unit-test/lib -Ilib/hostap/script -Ilib/hostap/script/wpas -Ilib/hostap/script/hostapd -Ilib/hostap/hostapd/logwatch -Ilib/hostap/src -Ilib/hostap/src/eapol_auth -Ilib/hostap/src/l2_packet -Ilib/hostap/src/pae -Ilib/hostap/src/fst -Ilib/hostap/src/utils -Ilib/hostap/src/tls -Ilib/hostap/src/wps -Ilib/hostap/src/common -Ilib/hostap/src/p2p -Ilib/hostap/src/eap_peer -Ilib/hostap/src/rsn_supp -Ilib/hostap/src/drivers -Ilib/hostap/src/drivers/test -Ilib/hostap/src/eapol_supp -Ilib/hostap/src/eap_server -Ilib/hostap/src/eap_common -Ilib/hostap/src/crypto -Ilib/hostap/src/radius -Ilib/hostap/src/ap -Ilib/hostap/wpa_supplicant -Ilib/hostap/wpa_supplicant/examples -Ilib/hostap/wpa_supplicant/examples/p2p -Ilib/hostap/wpa_supplicant/utils -Ilib/hostap/wpa_supplicant/wpa_gui-qt4 -Ilib/hostap/wpa_supplicant/wpa_gui-qt4/lang -Ilib/hostap/wpa_supplicant/wpa_gui-qt4/icons -Ilib/hostap/wpa_supplicant/binder -Ilib/hostap/wpa_supplicant/binder/fi -Ilib/hostap/wpa_supplicant/binder/fi/w1 -Ilib/hostap/wpa_supplicant/binder/fi/w1/wpa_supplicant -Ilib/hostap/wpa_supplicant/dbus -Ilib/hostap/wpa_supplicant/systemd -Ilib/hostap/wpa_supplicant/doc -Ilib/hostap/wpa_supplicant/doc/docbook -Ilib/hostap/wpa_supplicant/vs2005 -Ilib/hostap/wpa_supplicant/vs2005/wpasvc -Ilib/hostap/wpa_supplicant/vs2005/eapol_test -Ilib/hostap/wpa_supplicant/vs2005/win_if_list -Ilib/hostap/wpa_supplicant/vs2005/wpa_passphrase -Ilib/hostap/wpa_supplicant/vs2005/wpa_cli -Ilib/hostap/wpa_supplicant/vs2005/wpa_supplicant -mcpu=cortex-m3 -mthumb -DCONFIG_ATCMD_HSPI -DCONFIG_ATCMD_TASK_PRIORITY=2 -DCONFIG_L2BRIDGE_HSPI -DCPU_CM3 -DNRC7292 -DINCLUDE_STANDALONE -DNRC7292_STANDALONE_XIP -DCACHE_XIP -DSF_WRITABLE -DSDK_SYSTEM_NAME="nrc7292" -DSDK_TARGET_NAME="standalone_xip" -DSTANDARD_11AH -DLMAC_CONFIG_11AH=1 -DINCLUDE_UMAC -DINCLUDE_TIM_HANDLER -DINCLUDE_CDC -DUMAC_BEACON_MONITOR -DINCLUDE_ACCESS_POINT -DINCLUDE_UMAC_BEACON -DINCLUDE_BEACON_AP_BEACON -DMAX_STA=50 -DRC_START_MIN -DRC_MCS_SINGLE -DNRF_NO_USE_SPI -DINCLUDE_TRACE_ERROR -DINCLUDE_TRACE_ASSERT -DINCLUDE_TRACE_ALWAYS -DDEBUG_MAC_STATS -DUTIL_TRACE_STACK -DLMAC_CONFIG_FREERTOS=1 -DLMAC_CONFIG_NAN=0 -DLMAC_CONFIG_BUFFER_SIZE=512 -DLMAC_CONFIG_DL_DESCRIPTOR=32 -DLMAC_CONFIG_POOL_0_RESERVED_NUM=4 -DLMAC_CONFIG_POOL_0_NUM=55 -DLMAC_CONFIG_POOL_1_NUM=36 -DLMAC_CONFIG_CREDIT_QM0=8 -DLMAC_CONFIG_CREDIT_QM1=8 -DLMAC_CONFIG_CREDIT_QM2=8 -DLMAC_CONFIG_CREDIT_QM3=9 -DLMAC_MODEM_RECOVERY_TIME_MS=120000 -DLMAC_WDT_RESET_TIME_MS=20000 -DLMAC_BMT_LOSS_CNT=30 -DNRC_FREERTOS -DCONFIG_OS_FREERTOS -DPRO_FPGA -DconfigTOTAL_HEAP_SIZE=240000 -DINCLUDE_S1G_HOOK -DINCLUDE_S1G_CONFIG -DINCLUDE_UMAC_PRESP -DINCLUDE_MODEM_RECOVERY -DTX_GAIN_1_5_WITH_TXLO_TXIMG_CAL -DUSE_TEMP_SENSOR -DINCLUDE_MIC_SCAN -DINCLUDE_4M_OP_2M_TX -DINCLUDE_DUTYCYCLE -DINCLUDE_DUTY_CYCLE_CHECK -DINCLUDE_UCODE -DINCLUDE_TWT_SUPPORT -DINCLUDE_SW_OFFLOAD_NDP_CTRL -DCONFIG_BG_SCAN -DINCLUDE_PS_NONPOLL -DINCLUDE_BD_SUPPORT -DINCLUDE_BD_SUPPORT_TARGET_VERSION -DINCLUDE_RUNRAM -DINCLUDE_STA_SIG_INFO -DINCLUDE_WPS_PS_HOOK -DBW1M_CENTER_LO_EU -DBW1M_CENTER_LO_JP -DBW1M_CENTER_LO_KR_USN1 -DINCLUDE_NEW_TASK_ARCH -DINCLUDE_NO_USE_LMAC_SEM -DINCLUDE_WDT -DINCLUDE_STA_CSA_SUPPORT -DINCLUDE_DYNAMIC_FRAG -DINCLUDE_DYNAMIC_FRAG_NO_LINKED -DINCLUDE_DEFRAG -DINCLUDE_MULTI_STA_RC -DINCLUDE_BCAST_FOTA_STA_SUPPORT -DINCLUDE_AUTH_CONTROL -DINCLUDE_WLAN_STABLE_CONN -DINCLUDE_SCAN_MODE -DINCLUDE_GDMA_COPY -DINCLUDE_AMPDU_AUTO_TX -DINCLUDE_SOFT_AP -DINCLUDE_RTC_ALWAYS_ON -DINCLUDE_MANUAL_AGG_NUM -DINCLUDE_SOFTAP_OWE -DINCLUDE_PS_SCHEDULE -DINCLUDE_LEGACY_ACK -DINCLUDE_TSF_SYNC_VENDOR_IE -DINCLUDE_TSF_SYNC_PROBE_REQ -DMATCH_OP_BW_PREQ_PRSP -DINCLUDE_MANUAL_CONT_TX_SUPPORT -DINCLUDE_STA_SUPPORT_8M -DINCLUDE_RTC_DYNAMIC_PS -DINCLUDE_ADAPTIVE_GI -DNRC_LWIP -DSUPPORT_LWIP -DMBEDTLS_CONFIG_FILE="config-nrc-basic.h" -DSUPPORT_MBEDTLS -DNRC_MBEDTLS -DCONFIG_MBEDTLS_TLS_ENABLED -DINCLUDE_WPA_SUPP -DMAC_ADDR_SEED="Natsu-B" -DNRC_WPA_SUPP -D_FREERTOS -DOS_NO_C_LIB_DEFINES -DCONFIG_NO_HOSTAPD_LOGGER -DCONFIG_HT_OVERRIDES -DCONFIG_NO_CONFIG_WRITE -DCONFIG_NO_CONFIG_BLOBS -DCONFIG_IEEE80211W -DCONFIG_SAE -DCONFIG_OWE    -DIEEE8021X_EAPOL -DCONFIG_AP -DCONFIG_NO_RADIUS -DCONFIG_NO_ACCOUNTING -DCONFIG_NO_VLAN -DEAP_SERVER -DEAP_SERVER_IDENTITY -DCONFIG_IEEE80211N -DNEED_AP_MLME -DCONFIG_NO_RADIUS -DCONFIG_SHA256 -DCONFIG_HMAC_SHA256_KDF -DCONFIG_HMAC_SHA256_KDF -DCONFIG_HMAC_SHA256_KDF -DCONFIG_SHA384 -DCONFIG_ECC -DCONFIG_NO_RANDOM_POOL -DCONFIG_CTRL_IFACE  -DCONFIG_NO_STDOUT_DEBUG -DCONFIG_SME -DCONFIG_BGSCAN_SIMPLE -DCONFIG_BGSCAN -DCONFIG_DRIVER_FREERTOS -DCONFIG_NDP_PREQ -DCONFIG_NO_FAST_ASSOC -DCONFIG_WPA_MSG -DCONFIG_SCAN_IGNORE
+compile bdf/bdf_api.c
+Link Script : lib/modem/cmx_single_huge_7292.ld
+Linking out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.elf
+Linking library : lib/modem/libModem.a
+generating out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin
+generating out/nrc7292/standalone_xip/L2BRIDGE_HSPI/xip.bin
+generating out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.lst
+generating out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.nm
+   text	   data	    bss	    dec	    hex	filename
+ 832972	      0	 453052	1286024	 139f88	out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.elf
+make[1]: Leaving directory '/home/hotaru/silex/_codex_work/prepared_sx_20260908_guarded'
+PASS: ARM migration override returns SF_MIGRATION_RES_ERROR (4); SDK calls override
+[
+  {
+    "path": "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.elf",
+    "bytes": 11050840,
+    "sha256": "930b8c1e26132bcc9ca793dbc38476391c50a5c0b19bc51ebf5fd00c1e63ba9a"
+  },
+  {
+    "path": "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin",
+    "bytes": 832972,
+    "sha256": "c05ec7b2bdf3dc94ccba87ac8d543bdd2db1cc4e5ee7ae770df2f57d89fe6a01"
+  },
+  {
+    "path": "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.map",
+    "bytes": 2379100,
+    "sha256": "510eef1b5b237427abb911fc6738554692ff9a8511ea41dff9e7e9f4aceff88e"
+  }
+]
+
+Build finished. Do not flash without confirming the EVK flash size, vendor BDF and bootloader compatibility.

@@ -1,0 +1,17 @@
+
+# 2026-09-08T23:20:33+0900 port=/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 baud=115200
+0G^2 consecutive=50
+Initializing SD in SPI mode...
+
+SD SPI pins: SCK=10 MOSI/CMD=11 MISO/D0=9 CS/D3=12 freq=10000000 Hz
+SD.begin SPI failed
+
+ICM42688 WHO_AM_I=0xFF
+ICM init warning: WHO_AM_I is not 0x47. Check SPI pins/mode/power.
+
+fatal: ICM init failed
+
+
+# TX ''
+
+# TX 'pins'

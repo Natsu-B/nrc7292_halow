@@ -1,0 +1,20 @@
+{
+  "status": "BUILD_OUTPUT_PRESENT_NOT_RF_VERIFIED",
+  "files": [
+    {
+      "path": "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.elf",
+      "bytes": 11050840,
+      "sha256": "930b8c1e26132bcc9ca793dbc38476391c50a5c0b19bc51ebf5fd00c1e63ba9a"
+    },
+    {
+      "path": "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin",
+      "bytes": 832972,
+      "sha256": "c05ec7b2bdf3dc94ccba87ac8d543bdd2db1cc4e5ee7ae770df2f57d89fe6a01"
+    },
+    {
+      "path": "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.map",
+      "bytes": 2379100,
+      "sha256": "510eef1b5b237427abb911fc6738554692ff9a8511ea41dff9e7e9f4aceff88e"
+    }
+  ]
+}

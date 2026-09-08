@@ -1,0 +1,79 @@
+[0;33m--- esp-idf-monitor 1.7.0 on /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+Executing action: monitor
+Running idf_monitor in directory /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32
+Executing "/nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/tools/idf_monitor.py -p /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/halow_stage1.elf /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/bootloader/bootloader.elf -m '/nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python' '/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/tools/idf.py' '-C' 'esp32' '-p' '/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00'"...
+[0;32mI (116) esp_image: segment 4: paddr=00060990 vaddr=40381390 sizeESP-ROM:esp32s3-20210327[0m
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40378606
+[0m--- 0x40378606: [0;33mesp_cpu_wait_for_intr[0m[0m at [0;32m/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_hw_support/cpu.c[0m[0m:[1;31m64[0m
+SPIWP:0xee
+mode:DIO, clock div:2
+load:0x3fce2820,len:0x15c8
+load:0x403c8700,len:0xce4
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+load:0x403cb700,len:0x2f40
+entry 0x403c8920
+[0m--- 0x403c8920: [0;33mcall_start_cpu0[0m[0m at [0;32m/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0;32mI (27) boot: ESP-IDF v5.5.2 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Jan  1 1980 00:00:00[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+[0;32mI (27) boot: chip revision: v0.2[0m
+[0;32mI (27) boot: efuse block revision: v1.3[0m
+[0;32mI (28) boot.esp32s3: Boot SPI Speed : 40MHz[0m
+[0;32mI (28) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (28) boot.esp32s3: SPI Flash Size : 4MB[0m
+[0;32mI (28) boot: Enabling RNG early entropy source...[0m
+[0;32mI (28) boot: Partition Table:[0m
+[0;32mI (29) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (29) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (29) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (30) boot:  2 factory          factory app      00 00 00010000 001f0000[0m
+[0;32mI (30) boot:  3 video            Unknown data     01 40 00200000 00200000[0m
+[0;32mI (30) boot: End of partition table[0m
+[0;32mI (31) esp_image: segment 0: paddr=00010020 vaddr=3c040020 size=10244h ( 66116) map[0m
+[0;32mI (47) esp_image: segment 1: paddr=0002026c vaddr=3fc93800 size=02a14h ( 10772) load[0m
+[0;32mI (51) esp_image: segment 2: paddr=00022c88 vaddr=40374000 size=0d390h ( 54160) load[0m
+[0;32mI (67) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=30968h (199016) map[0m
+[0;32mI (116) esp_image: segment 4: paddr=00060990 vaddr=40381390 size=023ech (  9196) load[0m
+[0;32mI (119) esp_image: segment 5: paddr=00062d84 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (125) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (126) boot: Disabling RNG early entropy source...[0m
+[0;32mI (127) cpu_start: Multicore app[0m
+[0;32mI (136) cpu_start: Pro cpu start user code[0m
+[0;32mI (136) cpu_start: cpu freq: 240000000 Hz[0m
+[0;32mI (136) app_init: Application information:[0m
+[0;32mI (136) app_init: Project name:     halow_stage1[0m
+[0;32mI (137) app_init: App version:      69115b3-dirty[0m
+[0;32mI (137) app_init: Compile time:     Jan  1 1980 00:00:00[0m
+[0;32mI (137) app_init: ELF file SHA256:  bc7bdbe6c...[0m
+[0;32mI (137) app_init: ESP-IDF:          v5.5.2[0m
+[0;32mI (137) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (137) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (137) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (138) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (138) heap_init: At 3FC97598 len 00052178 (328 KiB): RAM[0m
+[0;32mI (138) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (138) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (139) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (140) spi_flash: detected chip: gd[0m
+[0;32mI (140) spi_flash: flash io: dio[0m
+[0;33mW (140) spi_flash: Detected size(8192k) larger than the size in the binary image header(4096k). Using the size in the binary image header.[0m
+[0;32mI (141) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (141) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (142) main_task: Started on CPU0[0m
+[0;32mI (143) main_task: Calling app_main()[0m
+[0;32mI (144) stage1: HaLow Stage1 0.8.0 native HSPI; target=esp32s3[0m
+SCLK GPIO9
+MOSI GPIO7
+MISO GPIO8
+EIRQ GPIO4
+CE0 GPIO6
+CE1 GPIO5
+SPI mode 0, 8 bit, MSB first, active-low CS, clock 5000000 Hz; selected CS GPIO6
+EIRQ active-high level; probe always polls. SX reset is manual; no RST wire.
+Commands: pins | wiring-confirm | probe | probe-ce0 | probe-ce1 | diag | eirq | loopback [count] [bytes]
+          rf-confirm | connect | ping [IPv4] [count] | udp <bps> <seconds>
+          start | pause | disconnect | status | help
+Boot does NOT drive SPI or associate. Confirmations are RAM-only; no erase/auto-flash.

@@ -1,0 +1,17 @@
+2026-09-08 JST; no SX hardware write performed by Codex.
+SDK revision f10910b541f070e8a636a891efc0895fe39cfb1f; VERSION-SDK 1.7.0
+ARM GCC 7.3.1 20180622; real Cortex-M3 ELF build PASS
+Guarded firmware bytes 832972
+Guarded firmware SHA256 c05ec7b2bdf3dc94ccba87ac8d543bdd2db1cc4e5ee7ae770df2f57d89fe6a01
+check_sx_flash_guard.py guarded ELF PASS
+check_sx_flash_guard.py original unguarded ELF REJECTED as expected
+Final migration function: 2004 (movs r0,#4), 4770 (bx lr)
+SDK initializer call: branch to veneer, veneer Thumb pointer to strong override
+Initializer accepts results <=1 or ==5 for migration map write; result4 skips block
+Factory BDF source size 644; final binary contains original bytes once at offset578342
+BDF SHA256 c4550702d2409dbdc1b2ce6e0f81a77840d7de7887def0359a8cdb4e8d9eac41
+Native hif.c hif.h hif_fifo.c hif_hspi.c hif_dma.h exact-byte comparison PASS
+build_sx.sh shell syntax PASS
+git diff --check PASS
+Actual SX boot, flash capacity, existing flash map, HSPI/RF NOT_TESTED
+Original unguarded firmware SHA118577528bc061aa69e4ddf2b90a8126d2a2f479df8b4875a66496565fe5d5ba DO_NOT_FLASH

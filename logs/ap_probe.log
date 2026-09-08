@@ -1,0 +1,81 @@
+
+$ date --iso-8601=seconds
+2026-09-08T23:19:10+09:00
+EXIT=0
+
+$ ip -br addr show enp0s31f6
+enp0s31f6        UP             169.254.111.100/16 192.168.1.250/24 
+EXIT=0
+
+$ ping -I enp0s31f6 -c 3 -W 1 169.254.111.111
+PING 169.254.111.111 (169.254.111.111) from 169.254.111.100 enp0s31f6: 56(84) bytes of data.
+
+--- 169.254.111.111 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2051ms
+
+EXIT=1
+
+$ ping -I enp0s31f6 -c 3 -W 1 192.168.1.1
+PING 192.168.1.1 (192.168.1.1) from 192.168.1.250 enp0s31f6: 56(84) bytes of data.
+
+--- 192.168.1.1 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2070ms
+
+EXIT=1
+
+$ ping -I enp0s31f6 -c 3 -W 1 192.168.1.100
+PING 192.168.1.100 (192.168.1.100) from 192.168.1.250 enp0s31f6: 56(84) bytes of data.
+
+--- 192.168.1.100 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2067ms
+
+EXIT=1
+
+$ ip neigh show dev enp0s31f6
+192.168.1.1 FAILED 
+192.168.1.100 INCOMPLETE 
+169.254.111.111 FAILED 
+EXIT=0
+
+$ date --iso-8601=seconds
+2026-09-08T23:32:37+09:00
+EXIT=0
+
+$ ip -br addr show enp0s31f6
+enp0s31f6        UP             169.254.111.100/16 192.168.1.250/24 192.168.50.10/24 
+EXIT=0
+
+$ ping -I enp0s31f6 -c 3 -W 1 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) from 192.168.50.10 enp0s31f6: 56(84) bytes of data.
+
+--- 192.168.50.1 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2046ms
+
+EXIT=1
+
+$ ip neigh show dev enp0s31f6
+192.168.50.1 INCOMPLETE 
+EXIT=0
+
+$ date --iso-8601=seconds
+2026-09-08T23:42:36+09:00
+EXIT=0
+
+$ ip -br addr show enp0s31f6
+enp0s31f6        UP             192.168.10.250/32 
+EXIT=0
+
+$ ping -I enp0s31f6 -c 3 -W 1 192.168.10.10
+PING 192.168.10.10 (192.168.10.10) from 192.168.10.250 enp0s31f6: 56(84) bytes of data.
+64 bytes from 192.168.10.10: icmp_seq=1 ttl=64 time=0.801 ms
+64 bytes from 192.168.10.10: icmp_seq=2 ttl=64 time=0.597 ms
+64 bytes from 192.168.10.10: icmp_seq=3 ttl=64 time=0.585 ms
+
+--- 192.168.10.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2076ms
+rtt min/avg/max/mdev = 0.585/0.661/0.801/0.099 ms
+EXIT=0
+
+$ ip neigh show dev enp0s31f6
+192.168.10.10 lladdr 1c:bc:ec:1b:30:fe REACHABLE 
+EXIT=0

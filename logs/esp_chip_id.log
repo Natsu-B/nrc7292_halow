@@ -1,0 +1,13 @@
+2026-09-08 23:22 JST — actual device query
+Command: tools/idf_env.sh python -m esptool --port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 --after no_reset chip_id
+esptool.py v4.9.0
+Detecting chip type... ESP32-S3
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Stub running.
+ESP32-S3 has no Chip ID. Reading MAC instead.
+Staying in bootloader.
+Exit: 0

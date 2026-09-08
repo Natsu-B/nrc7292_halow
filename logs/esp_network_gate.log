@@ -1,0 +1,6 @@
+
+HOST command: ping 192.168.50.10 5
+{"event":"ping","sent":0,"received":0,"error":259}
+
+HOST command: udp 100000 1
+{"event":"udp","run_id":1245676391,"bps":100000,"seconds":1,"elapsed_ms":0,"offered":0,"sent":0,"bytes":0,"send_errors":0,"scheduler_skips":0,"duty_skips":0,"queue_skips":0,"telemetry_skips":0,"duty_pauses":0,"duty_blocked_ms":0,"queue_wait_ms":0,"telemetry_wait_ms":0,"duty_measurement":"sampled_target_availability","host_queue_drops":0,"target_queue_drops":0,"error":259}

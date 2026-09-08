@@ -1,0 +1,66 @@
+ESP-IDF v5.5.2
+Executing action: all (aliases: build)
+Running ninja in directory /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build
+Executing "ninja all"...
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/bootloader/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/bootloader/bootloader.bin
+Bootloader binary size 0x5240 bytes. 0x2dc0 bytes (36%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building C object esp-idf/nrc7292/CMakeFiles/__idf_nrc7292.dir/src/nrc7292.c.obj
+[5/9] Linking C static library esp-idf/nrc7292/libnrc7292.a
+[6/9] Generating esp-idf/esp_system/ld/sections.ld
+[7/9] Linking CXX executable halow_stage1.elf
+[8/9] Generating binary image from built executable
+esptool.py v4.9.0
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/halow_stage1.bin
+[9/9] cd /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/partition_table/partition-table.bin /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build/halow_stage1.bin
+halow_stage1.bin binary size 0x52560 bytes. Smallest app partition is 0x1f0000 bytes. 0x19daa0 bytes (83%) free.
+
+Project build complete. To flash, run:
+ idf.py flash
+or
+ idf.py -p PORT flash
+or
+ python -m esptool --chip esp32s3 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 4MB --flash_freq 40m 0x0 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/halow_stage1.bin
+or from the "/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/esp32/build" directory
+ python -m esptool --chip esp32s3 -b 460800 --before default_reset --after hard_reset write_flash "@flash_args"
+{
+  "component": "esp32s3",
+  "status": "BUILD_OUTPUT_PRESENT_NOT_HARDWARE_TESTED",
+  "files": [
+    {
+      "path": "bootloader/bootloader.bin",
+      "bytes": 21056,
+      "sha256": "45cc3fdbe9990f23855845ab2cc56c369104e0f14ad6d8ba9e8cefb507c79486",
+      "flash_offset": "0x0"
+    },
+    {
+      "path": "halow_stage1.bin",
+      "bytes": 337248,
+      "sha256": "f254fa6a87cfbb8f9c5866825127ece6d039b0dc6a1387d1c3977b6db3a36382",
+      "flash_offset": "0x10000"
+    },
+    {
+      "path": "partition_table/partition-table.bin",
+      "bytes": 3072,
+      "sha256": "e86cd73f6de5cec94b647994401ca935115bb465ccf86aa3cf61ab58b23ab3c2",
+      "flash_offset": "0x8000"
+    },
+    {
+      "path": "halow_stage1.elf",
+      "bytes": 5979200,
+      "sha256": "f5535debae7f268f4d36465b6f9fa6663f5a70cc3847c7374384e4b47879e9c6"
+    }
+  ],
+  "flasher_args": {
+    "path": "flasher_args.json",
+    "bytes": 915,
+    "sha256": "16a49fcca7083f7b0855e985f7e465d6f550ebfd570745352167fbf0e96c6d64"
+  }
+}
+
+Built from the current worktree. Review GPIOs, then idf.py -p PORT flash. SX flashing remains manual.

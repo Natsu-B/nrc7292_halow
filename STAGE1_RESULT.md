@@ -1,0 +1,125 @@
+# Stage-1 実機結果
+
+更新: 2026-09-08 23:50 JST。SXのSA起動待ち。
+
+| 項目 | 結果 | 実測・根拠 |
+|---|---|---|
+| USB ESP32-S3 | PASS | 303a:1001、serial/MAC 90:70:69:10:C7:B4、esptoolでESP32-S3 rev0.2 |
+| USB SX-NEWAH | PASS（USB-UARTのみ） | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。SX MCU応答は未確認 |
+| Ethernet AP-100AH | PASS | ARPから192.168.10.10 / 1c:bc:ec:1b:30:feを検出、HTTP200、画面にAP-100AHと表示 |
+| SX standalone boot | NOT_TESTED | 115200 8N1で受信0 byte。SW1/現行FW未確認 |
+| SX → AP association | NOT_TESTED | Standalone boot未確認 |
+| AP → PC Ethernet | PASS | 実IP192.168.10.10へのping3/3、0% loss。候補IP失敗はアドレス違いだった |
+| custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
+| custom SX flash | NOT_DONE | 人間専用操作、依頼手順準備済み |
+| ESP build | PASS | ESP-IDF v5.5.2 / esp32s3、最終339536 bytes |
+| ESP flash | PASS | by-idをesptool再照合、書込み後hash一致 |
+| ESP boot | PASS | 実boot log、GPIO表示、console応答 |
+| CE0 GPIO6 probe | NOT_TESTED | GND確認済み。EVK信号電圧/SA起動待ち。未確認時probe拒否は実測 |
+| CE1 GPIO5 probe | NOT_TESTED | 同上。両CS同時Low禁止の切替はhost regressionで検証 |
+| HSPI 1MHz | NOT_TESTED | 5MHz両候補失敗時のfallback実装済み |
+| HSPI 5MHz | NOT_TESTED | 電気試験未開始 |
+| EIRQ GPIO4 | NOT_TESTED | input/high-level実装、polling後有効化。実信号未測定 |
+| loopback 1518×1000 | NOT_TESTED | SX custom未書込み |
+| AP association custom FW | NOT_TESTED | SX custom未書込み |
+| IPv4 ping | NOT_TESTED | 無線経路未確立 |
+| UDP 100k | NOT_TESTED | 無線経路未確立 |
+| 360p | NOT_TESTED | 下位層未確立 |
+| merged to main | NO | 必須HSPI probe PASS未達 |
+| merge commit | — | merge未実施 |
+
+NOT_TESTEDは未試験を表し、測定した故障とは区別する。Standaloneの無線成功とSPI成功も別々に判定する。
+
+## 実機識別
+
+ESP: `/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00`
+
+SX: `/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0`
+
+ESP実Flashは8MiB、現在のStage1 partition/headerは4MiBに制限した既存構成。
+eFuseの読取りではquad Flash / 3.3V。これはSX host I/O電圧の確認を代替しない。
+
+実配線: SCLK9 / MOSI7 / MISO8 / EIRQ4 / CE0=6 / CE1=5、RST未接続。
+ESP書込み前のFWはSD/ICMセンサー用だった。診断FWはSPI/RFを起動時に開始しない。
+
+## Firmware
+
+最初の実flash済ESP bin SHA256:
+`f254fa6a87cfbb8f9c5866825127ece6d039b0dc6a1387d1c3977b6db3a36382`
+
+現在実flash済ESP bin SHA256（ping/UDP追加、再probeキャッシュ誤PASS修正）:
+`6eb638c0d5d1bb7fad391a0d1de935bf943772a52e6e1d9c805f05f285250e0d`
+
+`logs/esp_flash_reprobe.log`の3領域hash照合と`logs/esp_boot_reprobe.log`で最終imageを確認。
+ping/UDPの未接続時拒否は実機で確認済み。疎通成功としては数えない。
+
+SX custom候補:
+`/home/hotaru/silex/_codex_work/prepared_sx_20260908_guarded/out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin`
+
+SHA256: `c05ec7b2bdf3dc94ccba87ac8d543bdd2db1cc4e5ee7ae770df2f57d89fe6a01`
+
+Silex UART Standalone: `/home/hotaru/silex/nrc7292_xip_fw_sx_uart.bin`
+
+SHA256: `7e93f02fb67a0d6504998a7372dc01cdcaf47c800c70f5b8224844dc85170ccf`
+
+SDKにはFlashマップの自動移行処理があり、RF_CAL/SYS_CONFIGを書き込むことを逆アセンブルで確認。
+guarded binは当該移行処理を抑止し、最終ARM呼び出し先と戻り値を確認済み。
+JP Duty/LBTは有効。提供BDFは無変更。実機でのboot互換性は未確認。
+
+## Git
+
+提供ディレクトリはGit repositoryではなかったため、内容を保持してmain初期commit `69115b3`を作成。
+既存ファイルを削除・stash・resetしていない。
+
+開発branch: `codex/stage1-real-hw-20260908-231300`
+
+worktree: `/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300`
+
+mainへmergeしていない。mainからの再build/reflashも未実施。
+
+## 最初の30分と人間操作
+
+開始23:11 JST、30分枠は23:41まで。
+
+- 23:11 USB/Ethernet inventory、sudo -v開始。
+- 23:13 初回質問でアンテナ、GND、3.3V、SW1、sudo認証を一括依頼。
+- serialは既存dialout権限で利用可能。NetworkManagerの既存権限で一時IP設定可能。
+- 最初のsudo対話は認証未完了で終了。ユーザー指示に従い特権処理をshell script化。
+- 23:20 SX build初回成功。自動Flash移行が見つかり、この初回binは書込み対象から除外。
+- 23:23 ESP実flash成功、23:25 bootとpins確認。
+- 23:27 guarded SX bin完成、書込み手順準備。
+- 人間が実際に行った操作: アンテナ/GND/3.3V電源線未接続/SW1 Hostedの報告。
+- 23:40:25 人間が `tools/prepare_privileged.sh` を実行。kernel module、runtime firewall、90秒pcapを記録。
+- UDP50000とICMP echoのenp0s31f6限定一時受信許可は4時間後自動解除。恒久設定変更なし。
+- 23:41 pcapに実APのgratuitous ARP。23:42 AP実IPへ有線疎通成功。
+- 30分以降の人間操作: SX SAへの手動切替/起動を待っている。FW完成待ちでの拘束はない。
+
+現在のPC有線IPは `192.168.10.250/32`。APへの `192.168.10.10/32` だけを有線routeに設定。
+Wi-Fiの `192.168.10.136/24` と競合させず、インターネット経路はWi-Fiのまま。
+
+AP公開画面: firmware `BB3-5.10 (2024.06.14)`、SSID `halow_demo_video`、925.5MHz/2MHz、BSSID `1c:bc:ec:1b:30:ff`、接続STA 0台。
+認証方式は設定画面のログインが必要で未取得。表示MCS7/-95dBmは接続STAゼロ時の値なのでSXの測定結果とは扱わない。
+ユーザーはAPリセットも許可。現時点では実施していない。
+
+開発commit: `fe708d1` 実GPIO、`bccdc8b` native診断/IP試験、`5fef123` SX自動移行抑止、`c4d297b` 実機自動化。
+host検証: 12 C tests、12 receiver tests、実parserを使うC→Node互換、CE切替/再probe切断、UDP/Duty分離、映像cycle/fragment並替え、USB個体識別、SX USB再接続を検証。
+これらhost試験は実HSPI/RFの成功を代替しない。
+
+## ログと次の操作
+
+- `logs/hardware_inventory.txt`: 全inventoryとudev identity。
+- `logs/esp_chip_id.log`, `logs/esp_flash.log`, `logs/esp_boot.log`, `logs/esp_pins.log`: ESP実機証跡。
+- `logs/esp_probe_before_confirmation.log`: 未確認時のprobe拒否、SPI未開始。
+- `logs/sx_initial_console.log`: SX受信0 byteの試行。
+- `logs/ap_probe.log`: AP候補IPへの有線試行。
+- `logs/ap_status.json`: AP実機HTTPから取得した認証情報を含まない設定/状態。
+- `logs/privileged/`: 人間が実行した特権setupと実Ethernet pcap。自動解除timerは03:40:25 JSTに設定済み。
+- `HUMAN_ACTION_1.md`: 最初の確認、Standalone起動/必要時書込み。
+- `HUMAN_ACTION_2.md`: RF独立確認後のcustom書込み。
+
+初回確認→SX Standalone boot→scan/association→custom SX書込み→ESP polling probeの順で再開する。
+
+次の人間操作はSX電源OFF→SW1 SA `L L L H L H`→電源ON、EVK I/O設定が出荷時のままかの回答。
+GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線は接続不要。
+書込みが必要になった場合だけ `tools/open_sx_flashtool.sh` をデスクトップ端末から実行する。
+同梱Linux説明書に従うJava GUI方式で、Codex自身はSXへflashしない。

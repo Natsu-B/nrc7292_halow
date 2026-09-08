@@ -1,0 +1,134 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/.native-build
+ninja: no work to do.
+Test project /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/.native-build
+      Start  1: packetizer
+ 1/12 Test  #1: packetizer .......................   Passed    0.00 sec
+      Start  2: h264
+ 2/12 Test  #2: h264 .............................   Passed    0.00 sec
+      Start  3: l2_protocol
+ 3/12 Test  #3: l2_protocol ......................   Passed    0.00 sec
+      Start  4: hspi
+ 4/12 Test  #4: hspi .............................   Passed    0.00 sec
+      Start  5: hspi_transport
+ 5/12 Test  #5: hspi_transport ...................   Passed    0.00 sec
+      Start  6: clip
+ 6/12 Test  #6: clip .............................   Passed    0.02 sec
+      Start  7: mac
+ 7/12 Test  #7: mac ..............................   Passed    0.00 sec
+      Start  8: hspi_faults
+ 8/12 Test  #8: hspi_faults ......................   Passed    0.00 sec
+      Start  9: native_records
+ 9/12 Test  #9: native_records ...................   Passed    0.02 sec
+      Start 10: esp_adapter
+10/12 Test #10: esp_adapter ......................   Passed    2.04 sec
+      Start 11: sx_endpoint
+11/12 Test #11: sx_endpoint ......................   Passed    0.00 sec
+      Start 12: esp_network
+12/12 Test #12: esp_network ......................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 12
+
+Total Test time (real) =   2.08 sec
+
+> halow-stage1-receiver@0.7.0 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: CRC32 standard vector and serial wrap
+ok 1 - CRC32 standard vector and serial wrap
+  ---
+  duration_ms: 0.86864
+  type: 'test'
+  ...
+# Subtest: NRCV rejects inconsistent lengths, flags and excessive allocation
+ok 2 - NRCV rejects inconsistent lengths, flags and excessive allocation
+  ---
+  duration_ms: 0.433929
+  type: 'test'
+  ...
+# Subtest: reassembly supports reverse packet order and duplicate suppression
+ok 3 - reassembly supports reverse packet order and duplicate suppression
+  ---
+  duration_ms: 1.191512
+  type: 'test'
+  ...
+# Subtest: incomplete reference frame discards following delta until a new keyframe
+ok 4 - incomplete reference frame discards following delta until a new keyframe
+  ---
+  duration_ms: 0.862481
+  type: 'test'
+  ...
+# Subtest: frame number and packet sequence wrap keep order
+ok 5 - frame number and packet sequence wrap keep order
+  ---
+  duration_ms: 0.205841
+  type: 'test'
+  ...
+# Subtest: pending frame allocation is bounded
+ok 6 - pending frame allocation is bounded
+  ---
+  duration_ms: 2.233346
+  type: 'test'
+  ...
+# Subtest: on-flash real H264 and MJPEG clips validate every CRC
+ok 7 - on-flash real H264 and MJPEG clips validate every CRC
+  ---
+  duration_ms: 47.155014
+  type: 'test'
+  ...
+# Subtest: radio telemetry checksum
+ok 8 - radio telemetry checksum
+  ---
+  duration_ms: 0.190805
+  type: 'test'
+  ...
+# Subtest: late packets from a retired stream cannot reset the current session
+ok 9 - late packets from a retired stream cannot reset the current session
+  ---
+  duration_ms: 0.297062
+  type: 'test'
+  ...
+# Subtest: localhost UDP reconstructs all real H264 access units byte for byte
+ok 10 - localhost UDP reconstructs all real H264 access units byte for byte
+  ---
+  duration_ms: 397.097765
+  type: 'test'
+  ...
+# Subtest: unexpected source IP is ignored
+ok 11 - unexpected source IP is ignored
+  ---
+  duration_ms: 40.063635
+  type: 'test'
+  ...
+# Subtest: invalid listening configuration is refused
+ok 12 - invalid listening configuration is refused
+  ---
+  duration_ms: 0.496481
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 482.129769
+C packetizer -> Node receiver: 277 packets / 120 frames, all bytes match
+C packetizer -> Node receiver: 344 packets / 60 frames, all bytes match
+PASS: API-stub C syntax and real Node/renderer JavaScript syntax. Not a target link or Electron launch.
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
+PASS: host automation rejects missing/error/incomplete responses and corrupted UDP/video; no hardware exercised.
+PASS: ESP discovery pins the confirmed serial; another board requires explicit ESP_USB_SERIAL.
+PASS: same by-id reconnect captures both boots without UART writes; total deadline stays bounded
+PASS: a video cycle cannot combine streams, gaps or reordered source frames; fragment reordering remains valid.
+PASS: seven native transport originals and host/target L2 source identity
+
+Native tests finished. This does NOT build ESP or NRC firmware.
