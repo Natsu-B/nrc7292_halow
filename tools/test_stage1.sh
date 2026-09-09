@@ -33,3 +33,6 @@ fi
 if [[ ${TEST_VIDEO:-0} == 1 ]]; then
   "$ROOT/tools/test_video.sh"
 fi
+if [[ ${TEST_RANGE:-0} == 1 ]]; then
+  "$ROOT/tools/test_range.sh"
+fi
