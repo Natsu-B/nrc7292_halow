@@ -5,6 +5,7 @@ esp32/sdkconfig.old
 receiver/node_modules/
 receiver/dist/
 .native-build/
+.native-build-*/
 *.h264.capture
 *.mjpg.capture
 __pycache__/
