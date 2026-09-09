@@ -14,16 +14,20 @@ rm -f "$LOG_DIR/range.ready" "$LOG_DIR/range_result.json" "$LOG_DIR/source_clock
 # plus two seconds of post-test panic observation. Short overrides cannot reduce it.
 monitor_seconds=$(python3 - <<'PY'
 import math, os
-defaults={'RANGE_STARTUP_SECONDS':45,'RANGE_HEALTHY_SECONDS':15,
-          'RANGE_BAD_SECONDS':25,'RANGE_BAD_MAX_SECONDS':45,
-          'RANGE_RECOVERY_SECONDS':30,'RANGE_IDLE_SECONDS':30}
+rapid=os.environ.get('RANGE_RAPID','0')
+if rapid not in ('0','1'):
+    raise SystemExit('RANGE_RAPID must be 0 or 1')
+rapid=rapid=='1'
+defaults={'RANGE_STARTUP_SECONDS':45,'RANGE_HEALTHY_SECONDS':5 if rapid else 15,
+          'RANGE_BAD_SECONDS':6 if rapid else 25,'RANGE_BAD_MAX_SECONDS':15 if rapid else 45,
+          'RANGE_RECOVERY_SECONDS':12 if rapid else 30,'RANGE_IDLE_SECONDS':30}
 values={name:float(os.environ.get(name,default)) for name,default in defaults.items()}
 if any(not math.isfinite(value) or not 1 <= value <= 300 for value in values.values()):
     raise SystemExit('Range phase durations must be 1..300 seconds')
 if values['RANGE_BAD_MAX_SECONDS'] < values['RANGE_BAD_SECONDS']:
     raise SystemExit('RANGE_BAD_MAX_SECONDS must be at least RANGE_BAD_SECONDS')
-minimum=math.ceil(sum(values[name] for name in ('RANGE_STARTUP_SECONDS',
-    'RANGE_HEALTHY_SECONDS','RANGE_BAD_MAX_SECONDS','RANGE_RECOVERY_SECONDS'))+10)+2
+minimum=math.ceil(values['RANGE_STARTUP_SECONDS']+values['RANGE_HEALTHY_SECONDS']+
+    (2 if rapid else 1)*(values['RANGE_BAD_MAX_SECONDS']+values['RANGE_RECOVERY_SECONDS'])+10)+2
 override=float(os.environ.get('RANGE_MONITOR_SECONDS',minimum))
 if not math.isfinite(override) or not 0 < override <= 3600:
     raise SystemExit('RANGE_MONITOR_SECONDS must be positive and at most 3600')
