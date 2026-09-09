@@ -14,3 +14,5 @@ __pycache__/
 *.pcap
 *.pcapng
 firmware_candidates/
+# Manual GUI runtime traces are private; commit only reviewed evidence extracts.
+logs/sx_flashtool_*.log
