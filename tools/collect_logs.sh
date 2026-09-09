@@ -6,7 +6,7 @@ mkdir -p "$(dirname "$OUT")"
 mkdir -p "$ROOT/logs"
 OUT=$(realpath -m "$OUT")
 files=(logs)
-for file in STAGE1_RESULT.md RANGE_RESULT.md esp32/build/artifact_manifest.json .build-range-video/video_profiles.bin; do
+for file in STAGE1_RESULT.md RANGE_RESULT.md MOBILITY_RESULT.md esp32/build/artifact_manifest.json .build-range-video/video_profiles.bin; do
   [[ ! -f "$ROOT/$file" ]] || files+=("$file")
 done
 # Configuration may contain WPA credentials; collect evidence, never sdkconfig.
