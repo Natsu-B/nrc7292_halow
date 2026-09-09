@@ -1,0 +1,223 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/.native-build-range
+[1/37] Building C object CMakeFiles/test_mac.dir/test_mac.c.o
+[2/37] Building C object CMakeFiles/test_hspi.dir/test_hspi.c.o
+[3/37] Building C object CMakeFiles/test_mac.dir/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/sx_newah/L2BRIDGE_HSPI/sx_mac.c.o
+[4/37] Building C object CMakeFiles/test_h264.dir/test_h264.c.o
+[5/37] Building C object CMakeFiles/packet_fixture.dir/packet_fixture.c.o
+[6/37] Building C object CMakeFiles/test_clip.dir/test_clip.c.o
+[7/37] Building C object CMakeFiles/test_l2_protocol.dir/test_l2_protocol.c.o
+[8/37] Building C object CMakeFiles/test_packetizer.dir/test_packetizer.c.o
+[9/37] Linking C executable test_mac
+[10/37] Building C object CMakeFiles/test_hspi_transport.dir/test_hspi_transport.c.o
+[11/37] Building C object CMakeFiles/link_adapt.dir/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/main/link_adapt.c.o
+[12/37] Linking C static library liblink_adapt.a
+[13/37] Building C object CMakeFiles/video.dir/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/nrc_video_packet/src/nrc_video_packet.c.o
+[14/37] Building C object CMakeFiles/test_hspi_faults.dir/test_hspi_faults.c.o
+[15/37] Linking C static library libvideo.a
+[16/37] Linking C executable test_link_adapt
+[17/37] Building C object CMakeFiles/test_native_records.dir/test_native_records.c.o
+[18/37] Building C object CMakeFiles/l2.dir/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/nrc7292/src/nrc_l2_protocol.c.o
+[19/37] Linking C executable test_packetizer
+[20/37] Linking C executable packet_fixture
+[21/37] Linking C static library libl2.a
+[22/37] Linking C executable test_h264
+[23/37] Linking C executable test_clip
+[24/37] Building C object CMakeFiles/test_sx_endpoint.dir/test_sx_endpoint.c.o
+[25/37] Linking C executable test_sx_endpoint
+[26/37] Linking C executable test_l2_protocol
+[27/37] Building C object CMakeFiles/hspi.dir/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/nrc7292/hspi/nrc-hspi.c.o
+[28/37] Linking C static library libhspi.a
+[29/37] Building C object CMakeFiles/test_esp_adapter.dir/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/nrc7292/src/nrc7292.c.o
+[30/37] Building C object CMakeFiles/test_esp_adapter.dir/test_esp_adapter.c.o
+[31/37] Linking C executable test_hspi_faults
+[32/37] Linking C executable test_native_records
+[33/37] Linking C executable test_hspi_transport
+[34/37] Linking C executable test_hspi
+[35/37] Linking C executable test_esp_adapter
+[36/37] Building C object CMakeFiles/test_esp_network.dir/test_esp_network.c.o
+[37/37] Linking C executable test_esp_network
+Test project /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/.native-build-range
+      Start  1: link_adapt
+ 1/13 Test  #1: link_adapt .......................   Passed    0.00 sec
+      Start  2: packetizer
+ 2/13 Test  #2: packetizer .......................   Passed    0.00 sec
+      Start  3: h264
+ 3/13 Test  #3: h264 .............................   Passed    0.00 sec
+      Start  4: l2_protocol
+ 4/13 Test  #4: l2_protocol ......................   Passed    0.00 sec
+      Start  5: hspi
+ 5/13 Test  #5: hspi .............................   Passed    0.00 sec
+      Start  6: hspi_transport
+ 6/13 Test  #6: hspi_transport ...................   Passed    0.00 sec
+      Start  7: clip
+ 7/13 Test  #7: clip .............................   Passed    0.01 sec
+      Start  8: mac
+ 8/13 Test  #8: mac ..............................   Passed    0.00 sec
+      Start  9: hspi_faults
+ 9/13 Test  #9: hspi_faults ......................   Passed    0.00 sec
+      Start 10: native_records
+10/13 Test #10: native_records ...................   Passed    0.01 sec
+      Start 11: esp_adapter
+11/13 Test #11: esp_adapter ......................   Passed    2.03 sec
+      Start 12: sx_endpoint
+12/13 Test #12: sx_endpoint ......................   Passed    0.00 sec
+      Start 13: esp_network
+13/13 Test #13: esp_network ......................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 13
+
+Total Test time (real) =   2.07 sec
+
+> halow-stage1-receiver@0.7.0 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: CRC32 standard vector and serial wrap
+ok 1 - CRC32 standard vector and serial wrap
+  ---
+  duration_ms: 0.803452
+  type: 'test'
+  ...
+# Subtest: NRCV rejects inconsistent lengths, flags and excessive allocation
+ok 2 - NRCV rejects inconsistent lengths, flags and excessive allocation
+  ---
+  duration_ms: 0.484251
+  type: 'test'
+  ...
+# Subtest: reassembly supports reverse packet order and duplicate suppression
+ok 3 - reassembly supports reverse packet order and duplicate suppression
+  ---
+  duration_ms: 2.15143
+  type: 'test'
+  ...
+# Subtest: incomplete reference frame discards following delta until a new keyframe
+ok 4 - incomplete reference frame discards following delta until a new keyframe
+  ---
+  duration_ms: 0.304087
+  type: 'test'
+  ...
+# Subtest: frame number and packet sequence wrap keep order
+ok 5 - frame number and packet sequence wrap keep order
+  ---
+  duration_ms: 0.202751
+  type: 'test'
+  ...
+# Subtest: pending frame allocation is bounded
+ok 6 - pending frame allocation is bounded
+  ---
+  duration_ms: 3.066467
+  type: 'test'
+  ...
+# Subtest: default reassembly timeout tolerates a slow frame but expires stalled frames at 5 s
+ok 7 - default reassembly timeout tolerates a slow frame but expires stalled frames at 5 s
+  ---
+  duration_ms: 0.233243
+  type: 'test'
+  ...
+# Subtest: a new complete IDR preempts an incomplete reference and queued deltas immediately
+ok 8 - a new complete IDR preempts an incomplete reference and queued deltas immediately
+  ---
+  duration_ms: 0.301398
+  type: 'test'
+  ...
+# Subtest: independent images preempt across frame wrap and MJPEG needs no H264 key flag
+ok 9 - independent images preempt across frame wrap and MJPEG needs no H264 key flag
+  ---
+  duration_ms: 0.47721
+  type: 'test'
+  ...
+# Subtest: on-flash real H264 and MJPEG clips validate every CRC
+ok 10 - on-flash real H264 and MJPEG clips validate every CRC
+  ---
+  duration_ms: 48.551773
+  type: 'test'
+  ...
+# Subtest: NRFB feedback keeps the v1 wire layout and binds v2 CRC to the stream, including zero
+ok 11 - NRFB feedback keeps the v1 wire layout and binds v2 CRC to the stream, including zero
+  ---
+  duration_ms: 0.388406
+  type: 'test'
+  ...
+# Subtest: NRCS v1/v2 remain compatible and v3 exposes current resolution and snapshot interval
+ok 12 - NRCS v1/v2 remain compatible and v3 exposes current resolution and snapshot interval
+  ---
+  duration_ms: 0.371379
+  type: 'test'
+  ...
+# Subtest: NRCS rejects corrupt fields, CRC, version/length mismatches and trailing bytes
+ok 13 - NRCS rejects corrupt fields, CRC, version/length mismatches and trailing bytes
+  ---
+  duration_ms: 0.433471
+  type: 'test'
+  ...
+# Subtest: late packets from a retired stream cannot reset the current session
+ok 14 - late packets from a retired stream cannot reset the current session
+  ---
+  duration_ms: 0.134423
+  type: 'test'
+  ...
+# Subtest: renderer supersedes queued independent images and rejects old asynchronous decoder output
+ok 15 - renderer supersedes queued independent images and rejects old asynchronous decoder output
+  ---
+  duration_ms: 4.145247
+  type: 'test'
+  ...
+# Subtest: renderer displays v3 profile, v2 pacing and hides unavailable v1 pacing
+ok 16 - renderer displays v3 profile, v2 pacing and hides unavailable v1 pacing
+  ---
+  duration_ms: 0.801492
+  type: 'test'
+  ...
+# Subtest: localhost UDP reconstructs all real H264 access units byte for byte
+ok 17 - localhost UDP reconstructs all real H264 access units byte for byte
+  ---
+  duration_ms: 396.824607
+  type: 'test'
+  ...
+# Subtest: unexpected source IP is ignored
+ok 18 - unexpected source IP is ignored
+  ---
+  duration_ms: 41.674342
+  type: 'test'
+  ...
+# Subtest: invalid listening configuration is refused
+ok 19 - invalid listening configuration is refused
+  ---
+  duration_ms: 0.490897
+  type: 'test'
+  ...
+# Subtest: default feedback follows the current stream and peer, rejecting invalid and retired traffic
+ok 20 - default feedback follows the current stream and peer, rejecting invalid and retired traffic
+  ---
+  duration_ms: 4013.56929
+  type: 'test'
+  ...
+# Subtest: localhost receiver accepts NRCS v2 without retargeting the video peer
+ok 21 - localhost receiver accepts NRCS v2 without retargeting the video peer
+  ---
+  duration_ms: 22.411017
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4539.87131
+C packetizer -> Node receiver: 277 packets / 120 frames, all bytes match
+C packetizer -> Node receiver: 344 packets / 60 frames, all bytes match
+PASS: API-stub C syntax and real Node/renderer JavaScript syntax. Not a target link or Electron launch.
+Traceback (most recent call last):
+  File "/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/tests/test_flash_tools.py", line 5, in <module>
+    f=importlib.util.module_from_spec(spec);spec.loader.exec_module(f)
+                                            ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/tools/flash_video.py", line 11, in <module>
+    from prepare_video_profiles import validate_clip, validate_video
+ModuleNotFoundError: No module named 'prepare_video_profiles'

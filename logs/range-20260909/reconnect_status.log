@@ -1,0 +1,5 @@
+
+HOST command: status
+I (254300) stage1: link=1 hspi=1 rssi=-12 mcs=4/4 duty=1 q=0 drop=0/139 frame=197 skip=0 heap=324304 snr_api_db=29 snr_validity=unreported
+{"event":"adapt_status","desired_link":1,"play_requested":0,"bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295,"profile":8,"source":4,"width":214,"height":120,"interval_ms":6000}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":3821,"tx_slots":5832,"rx_slots":6918,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":3824,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}

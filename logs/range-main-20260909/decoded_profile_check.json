@@ -1,0 +1,30 @@
+[
+  {
+    "file": "profile_1_360p.h264",
+    "frames": 60,
+    "width": 640,
+    "height": 360,
+    "all_decoded_keyframes": true
+  },
+  {
+    "file": "profile_2_240p.h264",
+    "frames": 60,
+    "width": 426,
+    "height": 240,
+    "all_decoded_keyframes": true
+  },
+  {
+    "file": "profile_3_180p.h264",
+    "frames": 60,
+    "width": 320,
+    "height": 180,
+    "all_decoded_keyframes": true
+  },
+  {
+    "file": "profile_4_120p.h264",
+    "frames": 60,
+    "width": 214,
+    "height": 120,
+    "all_decoded_keyframes": true
+  }
+]

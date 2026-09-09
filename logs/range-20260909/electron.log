@@ -1,0 +1,6 @@
+
+DevTools listening on ws://127.0.0.1:9229/devtools/browser/5f805a7d-b65e-4030-a568-316d75625d01
+[2749814:0909/222026.054748:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.systemd1.Manager.StartTransientUnit: object_path= /org/freedesktop/systemd1: org.freedesktop.systemd1.UnitExists: Unit app-org.chromium.Chromium-2749814.scope was already loaded or has a fragment file.
+[2749871:0909/222030.185525:ERROR:ui/gl/gl_surface_presentation_helper.cc:260] GetVSyncParametersIfAvailable() failed for 1 times!
+[2749871:0909/222507.255093:ERROR:ui/gl/gl_surface_presentation_helper.cc:260] GetVSyncParametersIfAvailable() failed for 2 times!
+[2749871:0909/222512.242018:ERROR:ui/gl/gl_surface_presentation_helper.cc:260] GetVSyncParametersIfAvailable() failed for 3 times!

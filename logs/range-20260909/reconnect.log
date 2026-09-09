@@ -1,0 +1,4 @@
+
+HOST command: reconnect
+{"event":"reconnect_request","controlled_test":true,"error":0}
+{"event":"reconnect","attempt":1,"error":0,"backoff_ms":1000,"desired_link":1}

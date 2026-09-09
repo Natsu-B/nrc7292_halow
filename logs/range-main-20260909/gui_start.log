@@ -1,0 +1,28 @@
+
+HOST command: wiring-confirm
+Wiring acknowledged for this boot. Type probe for native HSPI/HELLO.
+
+HOST command: eirq
+CS candidate GPIO6/CE0 : PASS
+{"event":"cs_probe","cs_gpio":6,"clock_hz":5000000,"error":0}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":0,"rx_slots":0,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+{"event":"hello","error":0}
+{"event":"eirq","error":0}
+
+HOST command: rf-confirm
+RF acknowledged for this boot. Duty/LBT remains enforced; no association yet.
+
+HOST command: start
+I (50804) stage1: clip codec=1 640x360 frames=120 max=9444 bytes
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":434,"tx_slots":1,"rx_slots":469,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":434,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"start","error":0,"desired_link":1,"play_requested":1}
+{"event":"video_profile","profile":0,"source":0,"width":640,"height":360,"interval_ms":100,"stream_id":2086774755,"capture_epoch_ms":50687}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":0,"feedback_rejected":0,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":0,"feedback_rejected":0,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":1,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":2,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":3,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":4,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":5,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":6,"feedback_rejected":0,"feedback_age_ms":950}

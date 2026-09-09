@@ -1,0 +1,9 @@
+
+HOST command: start
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":4972,"tx_slots":5848,"rx_slots":8068,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":4975,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"start","error":0,"desired_link":1,"play_requested":1}
+{"event":"video_profile","profile":8,"source":4,"width":214,"height":120,"interval_ms":6000,"stream_id":704289510,"capture_epoch_ms":367340}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":63,"feedback_rejected":7,"feedback_age_ms":150}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":64,"feedback_rejected":7,"feedback_age_ms":150}

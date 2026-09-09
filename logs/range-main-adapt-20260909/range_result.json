@@ -1,0 +1,837 @@
+{
+  "result": "PASS",
+  "label": "SYNTHETIC_FEEDBACK_NOT_RF_DISTANCE",
+  "physicalPath": "ESP -> SX native HSPI -> AP-100AH -> PC; near-bench approximately 0.5 m operator-reported",
+  "distance3km": "NOT_TESTED",
+  "syntheticFeedback": true,
+  "productionAutomaticFeedback": false,
+  "source": "192.168.10.20",
+  "bind": "192.168.10.250",
+  "port": 50000,
+  "durations": {
+    "initial": 15,
+    "bad": 25,
+    "badMax": 45,
+    "recovery": 30,
+    "startup": 45,
+    "idle": 30
+  },
+  "bundle": {
+    "path": "/home/hotaru/silex/halow_stage1_main/.build-range-video/video_profiles.bin",
+    "bytes": 1534484,
+    "sha256": "be1c9cad03cea26c1368e8f4a1ea323b3b85b260a9cd2bab6337cd9cf3bb0393",
+    "profiles": [
+      {
+        "index": 0,
+        "width": 640,
+        "height": 360,
+        "frames": 120,
+        "duration": 12000,
+        "independent": false,
+        "bytes": 265001
+      },
+      {
+        "index": 1,
+        "width": 640,
+        "height": 360,
+        "frames": 60,
+        "duration": 12000,
+        "independent": true,
+        "bytes": 553431
+      },
+      {
+        "index": 2,
+        "width": 426,
+        "height": 240,
+        "frames": 60,
+        "duration": 12000,
+        "independent": true,
+        "bytes": 347012
+      },
+      {
+        "index": 3,
+        "width": 320,
+        "height": 180,
+        "frames": 60,
+        "duration": 12000,
+        "independent": true,
+        "bytes": 229626
+      },
+      {
+        "index": 4,
+        "width": 214,
+        "height": 120,
+        "frames": 60,
+        "duration": 12000,
+        "independent": true,
+        "bytes": 139302
+      }
+    ]
+  },
+  "checks": {
+    "actualVideoReceived": true,
+    "initialFrames": true,
+    "framesByteExact": true,
+    "lowestProfileObserved": true,
+    "actual120pFrameInBadPhase": true,
+    "recoveryAfterTenReports": true,
+    "recoveryFrames": true,
+    "receiverFaultFree": true,
+    "validNrcv": true
+  },
+  "failures": [],
+  "fault": null,
+  "matchedFrames": 178,
+  "mismatchedFrames": 0,
+  "receivedFrameBytes": 436119,
+  "phaseFrames": {
+    "initial_real_feedback": 158,
+    "synthetic_loss": 13,
+    "synthetic_recovery": 7
+  },
+  "profileFrames": {
+    "0": 160,
+    "1": 4,
+    "2": 1,
+    "3": 1,
+    "4": 12
+  },
+  "feedbackSent": {
+    "initial_real_feedback": 14,
+    "synthetic_loss": 25,
+    "synthetic_recovery": 30
+  },
+  "pendingSends": 0,
+  "worstObservedProfile": 9,
+  "matched120pFramesDuringBad": 5,
+  "recovery": {
+    "elapsedMs": 51034,
+    "phase": "synthetic_recovery",
+    "rank": 8,
+    "width": 214,
+    "height": 120,
+    "intervalMs": 6000,
+    "paceBps": 75000,
+    "feedbackAgeMs": 200,
+    "reportsSent": 10
+  },
+  "observedProfiles": [
+    {
+      "elapsedMs": 2002,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 4294967295
+    },
+    {
+      "elapsedMs": 3002,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 4001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 5001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 6001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 7002,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 8001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 9002,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 10002,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 11001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 12001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 13001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 14001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 15001,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 16002,
+      "phase": "initial_real_feedback",
+      "rank": 0,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 100,
+      "paceBps": 400000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 17002,
+      "phase": "synthetic_loss",
+      "rank": 1,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 500,
+      "paceBps": 300000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 18002,
+      "phase": "synthetic_loss",
+      "rank": 2,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 1000,
+      "paceBps": 225000,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 19002,
+      "phase": "synthetic_loss",
+      "rank": 3,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 2000,
+      "paceBps": 168750,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 20003,
+      "phase": "synthetic_loss",
+      "rank": 3,
+      "width": 640,
+      "height": 360,
+      "intervalMs": 2000,
+      "paceBps": 126562,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 21004,
+      "phase": "synthetic_loss",
+      "rank": 4,
+      "width": 426,
+      "height": 240,
+      "intervalMs": 2000,
+      "paceBps": 94921,
+      "feedbackAgeMs": 150
+    },
+    {
+      "elapsedMs": 22005,
+      "phase": "synthetic_loss",
+      "rank": 5,
+      "width": 320,
+      "height": 180,
+      "intervalMs": 2000,
+      "paceBps": 71190,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 23006,
+      "phase": "synthetic_loss",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 53392,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 24007,
+      "phase": "synthetic_loss",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 25008,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 26009,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 27010,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 28011,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 29012,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 30013,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 31014,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 32015,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 33016,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 34017,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 35018,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 36019,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 37020,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 38021,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 39022,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 40023,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 41024,
+      "phase": "synthetic_loss",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 42025,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 43026,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 44027,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 45028,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 46029,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 47030,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 48031,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 49032,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 50033,
+      "phase": "synthetic_recovery",
+      "rank": 9,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 10000,
+      "paceBps": 50000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 51034,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 52035,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 53036,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 54037,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 55038,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 56039,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 57040,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 58040,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 59041,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 60042,
+      "phase": "synthetic_recovery",
+      "rank": 8,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 6000,
+      "paceBps": 75000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 61043,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 62044,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 63045,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 64046,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 65047,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 66048,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 200
+    },
+    {
+      "elapsedMs": 67049,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 210
+    },
+    {
+      "elapsedMs": 68050,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 250
+    },
+    {
+      "elapsedMs": 69051,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 250
+    },
+    {
+      "elapsedMs": 70051,
+      "phase": "synthetic_recovery",
+      "rank": 7,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 4000,
+      "paceBps": 100000,
+      "feedbackAgeMs": 250
+    },
+    {
+      "elapsedMs": 71052,
+      "phase": "synthetic_recovery",
+      "rank": 6,
+      "width": 214,
+      "height": 120,
+      "intervalMs": 2000,
+      "paceBps": 125000,
+      "feedbackAgeMs": 250
+    }
+  ],
+  "metrics": {
+    "packets": 436,
+    "invalid": 0,
+    "duplicate": 0,
+    "outOfOrder": 0,
+    "completed": 178,
+    "expired": 0,
+    "referenceDrops": 0,
+    "superseded": 0,
+    "bytes": 610400
+  },
+  "lastStats": {
+    "goodputBps": 22378,
+    "lossEstimate": 0
+  },
+  "duty": "NRCS samples recorded independently; synthetic loss is not a measurement of RF packet loss or Duty",
+  "elapsedMs": 71053
+}

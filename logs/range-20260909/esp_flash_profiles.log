@@ -1,0 +1,255 @@
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Warning: ESP32-S3 has no Chip ID. Reading MAC instead.
+MAC: 90:70:69:10:c7:b4
+Staying in bootloader.
+Executing action: flash
+Running ninja in directory /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build
+Executing "ninja flash"...
+[0/1] Re-running CMake...
+-- Minimal build - OFF
+-- Building ESP-IDF components for target esp32s3
+-- ESP-TEE is currently supported only on the esp32c6;esp32h2;esp32c5 SoCs
+-- Project sdkconfig file /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/sdkconfig
+Loading defaults file /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/sdkconfig.defaults...
+-- Compiler supported targets: xtensa-esp-elf
+-- USING O3
+-- App "halow_stage1" version: 6dc88ac
+-- Adding linker script /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/esp-idf/esp_system/ld/sections.ld.in
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.bt_funcs.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.wdt.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_master.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_50.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_smp.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_dtm.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_test.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_scan.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.libc.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.newlib.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- Components: app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse esp-tls esp_adc esp_app_format esp_bootloader_format esp_coex esp_common esp_driver_ana_cmpr esp_driver_bitscrambler esp_driver_cam esp_driver_dac esp_driver_gpio esp_driver_gptimer esp_driver_i2c esp_driver_i2s esp_driver_isp esp_driver_jpeg esp_driver_ledc esp_driver_mcpwm esp_driver_parlio esp_driver_pcnt esp_driver_ppa esp_driver_rmt esp_driver_sdio esp_driver_sdm esp_driver_sdmmc esp_driver_sdspi esp_driver_spi esp_driver_touch_sens esp_driver_tsens esp_driver_twai esp_driver_uart esp_driver_usb_serial_jtag esp_eth esp_event esp_gdbstub esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_security esp_system esp_timer esp_vfs_console esp_wifi espcoredump esptool_py fatfs freertos hal heap http_parser hvc_clip idf_test ieee802154 json log lwip main mbedtls mqtt newlib nrc7292 nrc_video_packet nvs_flash nvs_sec_provider openthread partition_table perfmon protobuf-c protocomm pthread rt sdmmc soc spi_flash spiffs tcp_transport touch_element ulp unity usb vfs wear_levelling wifi_provisioning wpa_supplicant xtensa
+-- Component paths: /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/app_trace /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/app_update /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bootloader /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bootloader_support /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/cmock /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/console /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/cxx /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/driver /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/efuse /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp-tls /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_adc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_app_format /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_bootloader_format /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_coex /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_common /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_ana_cmpr /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_bitscrambler /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_cam /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_dac /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_gpio /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_gptimer /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_i2c /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_i2s /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_isp /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_jpeg /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_ledc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_mcpwm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_parlio /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_pcnt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_ppa /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_rmt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdio /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdmmc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdspi /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_spi /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_touch_sens /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_tsens /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_twai /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_uart /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_usb_serial_jtag /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_eth /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_event /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_gdbstub /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_hid /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_http_client /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_http_server /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_https_ota /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_https_server /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_hw_support /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_lcd /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_local_ctrl /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_mm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_netif /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_netif_stack /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_partition /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_phy /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_pm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_psram /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_ringbuf /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_security /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_system /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_timer /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_vfs_console /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_wifi /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/espcoredump /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/fatfs /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/freertos /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/hal /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/heap /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/http_parser /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/hvc_clip /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/idf_test /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/ieee802154 /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/json /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/log /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/lwip /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/main /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/mbedtls /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/mqtt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/newlib /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/nrc7292 /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/components/nrc_video_packet /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/nvs_flash /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/nvs_sec_provider /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/openthread /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/perfmon /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/protobuf-c /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/protocomm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/pthread /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/rt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/sdmmc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/soc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/spi_flash /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/spiffs /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/tcp_transport /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/touch_element /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/ulp /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/unity /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/usb /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/vfs /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/wear_levelling /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/wifi_provisioning /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/wpa_supplicant /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/xtensa
+-- Configuring done (2.0s)
+-- Generating done (0.3s)
+-- Build files have been written to: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build
+[1/13] Building C object esp-idf/esp_app_format/CMakeFiles/__idf_esp_app_format.dir/esp_app_desc.c.obj
+[2/13] Performing build step for 'bootloader'
+[1/1] cd /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/bootloader/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/bootloader/bootloader.bin
+Bootloader binary size 0x5240 bytes. 0x2dc0 bytes (36%) free.
+[3/13] No install step for 'bootloader'
+[4/13] Linking C static library esp-idf/esp_app_format/libesp_app_format.a
+[5/13] Completed 'bootloader'
+[6/13] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/clip_source.c.obj
+[7/13] Linking C static library esp-idf/main/libmain.a
+[8/13] Generating esp-idf/esp_system/ld/sections.ld
+[9/13] Linking CXX executable halow_stage1.elf
+[10/13] Generating binary image from built executable
+esptool.py v4.9.0
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/halow_stage1.bin
+[11/13] cd /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/partition_table/partition-table.bin /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build/halow_stage1.bin
+halow_stage1.bin binary size 0x5ac20 bytes. Smallest app partition is 0x1f0000 bytes. 0x1953e0 bytes (82%) free.
+[11/13] cd /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py && /nix/store/w9jm660dykns6hzrdhxmqfywnc9ail8g-cmake-4.1.2/bin/cmake -D IDF_PATH=/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2 -D "SERIAL_TOOL=/nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python;;/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py/esptool/esptool.py;--chip;esp32s3" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/esp32/build -P /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32s3 -p /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 4MB 0x0 bootloader/bootloader.bin 0x10000 halow_stage1.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Flash will be erased from 0x00010000 to 0x0006afff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 21056 bytes to 13388...
+Writing at 0x00000000... (100 %)
+Wrote 21056 bytes (13388 compressed) at 0x00000000 in 0.3 seconds (effective 513.5 kbit/s)...
+Hash of data verified.
+Compressed 371744 bytes to 226928...
+Writing at 0x00010000... (7 %)
+Writing at 0x0001c459... (14 %)
+Writing at 0x00026229... (21 %)
+Writing at 0x0002bb34... (28 %)
+Writing at 0x00031fff... (35 %)
+Writing at 0x000379dd... (42 %)
+Writing at 0x0003cd58... (50 %)
+Writing at 0x000424d9... (57 %)
+Writing at 0x00047673... (64 %)
+Writing at 0x0004c8b4... (71 %)
+Writing at 0x00051c5c... (78 %)
+Writing at 0x0005720f... (85 %)
+Writing at 0x00060584... (92 %)
+Writing at 0x00065a63... (100 %)
+Wrote 371744 bytes (226928 compressed) at 0x00010000 in 2.6 seconds (effective 1124.4 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 118...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (118 compressed) at 0x00008000 in 0.0 seconds (effective 564.4 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Configuring flash size...
+4096 (100 %)
+4096 (100 %)
+Read 4096 bytes at 0x00008000 in 0.4 seconds (91.4 kbit/s)...
+Hard resetting via RTS pin...
+Writing ESP video only: offset=0x200000, size=1534484, SHA256=be1c9cad03cea26c1368e8f4a1ea323b3b85b260a9cd2bab6337cd9cf3bb0393
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Configuring flash size...
+Flash will be erased from 0x00200000 to 0x00376fff...
+Compressed 1534484 bytes to 1393637...
+Writing at 0x00200000... (1 %)
+Writing at 0x002043bf... (2 %)
+Writing at 0x00208771... (3 %)
+Writing at 0x0020cb67... (4 %)
+Writing at 0x00210e63... (5 %)
+Writing at 0x0021538a... (6 %)
+Writing at 0x00219921... (8 %)
+Writing at 0x0021dcd2... (9 %)
+Writing at 0x0022208b... (10 %)
+Writing at 0x002265cf... (11 %)
+Writing at 0x0022aa6e... (12 %)
+Writing at 0x0022f05e... (13 %)
+Writing at 0x00233535... (15 %)
+Writing at 0x00237a0d... (16 %)
+Writing at 0x0023be53... (17 %)
+Writing at 0x002403eb... (18 %)
+Writing at 0x002449dc... (19 %)
+Writing at 0x002492f1... (20 %)
+Writing at 0x0024da53... (22 %)
+Writing at 0x002523a6... (23 %)
+Writing at 0x0025712a... (24 %)
+Writing at 0x0025b96e... (25 %)
+Writing at 0x00260098... (26 %)
+Writing at 0x00264812... (27 %)
+Writing at 0x00268f7c... (29 %)
+Writing at 0x0026d40b... (30 %)
+Writing at 0x002719ac... (31 %)
+Writing at 0x002760ea... (32 %)
+Writing at 0x0027a877... (33 %)
+Writing at 0x0027f13e... (34 %)
+Writing at 0x00283cd6... (36 %)
+Writing at 0x0028838c... (37 %)
+Writing at 0x0028cc40... (38 %)
+Writing at 0x0029119c... (39 %)
+Writing at 0x00295867... (40 %)
+Writing at 0x00299d86... (41 %)
+Writing at 0x0029e4b7... (43 %)
+Writing at 0x002a2d30... (44 %)
+Writing at 0x002a73fd... (45 %)
+Writing at 0x002abdaf... (46 %)
+Writing at 0x002b08e9... (47 %)
+Writing at 0x002b5248... (48 %)
+Writing at 0x002b9b7e... (50 %)
+Writing at 0x002be377... (51 %)
+Writing at 0x002c2b91... (52 %)
+Writing at 0x002c72e4... (53 %)
+Writing at 0x002cb7d1... (54 %)
+Writing at 0x002cfce3... (55 %)
+Writing at 0x002d4536... (56 %)
+Writing at 0x002d8acf... (58 %)
+Writing at 0x002dd03b... (59 %)
+Writing at 0x002e15d6... (60 %)
+Writing at 0x002e59f4... (61 %)
+Writing at 0x002e9efe... (62 %)
+Writing at 0x002ee432... (63 %)
+Writing at 0x002f29ed... (65 %)
+Writing at 0x002f6f78... (66 %)
+Writing at 0x002fb373... (67 %)
+Writing at 0x002ff7a7... (68 %)
+Writing at 0x00303c90... (69 %)
+Writing at 0x0030811d... (70 %)
+Writing at 0x0030c7a0... (72 %)
+Writing at 0x00310ed1... (73 %)
+Writing at 0x003153ac... (74 %)
+Writing at 0x00319831... (75 %)
+Writing at 0x0031dd04... (76 %)
+Writing at 0x003222d7... (77 %)
+Writing at 0x00326daa... (79 %)
+Writing at 0x0032b4fe... (80 %)
+Writing at 0x0032fa99... (81 %)
+Writing at 0x00334107... (82 %)
+Writing at 0x00338a37... (83 %)
+Writing at 0x0033cfef... (84 %)
+Writing at 0x0034147b... (86 %)
+Writing at 0x00345a4f... (87 %)
+Writing at 0x0034a22a... (88 %)
+Writing at 0x0034eba3... (89 %)
+Writing at 0x00353224... (90 %)
+Writing at 0x00357848... (91 %)
+Writing at 0x0035bf5b... (93 %)
+Writing at 0x00360526... (94 %)
+Writing at 0x00364b32... (95 %)
+Writing at 0x00369268... (96 %)
+Writing at 0x0036d7fe... (97 %)
+Writing at 0x00371f75... (98 %)
+Writing at 0x003765e3... (100 %)
+Wrote 1534484 bytes (1393637 compressed) at 0x00200000 in 10.5 seconds (effective 1174.4 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Configuring flash size...
+4096 (0 %)8192 (0 %)12288 (0 %)16384 (1 %)20480 (1 %)24576 (1 %)28672 (1 %)32768 (2 %)36864 (2 %)40960 (2 %)45056 (2 %)49152 (3 %)53248 (3 %)57344 (3 %)61440 (4 %)65536 (4 %)69632 (4 %)73728 (4 %)77824 (5 %)81920 (5 %)86016 (5 %)90112 (5 %)94208 (6 %)98304 (6 %)102400 (6 %)106496 (6 %)110592 (7 %)114688 (7 %)118784 (7 %)122880 (8 %)126976 (8 %)131072 (8 %)135168 (8 %)139264 (9 %)143360 (9 %)147456 (9 %)151552 (9 %)155648 (10 %)159744 (10 %)163840 (10 %)167936 (10 %)172032 (11 %)176128 (11 %)180224 (11 %)184320 (12 %)188416 (12 %)192512 (12 %)196608 (12 %)200704 (13 %)204800 (13 %)208896 (13 %)212992 (13 %)217088 (14 %)221184 (14 %)225280 (14 %)229376 (14 %)233472 (15 %)237568 (15 %)241664 (15 %)245760 (16 %)249856 (16 %)253952 (16 %)258048 (16 %)262144 (17 %)266240 (17 %)270336 (17 %)274432 (17 %)278528 (18 %)282624 (18 %)286720 (18 %)290816 (18 %)294912 (19 %)299008 (19 %)303104 (19 %)307200 (20 %)311296 (20 %)315392 (20 %)319488 (20 %)323584 (21 %)327680 (21 %)331776 (21 %)335872 (21 %)339968 (22 %)344064 (22 %)348160 (22 %)352256 (22 %)356352 (23 %)360448 (23 %)364544 (23 %)368640 (24 %)372736 (24 %)376832 (24 %)380928 (24 %)385024 (25 %)389120 (25 %)393216 (25 %)397312 (25 %)401408 (26 %)405504 (26 %)409600 (26 %)413696 (26 %)417792 (27 %)421888 (27 %)425984 (27 %)430080 (28 %)434176 (28 %)438272 (28 %)442368 (28 %)446464 (29 %)450560 (29 %)454656 (29 %)458752 (29 %)462848 (30 %)466944 (30 %)471040 (30 %)475136 (30 %)479232 (31 %)483328 (31 %)487424 (31 %)491520 (32 %)495616 (32 %)499712 (32 %)503808 (32 %)507904 (33 %)512000 (33 %)516096 (33 %)520192 (33 %)524288 (34 %)528384 (34 %)532480 (34 %)536576 (34 %)540672 (35 %)544768 (35 %)548864 (35 %)552960 (36 %)557056 (36 %)561152 (36 %)565248 (36 %)569344 (37 %)573440 (37 %)577536 (37 %)581632 (37 %)585728 (38 %)589824 (38 %)593920 (38 %)598016 (38 %)602112 (39 %)606208 (39 %)610304 (39 %)614400 (40 %)618496 (40 %)622592 (40 %)626688 (40 %)630784 (41 %)634880 (41 %)638976 (41 %)643072 (41 %)647168 (42 %)651264 (42 %)655360 (42 %)659456 (42 %)663552 (43 %)667648 (43 %)671744 (43 %)675840 (44 %)679936 (44 %)684032 (44 %)688128 (44 %)692224 (45 %)696320 (45 %)700416 (45 %)704512 (45 %)708608 (46 %)712704 (46 %)716800 (46 %)720896 (46 %)724992 (47 %)729088 (47 %)733184 (47 %)737280 (48 %)741376 (48 %)745472 (48 %)749568 (48 %)753664 (49 %)757760 (49 %)761856 (49 %)765952 (49 %)770048 (50 %)774144 (50 %)778240 (50 %)782336 (50 %)786432 (51 %)790528 (51 %)794624 (51 %)798720 (52 %)802816 (52 %)806912 (52 %)811008 (52 %)815104 (53 %)819200 (53 %)823296 (53 %)827392 (53 %)831488 (54 %)835584 (54 %)839680 (54 %)843776 (54 %)847872 (55 %)851968 (55 %)856064 (55 %)860160 (56 %)864256 (56 %)868352 (56 %)872448 (56 %)876544 (57 %)880640 (57 %)884736 (57 %)888832 (57 %)892928 (58 %)897024 (58 %)901120 (58 %)905216 (58 %)909312 (59 %)913408 (59 %)917504 (59 %)921600 (60 %)925696 (60 %)929792 (60 %)933888 (60 %)937984 (61 %)942080 (61 %)946176 (61 %)950272 (61 %)954368 (62 %)958464 (62 %)962560 (62 %)966656 (62 %)970752 (63 %)974848 (63 %)978944 (63 %)983040 (64 %)987136 (64 %)991232 (64 %)995328 (64 %)999424 (65 %)1003520 (65 %)1007616 (65 %)1011712 (65 %)1015808 (66 %)1019904 (66 %)1024000 (66 %)1028096 (66 %)1032192 (67 %)1036288 (67 %)1040384 (67 %)1044480 (68 %)1048576 (68 %)1052672 (68 %)1056768 (68 %)1060864 (69 %)1064960 (69 %)1069056 (69 %)1073152 (69 %)1077248 (70 %)1081344 (70 %)1085440 (70 %)1089536 (71 %)1093632 (71 %)1097728 (71 %)1101824 (71 %)1105920 (72 %)1110016 (72 %)1114112 (72 %)1118208 (72 %)1122304 (73 %)1126400 (73 %)1130496 (73 %)1134592 (73 %)1138688 (74 %)1142784 (74 %)1146880 (74 %)1150976 (75 %)1155072 (75 %)1159168 (75 %)1163264 (75 %)1167360 (76 %)1171456 (76 %)1175552 (76 %)1179648 (76 %)1183744 (77 %)1187840 (77 %)1191936 (77 %)1196032 (77 %)1200128 (78 %)1204224 (78 %)1208320 (78 %)1212416 (79 %)1216512 (79 %)1220608 (79 %)1224704 (79 %)1228800 (80 %)1232896 (80 %)1236992 (80 %)1241088 (80 %)1245184 (81 %)1249280 (81 %)1253376 (81 %)1257472 (81 %)1261568 (82 %)1265664 (82 %)1269760 (82 %)1273856 (83 %)1277952 (83 %)1282048 (83 %)1286144 (83 %)1290240 (84 %)1294336 (84 %)1298432 (84 %)1302528 (84 %)1306624 (85 %)1310720 (85 %)1314816 (85 %)1318912 (85 %)1323008 (86 %)1327104 (86 %)1331200 (86 %)1335296 (87 %)1339392 (87 %)1343488 (87 %)1347584 (87 %)1351680 (88 %)1355776 (88 %)1359872 (88 %)1363968 (88 %)1368064 (89 %)1372160 (89 %)1376256 (89 %)1380352 (89 %)1384448 (90 %)1388544 (90 %)1392640 (90 %)1396736 (91 %)1400832 (91 %)1404928 (91 %)1409024 (91 %)1413120 (92 %)1417216 (92 %)1421312 (92 %)1425408 (92 %)1429504 (93 %)1433600 (93 %)1437696 (93 %)1441792 (93 %)1445888 (94 %)1449984 (94 %)1454080 (94 %)1458176 (95 %)1462272 (95 %)1466368 (95 %)1470464 (95 %)1474560 (96 %)1478656 (96 %)1482752 (96 %)1486848 (96 %)1490944 (97 %)1495040 (97 %)1499136 (97 %)1503232 (97 %)1507328 (98 %)1511424 (98 %)1515520 (98 %)1519616 (99 %)1523712 (99 %)1527808 (99 %)1531904 (99 %)1534484 (100 %)
+1534484 (100 %)
+Read 1534484 bytes at 0x00200000 in 134.6 seconds (91.2 kbit/s)...
+Hard resetting via RTS pin...
+PASS: ESP video read-back byte-for-byte match. SX was not flashed.

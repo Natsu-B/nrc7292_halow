@@ -1,0 +1,6 @@
+
+HOST command: connect
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":3919,"tx_slots":5833,"rx_slots":7016,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":3922,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"reconnect","attempt":1,"error":0,"backoff_ms":1000,"desired_link":1}
+{"event":"connect","error":0,"desired_link":1,"play_requested":0}

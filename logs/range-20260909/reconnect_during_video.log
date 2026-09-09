@@ -1,0 +1,20 @@
+
+HOST command: reconnect
+{"event":"reconnect_request","controlled_test":true,"error":0}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":64,"feedback_rejected":7,"feedback_age_ms":1191}
+{"event":"reconnect","attempt":1,"error":0,"backoff_ms":1000,"desired_link":1}
+{"event":"video_profile","profile":8,"source":4,"width":214,"height":120,"interval_ms":6000,"stream_id":1071614028,"capture_epoch_ms":367340}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":64,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":65,"feedback_rejected":7,"feedback_age_ms":250}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":66,"feedback_rejected":7,"feedback_age_ms":200}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":67,"feedback_rejected":7,"feedback_age_ms":200}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":67,"feedback_rejected":7,"feedback_age_ms":1201}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":67,"feedback_rejected":7,"feedback_age_ms":2202}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":68,"feedback_rejected":7,"feedback_age_ms":256}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":69,"feedback_rejected":7,"feedback_age_ms":250}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":70,"feedback_rejected":7,"feedback_age_ms":250}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":71,"feedback_rejected":7,"feedback_age_ms":250}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":71,"feedback_rejected":7,"feedback_age_ms":1251}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":71,"feedback_rejected":7,"feedback_age_ms":2252}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":72,"feedback_rejected":7,"feedback_age_ms":255}
+{"event":"adapt","bps":70312,"reason":"stale_radio_stats","feedback_accepted":73,"feedback_rejected":7,"feedback_age_ms":250}

@@ -1,5 +1,7 @@
 # Stage-1 最終実機報告
 
+2026-09-09夜の追加変更（最新フレーム選択、360p→120p・最大10秒間隔への自動調整、切断後の再接続）とmain再検証は [RANGE_RESULT.md](RANGE_RESULT.md) を参照。以下は追加変更前のStage-1基準試験の記録。
+
 更新: 2026-09-09 19:43 JST時点。ESP32-S3 → NRC7292 native HSPI → 802.11ah → AP-100AH → PC の通信と360p実映像を確認した。100/250/500 kbpsは配送・安定性PASS、1 Mbpsは139 packet欠落でFAIL。検証済みsourceをmainへ統合し、mainの再build・再flash・HSPI/EIRQ/loopback・双方向ping・UDP100k・360p byte一致・GUI実描画の再確認もPASS。
 
 ## 結果一覧

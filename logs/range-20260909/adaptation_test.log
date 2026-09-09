@@ -1,0 +1,138 @@
+
+HOST command: pause
+Playback paused; association and Duty history retained.
+
+HOST command: wiring-confirm
+Wiring acknowledged for this boot. Type probe for native HSPI/HELLO.
+
+HOST command: rf-confirm
+RF acknowledged for this boot. Duty/LBT remains enforced; no association yet.
+
+HOST command: connect
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":1719,"tx_slots":4301,"rx_slots":4825,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":1720,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"connect","error":0,"desired_link":1,"play_requested":0}
+
+HOST command: start
+I (58488) stage1: clip codec=1 640x360 frames=120 max=9444 bytes
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":1730,"tx_slots":4302,"rx_slots":4836,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":1731,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"start","error":0,"desired_link":1,"play_requested":1}
+{"event":"video_profile","profile":0,"source":0,"width":640,"height":360,"interval_ms":100,"stream_id":3298443270,"capture_epoch_ms":58362}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":0,"feedback_rejected":0,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":0,"feedback_rejected":0,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":1,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":2,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":3,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":4,"feedback_rejected":0,"feedback_age_ms":950}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":5,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":6,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":7,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":8,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"initial","feedback_accepted":9,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"receiver_recovery","feedback_accepted":10,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"receiver_recovery","feedback_accepted":11,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"receiver_recovery","feedback_accepted":12,"feedback_rejected":0,"feedback_age_ms":902}
+{"event":"adapt","bps":400000,"reason":"receiver_recovery","feedback_accepted":13,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"adapt","bps":400000,"reason":"receiver_recovery","feedback_accepted":14,"feedback_rejected":0,"feedback_age_ms":901}
+{"event":"adapt","bps":300000,"reason":"receiver_loss","feedback_accepted":15,"feedback_rejected":0,"feedback_age_ms":900}
+{"event":"video_profile","profile":1,"source":1,"width":640,"height":360,"interval_ms":500,"stream_id":2219330390,"capture_epoch_ms":58362}
+{"event":"adapt","bps":225000,"reason":"receiver_loss","feedback_accepted":16,"feedback_rejected":0,"feedback_age_ms":914}
+{"event":"video_profile","profile":2,"source":1,"width":640,"height":360,"interval_ms":1000,"stream_id":3764230868,"capture_epoch_ms":58362}
+{"event":"adapt","bps":168750,"reason":"receiver_loss","feedback_accepted":17,"feedback_rejected":0,"feedback_age_ms":959}
+{"event":"video_profile","profile":3,"source":1,"width":640,"height":360,"interval_ms":2000,"stream_id":2847860789,"capture_epoch_ms":58362}
+{"event":"adapt","bps":168750,"reason":"receiver_loss","feedback_accepted":17,"feedback_rejected":1,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":126562,"reason":"receiver_loss","feedback_accepted":18,"feedback_rejected":1,"feedback_age_ms":950}
+{"event":"video_profile","profile":4,"source":2,"width":426,"height":240,"interval_ms":2000,"stream_id":3432265021,"capture_epoch_ms":58362}
+{"event":"adapt","bps":126562,"reason":"receiver_loss","feedback_accepted":18,"feedback_rejected":2,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":94921,"reason":"receiver_loss","feedback_accepted":19,"feedback_rejected":2,"feedback_age_ms":950}
+{"event":"video_profile","profile":5,"source":3,"width":320,"height":180,"interval_ms":2000,"stream_id":732465821,"capture_epoch_ms":58362}
+{"event":"adapt","bps":94921,"reason":"receiver_loss","feedback_accepted":19,"feedback_rejected":3,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":71190,"reason":"receiver_loss","feedback_accepted":20,"feedback_rejected":3,"feedback_age_ms":950}
+{"event":"video_profile","profile":6,"source":4,"width":214,"height":120,"interval_ms":2000,"stream_id":2598852085,"capture_epoch_ms":58362}
+{"event":"adapt","bps":71190,"reason":"receiver_loss","feedback_accepted":20,"feedback_rejected":4,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":53392,"reason":"receiver_loss","feedback_accepted":21,"feedback_rejected":4,"feedback_age_ms":950}
+{"event":"video_profile","profile":7,"source":4,"width":214,"height":120,"interval_ms":4000,"stream_id":453059709,"capture_epoch_ms":58362}
+{"event":"adapt","bps":53392,"reason":"receiver_loss","feedback_accepted":21,"feedback_rejected":5,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":22,"feedback_rejected":5,"feedback_age_ms":950}
+{"event":"video_profile","profile":8,"source":4,"width":214,"height":120,"interval_ms":6000,"stream_id":1047430531,"capture_epoch_ms":58362}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":22,"feedback_rejected":6,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":23,"feedback_rejected":6,"feedback_age_ms":951}
+{"event":"video_profile","profile":9,"source":4,"width":214,"height":120,"interval_ms":10000,"stream_id":2605471727,"capture_epoch_ms":58362}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":24,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":24,"feedback_rejected":7,"feedback_age_ms":1003}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":26,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":27,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":28,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":29,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":30,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":31,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":32,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":33,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":34,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":35,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":36,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":37,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":38,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":39,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":40,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":50000,"reason":"receiver_loss","feedback_accepted":41,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":42,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"video_profile","profile":8,"source":4,"width":214,"height":120,"interval_ms":6000,"stream_id":1676679351,"capture_epoch_ms":58362}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":43,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":44,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":45,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":46,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":47,"feedback_rejected":7,"feedback_age_ms":0}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":48,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":49,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":50,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":75000,"reason":"receiver_recovery","feedback_accepted":51,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":52,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"video_profile","profile":7,"source":4,"width":214,"height":120,"interval_ms":4000,"stream_id":2549675480,"capture_epoch_ms":58362}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":53,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":54,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":55,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":56,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":57,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":58,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":59,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":60,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":100000,"reason":"receiver_recovery","feedback_accepted":61,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":50}
+{"event":"video_profile","profile":6,"source":4,"width":214,"height":120,"interval_ms":2000,"stream_id":3479972758,"capture_epoch_ms":58362}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":125000,"reason":"receiver_recovery","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"video_profile","profile":7,"source":4,"width":214,"height":120,"interval_ms":4000,"stream_id":834238640,"capture_epoch_ms":58362}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":93750,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"video_profile","profile":8,"source":4,"width":214,"height":120,"interval_ms":6000,"stream_id":174000009,"capture_epoch_ms":58362}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+{"event":"adapt","bps":70312,"reason":"feedback_timeout","feedback_accepted":62,"feedback_rejected":7,"feedback_age_ms":4294967295}
+Synthetic adaptation test result: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-214548/logs/range-nearbench-20260909/range_result.json
+
+HOST command: pause
+Playback paused; association and Duty history retained.

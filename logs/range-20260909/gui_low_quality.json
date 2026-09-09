@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "first": {
+    "displayed": "40",
+    "state": "UDP 受信中",
+    "picture": "320 × 180 / frame 10",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "radio": "MCS 5/7 · Duty 可 · Q 0",
+    "log": "受信アプリを起動しました。\n\n10:25:07 PM  UDP 待受を開始しました。"
+  },
+  "second": {
+    "displayed": "46",
+    "state": "UDP 受信中",
+    "picture": "427 × 240 / frame 5",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "radio": "MCS 5/4 · Duty 可 · Q 0",
+    "log": "受信アプリを起動しました。\n\n10:25:07 PM  UDP 待受を開始しました。"
+  }
+}
