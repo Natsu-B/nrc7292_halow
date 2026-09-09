@@ -14,9 +14,9 @@ static unsigned connect_calls,disconnect_calls,video_packets;
 static esp_err_t connect_result=ESP_FAIL;
 static bool cancel_connect;
 static bool controlled_reconnect;
-static uint8_t pending_feedback[40];
-static bool feedback_pending,metadata_test;
-static unsigned metadata_packets;
+static uint8_t pending_feedback[44];
+static bool feedback_pending,metadata_test,metadata_fail,cadence_test,cadence_blocked;
+static unsigned metadata_packets,metadata_attempts,cadence_stats_reads;
 static struct sockaddr_in feedback_source;
 ssize_t recvfrom(int socket,void *buffer,size_t length,int flags,struct sockaddr *address,socklen_t *address_len){
     (void)socket;assert(length>=sizeof pending_feedback&&flags==MSG_DONTWAIT);
@@ -32,7 +32,7 @@ BaseType_t xSemaphoreTake(SemaphoreHandle_t semaphore,TickType_t timeout){
 }
 BaseType_t xSemaphoreGive(SemaphoreHandle_t semaphore){(void)semaphore;assert(mutex_held);mutex_held=false;return pdTRUE;}
 esp_err_t nrc7292_connect(nrc7292_handle_t handle,TickType_t timeout){
-    assert(handle==radio&&timeout==5000&&mutex_held&&atomic_load(&desired_link));
+    assert(handle==radio&&timeout==2250&&mutex_held&&atomic_load(&desired_link));
     connect_calls++;mock_time+=(int64_t)timeout*1000;
     if(cancel_connect)atomic_store(&desired_link,false); /* Explicit stop while CONNECT is in flight. */
     return connect_result;
@@ -59,6 +59,9 @@ uint32_t esp_random(void){return 0x12345678U;}
 bool nrc7292_is_connected(nrc7292_handle_t handle){(void)handle;return allow_network;}
 esp_err_t nrc7292_get_link_stats(nrc7292_handle_t handle,nrc7292_link_stats_t *out){
     (void)handle;memset(out,0,sizeof *out);out->hspi_ready=true;out->wifi_connected=true;
+    if(cadence_test){
+        cadence_stats_reads++;out->radio.duty_tx_available=!cadence_blocked;out->radio.rssi_average_dbm=-50;return ESP_OK;
+    }
     out->radio.duty_tx_available=mock_time<200000||mock_time>=500000;
     out->radio_stats_age_ms=mock_time>=500000&&mock_time<700000?501:0;
     return ESP_OK;
@@ -68,10 +71,13 @@ ssize_t sendto(int socket,const void *buffer,size_t length,int flags,const struc
     (void)socket;(void)flags;(void)address;(void)address_len;
     const uint8_t *p=buffer;
     if(metadata_test){
-        assert(length==56&&!memcmp(p,"NRCS",4)&&p[4]==3&&p[7]==56);
-        assert(read_be32(p+36)==adaptation.rate_bps&&read_be32(p+40)==50);
+        assert(length==60&&!memcmp(p,"NRCS",4)&&p[4]==4&&p[7]==60);
+        uint32_t age=adaptation.have_feedback?read_be32(p+8)-adaptation.last_feedback_rx_ms:UINT32_MAX;
+        assert(read_be32(p+36)==adaptation.rate_bps&&read_be32(p+40)==age);
         assert(p[44]==2&&p[45]==128&&p[46]==1&&p[47]==104); /* Actual 640x360. */
-        assert(read_be32(p+48)==100&&read_be32(p+52)==hvc_crc32(p,52));
+        assert(read_be32(p+48)==stage1_adapt_interval_ms(&adaptation)&&read_be32(p+52)==adaptation.stream);
+        assert(read_be32(p+56)==hvc_crc32(p,56));
+        metadata_attempts++;if(metadata_fail)return -1;
         metadata_packets++;return (ssize_t)length;
     }
     if(video_test){assert(length==1400&&mock_time>=700000);video_packets++;return (ssize_t)length;}
@@ -92,7 +98,7 @@ static void test_reconnect_state(void){
     s.radio_stats_age_ms=501;assert(!reconnect_step_locked(0,&s));
     s.radio_stats_age_ms=0;s.hspi_ready=false;assert(!reconnect_step_locked(0,&s));
     s.hspi_ready=true;
-    static const unsigned backoffs[]={1000,2000,4000,8000,16000,30000,30000};
+    static const unsigned backoffs[]={250,500,1000,2000,2000,2000,2000};
     for(unsigned i=0;i<sizeof backoffs/sizeof backoffs[0];i++) {
         assert(reconnect_step_locked(clock_ms(),&s));
         assert(connect_calls==i+1&&atomic_load(&desired_link)&&atomic_load(&play_requested));
@@ -136,10 +142,11 @@ static void test_feedback_and_deadlines(void){
     stage1_adapt_init(&adaptation,50000,400000,0);stage1_adapt_stream(&adaptation,0x12345678,0);
     adapt_initialized=true;adapt_last_service=adapt_last_tick=0;adapt_source_rejected=0;
     pc=(struct sockaddr_in){.sin_family=AF_INET,.sin_port=htons(50000),.sin_addr={.s_addr=htonl(0xc0a80afa)}};
-    memset(pending_feedback,0,sizeof pending_feedback);memcpy(pending_feedback,"NRFB",4);pending_feedback[4]=2;
+    memset(pending_feedback,0,sizeof pending_feedback);memcpy(pending_feedback,"NRFB",4);pending_feedback[4]=3;
     be32(pending_feedback+8,1000);be32(pending_feedback+12,1);be32(pending_feedback+16,1);
     be32(pending_feedback+32,100);be32(pending_feedback+36,0x12345678);
-    uint32_t crc=hvc_crc32(pending_feedback+8,32);pending_feedback[5]=(uint8_t)(crc>>16);
+    be32(pending_feedback+40,1);
+    uint32_t crc=hvc_crc32(pending_feedback+8,sizeof pending_feedback-8);pending_feedback[5]=(uint8_t)(crc>>16);
     pending_feedback[6]=(uint8_t)(crc>>8);pending_feedback[7]=(uint8_t)crc;
     feedback_source=pc;feedback_source.sin_addr.s_addr=htonl(0xc0a80afb);feedback_pending=true;
     mock_time=50000;adaptation_service();assert(!adaptation.accepted_feedback&&adapt_source_rejected==1);
@@ -152,8 +159,19 @@ static void test_feedback_and_deadlines(void){
     assert(atomic_load(&adapt_rejected)==3&&atomic_load(&adapt_feedback_age)==50);
     nrc7292_link_stats_t s={.hspi_ready=true,.wifi_connected=true,.radio={.duty_tx_available=true}};
     clip.width=640;clip.height=360;atomic_store(&play_requested,true);metadata_test=true;
-    network_stats(&s,200);assert(metadata_packets==1);
-    s.radio_stats_age_ms=501;network_stats(&s,200);assert(metadata_packets==1);
+    assert(network_stats(&s,200)&&metadata_packets==1);
+    uint8_t ack[20]={0};memcpy(ack,"NRPA",4);ack[4]=1;be16(ack+6,sizeof ack);
+    be32(ack+8,adaptation.stream);be32(ack+12,200);be32(ack+16,hvc_crc32(ack,16));
+    assert(stage1_adapt_feedback(&adaptation,ack,sizeof ack,210)); /* Only successfully submitted probes may be acknowledged. */
+    metadata_fail=true;assert(!network_stats(&s,220)&&metadata_packets==1);metadata_fail=false;
+    be32(ack+12,220);be32(ack+16,hvc_crc32(ack,16));
+    assert(!stage1_adapt_feedback(&adaptation,ack,sizeof ack,230));
+    adapt_publish(230);
+    assert(atomic_load(&adapt_probe_acks)==1&&atomic_load(&adapt_probe_rtt)==10&&atomic_load(&adapt_probe_age)==20);
+    unsigned attempts=metadata_attempts;
+    s.radio_stats_age_ms=501;assert(!network_stats(&s,240)&&metadata_attempts==attempts);
+    s.radio_stats_age_ms=0;s.radio.duty_tx_available=false;assert(!network_stats(&s,240)&&metadata_attempts==attempts);
+    s.radio.duty_tx_available=true;s.radio.host_to_radio_queue_depth=3;assert(!network_stats(&s,240)&&metadata_attempts==attempts);
     metadata_test=false;atomic_store(&play_requested,false);
     mock_time=30000000;adaptation_service();
     assert(adaptation.profile==0&&adaptation.rate_bps==400000); /* Intentional silence during pause is not link degradation. */
@@ -167,10 +185,23 @@ static void test_feedback_and_deadlines(void){
     assert(!frame_fits_deadline(100,50000,9000000,9000000));
     mock_time=0;
 }
+static void test_fast_probe_cadence(void){
+    stage1_adapt_init(&adaptation,50000,400000,0);stage1_adapt_stream(&adaptation,0xaabbccdd,0);
+    adaptation.profile=9;adaptation.rate_bps=50000;
+    adapt_initialized=true;adapt_last_service=adapt_last_tick=adapt_last_probe=adapt_last_log=0;
+    atomic_store(&play_requested,true);metadata_test=true;cadence_test=true;cadence_blocked=false;
+    unsigned sent_before=metadata_packets;cadence_stats_reads=0;
+    for(mock_time=50000;mock_time<=1000000;mock_time+=50000)adaptation_service();
+    assert(cadence_stats_reads==10&&metadata_packets==sent_before+5); /* 100ms decisions, 200ms probes even at 10s video cadence. */
+    cadence_blocked=true;
+    for(mock_time=1050000;mock_time<=1400000;mock_time+=50000)adaptation_service();
+    assert(metadata_packets==sent_before+5); /* Fast probes still respect measured Duty unavailability. */
+    cadence_test=false;metadata_test=false;adapt_initialized=false;atomic_store(&play_requested,false);mock_time=0;
+}
 int main(void){
     char *output=NULL;size_t size=0;FILE *saved=stdout;stdout=open_memstream(&output,&size);assert(stdout);
     radio=(nrc7292_handle_t)1;network_prepared=true;rf_confirmed=true;video_socket=1;
-    test_reconnect_state();test_video_freshness();test_feedback_and_deadlines();
+    test_reconnect_state();test_video_freshness();test_feedback_and_deadlines();test_fast_probe_cadence();
     test_udp(100000,1);assert(!packets); /* Explicit connected state is required. */
     allow_network=true;test_udp(99999,1);assert(!packets);
     test_udp(100000,1);assert(packets==7);
