@@ -1,0 +1,28 @@
+{
+  "result": "PASS",
+  "sourceCommit": "d35344cadb13203c30a9dfd23ddc061952292bef",
+  "first": {
+    "displayedFrames": "330",
+    "completed": "328",
+    "state": "UDP 受信中",
+    "codec": "H.264 avc1.42c016 / NRCV",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "picture": "640 × 360 / frame 329",
+    "source": "192.168.10.20",
+    "bind": "192.168.10.250",
+    "loss": "0.0%",
+    "log": "受信アプリを起動しました。\n\n7:42:10 PM  UDP 待受を開始しました。"
+  },
+  "second": {
+    "displayedFrames": "355",
+    "completed": "348",
+    "state": "UDP 受信中",
+    "codec": "H.264 avc1.42c016 / NRCV",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "picture": "640 × 360 / frame 354",
+    "source": "192.168.10.20",
+    "bind": "192.168.10.250",
+    "loss": "0.0%",
+    "log": "受信アプリを起動しました。\n\n7:42:10 PM  UDP 待受を開始しました。"
+  }
+}

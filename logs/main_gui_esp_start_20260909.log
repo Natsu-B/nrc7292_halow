@@ -1,0 +1,10 @@
+
+HOST command: start
+I (202998) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=0 dro{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":3279,"tx_slots":9645,"rx_slots":6353,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":3279,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"start","error":0}
+I (224468) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=601 skip=1 heap=328068 snr_api_db=27 snr_validity=unreported
+I (225494) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=612 skip=1 heap=328068 snr_api_db=31 snr_validity=unreported
+I (226551) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=623 skip=1 heap=328068 snr_api_db=31 snr_validity=unreported
+I (227618) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=634 skip=1 heap=328068 snr_api_db=34 snr_validity=unreported
+I (228720) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=645 skip=1 heap=328068 snr_api_db=26 snr_validity=unreported

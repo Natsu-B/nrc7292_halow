@@ -1,0 +1,61 @@
+
+HOST command: start
+I (141789) stage1: clip codec=1 640x360 frames=120 max=9444 bytes
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":2413,"tx_slots":5416,"rx_slots":5510,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":2413,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+I (141791) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=0 drop=0/139 frame=0 skip=0 heap=329840 snr_api_db=27 snr_validity=unreported
+{"event":"start","error":0}
+I (142959) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=11 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (144017) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=22 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (145075) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=33 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (146142) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=44 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (147243) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=55 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (148343) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=66 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (149443) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=77 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (150543) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=88 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (151643) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=99 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (152743) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=110 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (153988) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=121 skip=0 heap=328068 snr_api_db=36 snr_validity=unreported
+I (155017) stage1: link=1 hspi=1 rssi=-12 mcs=1/7 duty=1 q=1 drop=0/139 frame=132 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (156075) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=143 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (157142) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=154 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (158242) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=165 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (159343) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=176 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (160443) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=187 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (161543) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=198 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (162643) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=209 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (163743) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=220 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (164901) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=231 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (165988) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=241 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (167017) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=252 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (168075) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=263 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (169142) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=274 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (170243) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=285 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (171343) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=296 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (172443) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=307 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (173543) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=318 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (174643) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=329 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (175743) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=340 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (176901) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=351 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (177988) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=361 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (179017) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=372 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (180075) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=383 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (181143) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=394 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (182243) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=405 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (183343) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=416 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (184443) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=427 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (185543) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=438 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (186643) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=449 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (187743) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=460 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (188901) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=471 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (189988) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=481 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (191017) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=492 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (192075) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=503 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (193143) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=514 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (194243) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=525 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (195343) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=536 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (196443) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=547 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (197543) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=558 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (198643) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=569 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (199743) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=580 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (200901) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=591 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
