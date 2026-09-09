@@ -1,0 +1,10 @@
+
+HOST command: start
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":3044,"tx_slots":8054,"rx_slots":2859,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":3063,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"start","error":0,"desired_link":1,"play_requested":1}
+{"event":"video_profile","profile":0,"source":0,"width":640,"height":360,"interval_ms":100,"stream_id":207546615,"capture_epoch_ms":177431}
+{"event":"adapt","now_ms":177443,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":40,"radio_stats_fresh":1,"feedback_accepted":551,"feedback_rejected":2,"feedback_age_ms":4294967295,"probe_acks":541,"probe_rtt_ms":4294967295,"probe_ack_age_ms":4294967295}
+{"event":"adapt","now_ms":178443,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":39,"radio_stats_fresh":1,"feedback_accepted":556,"feedback_rejected":2,"feedback_age_ms":0,"probe_acks":546,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":179444,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":44,"radio_stats_fresh":1,"feedback_accepted":561,"feedback_rejected":2,"feedback_age_ms":0,"probe_acks":551,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":180444,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":41,"radio_stats_fresh":1,"feedback_accepted":566,"feedback_rejected":2,"feedback_age_ms":0,"probe_acks":556,"probe_rtt_ms":50,"probe_ack_age_ms":150}

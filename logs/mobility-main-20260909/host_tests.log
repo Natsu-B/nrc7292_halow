@@ -1,0 +1,241 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hotaru/silex/halow_stage1_main/.native-build-range
+[1/6] Building C object CMakeFiles/link_adapt.dir/home/hotaru/silex/halow_stage1_main/esp32/main/link_adapt.c.o
+[2/6] Linking C static library liblink_adapt.a
+[3/6] Building C object CMakeFiles/test_link_adapt.dir/test_link_adapt.c.o
+[4/6] Linking C executable test_link_adapt
+[5/6] Building C object CMakeFiles/test_esp_network.dir/test_esp_network.c.o
+[6/6] Linking C executable test_esp_network
+Test project /home/hotaru/silex/halow_stage1_main/.native-build-range
+      Start  1: link_adapt
+ 1/13 Test  #1: link_adapt .......................   Passed    0.00 sec
+      Start  2: packetizer
+ 2/13 Test  #2: packetizer .......................   Passed    0.00 sec
+      Start  3: h264
+ 3/13 Test  #3: h264 .............................   Passed    0.00 sec
+      Start  4: l2_protocol
+ 4/13 Test  #4: l2_protocol ......................   Passed    0.00 sec
+      Start  5: hspi
+ 5/13 Test  #5: hspi .............................   Passed    0.00 sec
+      Start  6: hspi_transport
+ 6/13 Test  #6: hspi_transport ...................   Passed    0.00 sec
+      Start  7: clip
+ 7/13 Test  #7: clip .............................   Passed    0.01 sec
+      Start  8: mac
+ 8/13 Test  #8: mac ..............................   Passed    0.00 sec
+      Start  9: hspi_faults
+ 9/13 Test  #9: hspi_faults ......................   Passed    0.00 sec
+      Start 10: native_records
+10/13 Test #10: native_records ...................   Passed    0.01 sec
+      Start 11: esp_adapter
+11/13 Test #11: esp_adapter ......................   Passed    2.04 sec
+      Start 12: sx_endpoint
+12/13 Test #12: sx_endpoint ......................   Passed    0.00 sec
+      Start 13: esp_network
+13/13 Test #13: esp_network ......................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 13
+
+Total Test time (real) =   2.07 sec
+
+> halow-stage1-receiver@0.7.0 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: CRC32 standard vector and serial wrap
+ok 1 - CRC32 standard vector and serial wrap
+  ---
+  duration_ms: 0.758834
+  type: 'test'
+  ...
+# Subtest: NRCV rejects inconsistent lengths, flags and excessive allocation
+ok 2 - NRCV rejects inconsistent lengths, flags and excessive allocation
+  ---
+  duration_ms: 0.420839
+  type: 'test'
+  ...
+# Subtest: reassembly supports reverse packet order and duplicate suppression
+ok 3 - reassembly supports reverse packet order and duplicate suppression
+  ---
+  duration_ms: 1.883831
+  type: 'test'
+  ...
+# Subtest: incomplete reference frame discards following delta until a new keyframe
+ok 4 - incomplete reference frame discards following delta until a new keyframe
+  ---
+  duration_ms: 0.273622
+  type: 'test'
+  ...
+# Subtest: frame number and packet sequence wrap keep order
+ok 5 - frame number and packet sequence wrap keep order
+  ---
+  duration_ms: 0.192195
+  type: 'test'
+  ...
+# Subtest: pending frame allocation is bounded
+ok 6 - pending frame allocation is bounded
+  ---
+  duration_ms: 2.476164
+  type: 'test'
+  ...
+# Subtest: default reassembly timeout tolerates a slow frame but expires stalled frames at 5 s
+ok 7 - default reassembly timeout tolerates a slow frame but expires stalled frames at 5 s
+  ---
+  duration_ms: 0.215677
+  type: 'test'
+  ...
+# Subtest: a new complete IDR preempts an incomplete reference and queued deltas immediately
+ok 8 - a new complete IDR preempts an incomplete reference and queued deltas immediately
+  ---
+  duration_ms: 0.294158
+  type: 'test'
+  ...
+# Subtest: independent images preempt across frame wrap and MJPEG needs no H264 key flag
+ok 9 - independent images preempt across frame wrap and MJPEG needs no H264 key flag
+  ---
+  duration_ms: 0.433947
+  type: 'test'
+  ...
+# Subtest: on-flash real H264 and MJPEG clips validate every CRC
+ok 10 - on-flash real H264 and MJPEG clips validate every CRC
+  ---
+  duration_ms: 48.597653
+  type: 'test'
+  ...
+# Subtest: NRFB v1/v2 stay compatible and v3 includes actual completed frames, including zero
+ok 11 - NRFB v1/v2 stay compatible and v3 includes actual completed frames, including zero
+  ---
+  duration_ms: 0.354176
+  type: 'test'
+  ...
+# Subtest: NRPA acknowledgement echoes stream and sample tick with its full CRC at zero and wrap
+ok 12 - NRPA acknowledgement echoes stream and sample tick with its full CRC at zero and wrap
+  ---
+  duration_ms: 0.166038
+  type: 'test'
+  ...
+# Subtest: NRCS v1/v2/v3 remain compatible and v4 identifies the telemetry stream
+ok 13 - NRCS v1/v2/v3 remain compatible and v4 identifies the telemetry stream
+  ---
+  duration_ms: 0.400977
+  type: 'test'
+  ...
+# Subtest: NRCS rejects corrupt fields, CRC, version/length mismatches and trailing bytes
+ok 14 - NRCS rejects corrupt fields, CRC, version/length mismatches and trailing bytes
+  ---
+  duration_ms: 0.500788
+  type: 'test'
+  ...
+# Subtest: late packets from a retired stream cannot reset the current session
+ok 15 - late packets from a retired stream cannot reset the current session
+  ---
+  duration_ms: 0.133359
+  type: 'test'
+  ...
+# Subtest: renderer supersedes queued independent images and rejects old asynchronous decoder output
+ok 16 - renderer supersedes queued independent images and rejects old asynchronous decoder output
+  ---
+  duration_ms: 4.357787
+  type: 'test'
+  ...
+# Subtest: renderer displays v3 profile, v2 pacing and hides unavailable v1 pacing
+ok 17 - renderer displays v3 profile, v2 pacing and hides unavailable v1 pacing
+  ---
+  duration_ms: 1.280493
+  type: 'test'
+  ...
+# Subtest: localhost UDP reconstructs all real H264 access units byte for byte
+ok 18 - localhost UDP reconstructs all real H264 access units byte for byte
+  ---
+  duration_ms: 398.967173
+  type: 'test'
+  ...
+# Subtest: unexpected source IP is ignored
+ok 19 - unexpected source IP is ignored
+  ---
+  duration_ms: 41.474284
+  type: 'test'
+  ...
+# Subtest: invalid listening configuration is refused
+ok 20 - invalid listening configuration is refused
+  ---
+  duration_ms: 0.558237
+  type: 'test'
+  ...
+# Subtest: 200 ms feedback counts the first frame, stream-local delivery and idle intervals without fabrication
+ok 21 - 200 ms feedback counts the first frame, stream-local delivery and idle intervals without fabrication
+  ---
+  duration_ms: 1003.416515
+  type: 'test'
+  ...
+# Subtest: a tick within 100 ms preserves the first packet baseline for the next valid interval
+ok 22 - a tick within 100 ms preserves the first packet baseline for the next valid interval
+  ---
+  duration_ms: 32.050736
+  type: 'test'
+  ...
+# Subtest: localhost receiver accepts NRCS v2 without retargeting the video peer
+ok 23 - localhost receiver accepts NRCS v2 without retargeting the video peer
+  ---
+  duration_ms: 21.679156
+  type: 'test'
+  ...
+# Subtest: NRCS v4 probes receive immediate ACK before video and for a new stream without retargeting video
+ok 24 - NRCS v4 probes receive immediate ACK before video and for a new stream without retargeting video
+  ---
+  duration_ms: 30.994182
+  type: 'test'
+  ...
+# Subtest: disabled automatic feedback still emits a validated probe but sends no ACK
+ok 25 - disabled automatic feedback still emits a validated probe but sends no ACK
+  ---
+  duration_ms: 261.934861
+  type: 'test'
+  ...
+# Subtest: old telemetry versions and invalid NRCS v4 packets never elicit probe ACKs
+ok 26 - old telemetry versions and invalid NRCS v4 packets never elicit probe ACKs
+  ---
+  duration_ms: 41.918556
+  type: 'test'
+  ...
+# Subtest: NRCS v4 from an unexpected source IP is ignored without ACK or probe event
+ok 27 - NRCS v4 from an unexpected source IP is ignored without ACK or probe event
+  ---
+  duration_ms: 41.416084
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1921.378336
+C packetizer -> Node receiver: 277 packets / 120 frames, all bytes match
+C packetizer -> Node receiver: 344 packets / 60 frames, all bytes match
+PASS: API-stub C syntax and real Node/renderer JavaScript syntax. Not a target link or Electron launch.
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.003s
+
+OK
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.281s
+
+OK
+PASS: host automation rejects missing/error/incomplete responses and corrupted UDP/video; no hardware exercised.
+PASS: ESP discovery pins the confirmed serial; another board requires explicit ESP_USB_SERIAL.
+PASS: same by-id reconnect captures both boots without UART writes; total deadline stays bounded
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.813s
+
+OK
+PASS: a video cycle cannot combine streams, gaps or reordered source frames; fragment reordering remains valid.
+PASS: seven native transport originals and host/target L2 source identity
+
+Native tests finished. This does NOT build ESP or NRC firmware.

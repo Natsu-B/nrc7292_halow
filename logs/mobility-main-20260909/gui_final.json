@@ -1,0 +1,18 @@
+{
+  "first": {
+    "displayedFrames": "695",
+    "state": "UDP 受信中",
+    "picture": "640 × 360 / frame 612",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "feedback": true,
+    "log": "受信アプリを起動しました。\n\n11:29:04 PM  UDP 待受を開始しました。"
+  },
+  "second": {
+    "displayedFrames": "735",
+    "state": "UDP 受信中",
+    "picture": "640 × 360 / frame 652",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "feedback": true,
+    "log": "受信アプリを起動しました。\n\n11:29:04 PM  UDP 待受を開始しました。"
+  }
+}

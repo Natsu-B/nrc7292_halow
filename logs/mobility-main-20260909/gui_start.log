@@ -1,0 +1,29 @@
+
+HOST command: wiring-confirm
+Wiring acknowledged for this boot. Type probe for native HSPI/HELLO.
+
+HOST command: eirq
+CS candidate GPIO6/CE0 : PASS
+{"event":"cs_probe","cs_gpio":6,"clock_hz":5000000,"error":0}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":0,"rx_slots":0,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+{"event":"hello","error":0}
+{"event":"eirq","error":0}
+
+HOST command: rf-confirm
+RF acknowledged for this boot. Duty/LBT remains enforced; no association yet.
+
+HOST command: start
+I (59104) stage1: clip codec=1 640x360 frames=120 max=9444 bytes
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":518,"tx_slots":1,"rx_slots":553,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":518,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"start","error":0,"desired_link":1,"play_requested":1}
+{"event":"video_profile","profile":0,"source":0,"width":640,"height":360,"interval_ms":100,"stream_id":2706986504,"capture_epoch_ms":58989}
+{"event":"adapt","now_ms":59020,"bps":400000,"profile":0,"reason":"initial","radio_stats_age_ms":23,"radio_stats_fresh":1,"feedback_accepted":0,"feedback_rejected":0,"feedback_age_ms":4294967295,"probe_acks":0,"probe_rtt_ms":4294967295,"probe_ack_age_ms":4294967295}
+{"event":"adapt","now_ms":59420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":24,"radio_stats_fresh":1,"feedback_accepted":2,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":2,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":60420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":24,"radio_stats_fresh":1,"feedback_accepted":7,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":7,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":61420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":22,"radio_stats_fresh":1,"feedback_accepted":12,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":12,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":62420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":26,"radio_stats_fresh":1,"feedback_accepted":17,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":17,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":63420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":24,"radio_stats_fresh":1,"feedback_accepted":22,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":22,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":64420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":25,"radio_stats_fresh":1,"feedback_accepted":27,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":27,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":65420,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":21,"radio_stats_fresh":1,"feedback_accepted":32,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":32,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":66421,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":26,"radio_stats_fresh":1,"feedback_accepted":37,"feedback_rejected":0,"feedback_age_ms":0,"probe_acks":37,"probe_rtt_ms":50,"probe_ack_age_ms":150}

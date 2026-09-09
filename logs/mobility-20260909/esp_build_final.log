@@ -1,0 +1,100 @@
+ESP-IDF v5.5.2
+Executing action: all (aliases: build)
+Running ninja in directory /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build
+Executing "ninja all"...
+[0/1] Re-running CMake...
+-- Minimal build - OFF
+-- Building ESP-IDF components for target esp32s3
+-- ESP-TEE is currently supported only on the esp32c6;esp32h2;esp32c5 SoCs
+-- Project sdkconfig file /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/sdkconfig
+Loading defaults file /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/sdkconfig.defaults...
+-- Compiler supported targets: xtensa-esp-elf
+-- USING O3
+-- App "halow_stage1" version: 32a0b9e-dirty
+-- Adding linker script /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/esp-idf/esp_system/ld/sections.ld.in
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.bt_funcs.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.wdt.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_master.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_50.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_smp.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_dtm.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_test.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_scan.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.libc.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom/esp32s3/ld/esp32s3.rom.newlib.ld
+-- Adding linker script /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- Components: app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse esp-tls esp_adc esp_app_format esp_bootloader_format esp_coex esp_common esp_driver_ana_cmpr esp_driver_bitscrambler esp_driver_cam esp_driver_dac esp_driver_gpio esp_driver_gptimer esp_driver_i2c esp_driver_i2s esp_driver_isp esp_driver_jpeg esp_driver_ledc esp_driver_mcpwm esp_driver_parlio esp_driver_pcnt esp_driver_ppa esp_driver_rmt esp_driver_sdio esp_driver_sdm esp_driver_sdmmc esp_driver_sdspi esp_driver_spi esp_driver_touch_sens esp_driver_tsens esp_driver_twai esp_driver_uart esp_driver_usb_serial_jtag esp_eth esp_event esp_gdbstub esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_security esp_system esp_timer esp_vfs_console esp_wifi espcoredump esptool_py fatfs freertos hal heap http_parser hvc_clip idf_test ieee802154 json log lwip main mbedtls mqtt newlib nrc7292 nrc_video_packet nvs_flash nvs_sec_provider openthread partition_table perfmon protobuf-c protocomm pthread rt sdmmc soc spi_flash spiffs tcp_transport touch_element ulp unity usb vfs wear_levelling wifi_provisioning wpa_supplicant xtensa
+-- Component paths: /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/app_trace /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/app_update /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bootloader /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bootloader_support /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/bt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/cmock /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/console /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/cxx /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/driver /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/efuse /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp-tls /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_adc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_app_format /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_bootloader_format /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_coex /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_common /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_ana_cmpr /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_bitscrambler /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_cam /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_dac /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_gpio /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_gptimer /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_i2c /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_i2s /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_isp /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_jpeg /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_ledc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_mcpwm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_parlio /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_pcnt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_ppa /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_rmt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdio /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdmmc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_sdspi /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_spi /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_touch_sens /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_tsens /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_twai /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_uart /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_driver_usb_serial_jtag /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_eth /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_event /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_gdbstub /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_hid /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_http_client /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_http_server /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_https_ota /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_https_server /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_hw_support /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_lcd /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_local_ctrl /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_mm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_netif /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_netif_stack /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_partition /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_phy /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_pm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_psram /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_ringbuf /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_rom /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_security /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_system /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_timer /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_vfs_console /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esp_wifi /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/espcoredump /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/fatfs /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/freertos /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/hal /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/heap /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/http_parser /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/components/hvc_clip /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/idf_test /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/ieee802154 /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/json /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/log /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/lwip /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/main /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/mbedtls /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/mqtt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/newlib /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/components/nrc7292 /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/components/nrc_video_packet /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/nvs_flash /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/nvs_sec_provider /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/openthread /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/perfmon /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/protobuf-c /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/protocomm /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/pthread /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/rt /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/sdmmc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/soc /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/spi_flash /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/spiffs /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/tcp_transport /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/touch_element /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/ulp /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/unity /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/usb /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/vfs /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/wear_levelling /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/wifi_provisioning /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/wpa_supplicant /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/xtensa
+-- Configuring done (1.9s)
+-- Generating done (0.3s)
+-- Build files have been written to: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build
+[1/13] Building C object esp-idf/esp_app_format/CMakeFiles/__idf_esp_app_format.dir/esp_app_desc.c.obj
+[2/13] Performing build step for 'bootloader'
+[1/1] cd /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/bootloader/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/bootloader/bootloader.bin
+Bootloader binary size 0x5240 bytes. 0x2dc0 bytes (36%) free.
+[3/13] No install step for 'bootloader'
+[4/13] Linking C static library esp-idf/esp_app_format/libesp_app_format.a
+[5/13] Completed 'bootloader'
+[6/13] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/link_adapt.c.obj
+[7/13] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/app_main.c.obj
+[8/13] Linking C static library esp-idf/main/libmain.a
+[9/13] Generating esp-idf/esp_system/ld/sections.ld
+[10/13] Linking CXX executable halow_stage1.elf
+[11/13] Generating binary image from built executable
+esptool.py v4.9.0
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/halow_stage1.bin
+[12/13] cd /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/partition_table/partition-table.bin /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build/halow_stage1.bin
+halow_stage1.bin binary size 0x5b200 bytes. Smallest app partition is 0x1f0000 bytes. 0x194e00 bytes (82%) free.
+
+Project build complete. To flash, run:
+ idf.py flash
+or
+ idf.py -p PORT flash
+or
+ python -m esptool --chip esp32s3 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 4MB --flash_freq 40m 0x0 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/halow_stage1.bin
+or from the "/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260909-230315/esp32/build" directory
+ python -m esptool --chip esp32s3 -b 460800 --before default_reset --after hard_reset write_flash "@flash_args"
+{
+  "component": "esp32s3",
+  "status": "BUILD_OUTPUT_PRESENT_NOT_HARDWARE_TESTED",
+  "files": [
+    {
+      "path": "bootloader/bootloader.bin",
+      "bytes": 21056,
+      "sha256": "45cc3fdbe9990f23855845ab2cc56c369104e0f14ad6d8ba9e8cefb507c79486",
+      "flash_offset": "0x0"
+    },
+    {
+      "path": "halow_stage1.bin",
+      "bytes": 373248,
+      "sha256": "025e67f5241700f2e6d4c5617ef91e17cc95a7f15c70bf770a1c2a51737349cf",
+      "flash_offset": "0x10000"
+    },
+    {
+      "path": "partition_table/partition-table.bin",
+      "bytes": 3072,
+      "sha256": "e86cd73f6de5cec94b647994401ca935115bb465ccf86aa3cf61ab58b23ab3c2",
+      "flash_offset": "0x8000"
+    },
+    {
+      "path": "halow_stage1.elf",
+      "bytes": 6174892,
+      "sha256": "61bbde9de923608e27f0d5250506c4df285ab6bc469f2c7fb1ec70e83393e01e"
+    }
+  ],
+  "flasher_args": {
+    "path": "flasher_args.json",
+    "bytes": 915,
+    "sha256": "16a49fcca7083f7b0855e985f7e465d6f550ebfd570745352167fbf0e96c6d64"
+  }
+}
+
+Built from the current worktree. Review GPIOs, then idf.py -p PORT flash. SX flashing remains manual.

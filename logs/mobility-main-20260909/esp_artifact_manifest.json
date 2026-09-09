@@ -1,0 +1,34 @@
+{
+  "component": "esp32s3",
+  "status": "BUILD_OUTPUT_PRESENT_NOT_HARDWARE_TESTED",
+  "files": [
+    {
+      "path": "bootloader/bootloader.bin",
+      "bytes": 21056,
+      "sha256": "45cc3fdbe9990f23855845ab2cc56c369104e0f14ad6d8ba9e8cefb507c79486",
+      "flash_offset": "0x0"
+    },
+    {
+      "path": "halow_stage1.bin",
+      "bytes": 373248,
+      "sha256": "d3af2ece9a10d67c1d8833fc72bef2a84755c2bd3640fc5a10d9c5b0d4b335a4",
+      "flash_offset": "0x10000"
+    },
+    {
+      "path": "partition_table/partition-table.bin",
+      "bytes": 3072,
+      "sha256": "e86cd73f6de5cec94b647994401ca935115bb465ccf86aa3cf61ab58b23ab3c2",
+      "flash_offset": "0x8000"
+    },
+    {
+      "path": "halow_stage1.elf",
+      "bytes": 6173884,
+      "sha256": "ccc30ab34430f7b6524d758d97f6f35b62131418055d07cb1348053ca76199a4"
+    }
+  ],
+  "flasher_args": {
+    "path": "flasher_args.json",
+    "bytes": 915,
+    "sha256": "16a49fcca7083f7b0855e985f7e465d6f550ebfd570745352167fbf0e96c6d64"
+  }
+}

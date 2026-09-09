@@ -1,0 +1,73 @@
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Warning: ESP32-S3 has no Chip ID. Reading MAC instead.
+MAC: 90:70:69:10:c7:b4
+Staying in bootloader.
+Executing action: flash
+Running ninja in directory /home/hotaru/silex/halow_stage1_main/esp32/build
+Executing "ninja flash"...
+[1/5] Performing build step for 'bootloader'
+[1/1] cd /home/hotaru/silex/halow_stage1_main/esp32/build/bootloader/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/hotaru/silex/halow_stage1_main/esp32/build/bootloader/bootloader.bin
+Bootloader binary size 0x5240 bytes. 0x2dc0 bytes (36%) free.
+[2/5] cd /home/hotaru/silex/halow_stage1_main/esp32/build/esp-idf/esptool_py && /nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/hotaru/silex/halow_stage1_main/esp32/build/partition_table/partition-table.bin /home/hotaru/silex/halow_stage1_main/esp32/build/halow_stage1.bin
+halow_stage1.bin binary size 0x5b200 bytes. Smallest app partition is 0x1f0000 bytes. 0x194e00 bytes (82%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] cd /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py && /nix/store/w9jm660dykns6hzrdhxmqfywnc9ail8g-cmake-4.1.2/bin/cmake -D IDF_PATH=/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2 -D "SERIAL_TOOL=/nix/store/yxn8caq88x7ncmsbvqn51wk7pwqmvivc-python3-3.13.9-env/bin/python;;/nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py/esptool/esptool.py;--chip;esp32s3" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/hotaru/silex/halow_stage1_main/esp32/build -P /nix/store/xnq0z77rvjvzz1df8mx0bpk7y2igxjd5-esp-idf-v5.5.2/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32s3 -p /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 4MB 0x0 bootloader/bootloader.bin 0x10000 halow_stage1.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.9.0
+Serial port /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: 90:70:69:10:c7:b4
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Flash will be erased from 0x00010000 to 0x0006bfff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 21056 bytes to 13388...
+Writing at 0x00000000... (100 %)
+Wrote 21056 bytes (13388 compressed) at 0x00000000 in 0.3 seconds (effective 507.4 kbit/s)...
+Hash of data verified.
+Compressed 373248 bytes to 227926...
+Writing at 0x00010000... (7 %)
+Writing at 0x0001c3ec... (14 %)
+Writing at 0x000262c8... (21 %)
+Writing at 0x0002bbcf... (28 %)
+Writing at 0x000320bc... (35 %)
+Writing at 0x00037b21... (42 %)
+Writing at 0x0003cdf4... (50 %)
+Writing at 0x000425a3... (57 %)
+Writing at 0x0004769b... (64 %)
+Writing at 0x0004c9cd... (71 %)
+Writing at 0x00051d13... (78 %)
+Writing at 0x00057267... (85 %)
+Writing at 0x000605fa... (92 %)
+Writing at 0x00065b14... (100 %)
+Wrote 373248 bytes (227926 compressed) at 0x00010000 in 2.7 seconds (effective 1109.6 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 118...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (118 compressed) at 0x00008000 in 0.0 seconds (effective 551.6 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done

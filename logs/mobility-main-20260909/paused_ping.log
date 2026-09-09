@@ -1,0 +1,7 @@
+
+HOST command: pause
+{"event":"adapt","now_ms":107291,"bps":400000,"profile":0,"reasoPlayback paused; association and Duty history retained.
+
+HOST command: ping 192.168.10.250 5
+{"event":"ping","target":"192.168.10.250","sent":5,"received":5,"elapsed_ms":57,"error":0}
+{"event":"ping_stack","configured_bytes":5120,"min_free_after_report_bytes":2228}

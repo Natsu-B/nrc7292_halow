@@ -1,0 +1,10 @@
+
+HOST command: reconnect
+{"event":"reconnect_request","controlled_test":true,"error":0}
+{"event":"adapt","now_ms":67234,"bps":400000,"profile":0,"reason":"stale_radio_stats","radio_stats_age_ms":34,"radio_stats_fresh":0,"feedback_accepted":40,"feedback_rejected":0,"feedback_age_ms":212,"probe_acks":41,"probe_rtt_ms":50,"probe_ack_age_ms":162}
+{"event":"adapt","now_ms":68315,"bps":400000,"profile":0,"reason":"stale_radio_stats","radio_stats_age_ms":62,"radio_stats_fresh":0,"feedback_accepted":40,"feedback_rejected":0,"feedback_age_ms":1293,"probe_acks":41,"probe_rtt_ms":50,"probe_ack_age_ms":1243}
+{"event":"reconnect","attempt":1,"error":0,"backoff_ms":250,"desired_link":1}
+{"event":"video_profile","profile":0,"source":0,"width":640,"height":360,"interval_ms":100,"stream_id":2476442013,"capture_epoch_ms":58989}
+{"event":"adapt","now_ms":69265,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":92,"radio_stats_fresh":1,"feedback_accepted":41,"feedback_rejected":2,"feedback_age_ms":50,"probe_acks":44,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":70265,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":94,"radio_stats_fresh":1,"feedback_accepted":46,"feedback_rejected":2,"feedback_age_ms":50,"probe_acks":49,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+{"event":"adapt","now_ms":71265,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":92,"radio_stats_fresh":1,"feedback_accepted":51,"feedback_rejected":2,"feedback_age_ms":50,"probe_acks":54,"probe_rtt_ms":50,"probe_ack_age_ms":150}

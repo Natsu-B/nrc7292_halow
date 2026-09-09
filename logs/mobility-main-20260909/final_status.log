@@ -1,0 +1,6 @@
+{"event":"adapt","now_ms":72265,"bps":400000,"profile":0,"reason":"delivered_frame_recovery","radio_stats_age_ms":92,"radio_stats_fresh":1,"feedback_accepted":56,"feedback_rejected":2,"feedback_age_ms":50,"probe_acks":59,"probe_rtt_ms":50,"probe_ack_age_ms":150}
+
+HOST command: status
+I (72560) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=0 drop=0/142 frame=116 skip=5 heap=324020 snr_api_db=31 snr_validity=unreported
+{"event":"adapt_status","desired_link":1,"play_requested":1,"bps":400000,"reason":"delivered_frame_recovery","feedback_accepted":56,"feedback_rejected":2,"feedback_age_ms":150,"profile":0,"source":0,"width":640,"height":360,"interval_ms":100,"probe_acks":60,"probe_rtt_ms":50,"probe_ack_age_ms":50}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":802,"tx_slots":902,"rx_slots":815,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":803,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
