@@ -139,6 +139,9 @@ static bool session_started;
 static esp_netif_t *halow_netif;
 static atomic_bool ping_running;
 static char ping_target[16];
+/* The real S3 overflowed IDF's 2560-byte default after the completion printf.
+ * Keep the asynchronous CLI and reserve space for the newlib callback path. */
+#define PING_TASK_STACK_BYTES 5120U
 
 static void show_pins(void) {
     printf("SCLK GPIO%d\nMOSI GPIO%d\nMISO GPIO%d\nEIRQ GPIO%d\nCE0 GPIO%d\nCE1 GPIO%d\n"
@@ -274,16 +277,22 @@ static void ping_done(esp_ping_handle_t handle,void *context) {
     if(err==ESP_OK && (!sent || received!=sent))err=ESP_FAIL;
     printf("{\"event\":\"ping\",\"target\":\"%s\",\"sent\":%lu,\"received\":%lu,\"elapsed_ms\":%lu,\"error\":%d}\n",
         ping_target,(unsigned long)sent,(unsigned long)received,(unsigned long)duration,err);
+    /* IDF's Xtensa port reports this watermark in bytes. Sample after the
+     * completion formatting; this does not claim to include later cleanup. */
+    unsigned min_free=(unsigned)uxTaskGetStackHighWaterMark(NULL);
+    printf("{\"event\":\"ping_stack\",\"configured_bytes\":%u,\"min_free_after_report_bytes\":%u}\n",
+        PING_TASK_STACK_BYTES,min_free);
     (void)esp_ping_delete_session(handle);
     atomic_store(&ping_running,false);
 }
 static void test_ping(const char *target,unsigned count) {
     esp_err_t err=ESP_ERR_INVALID_STATE;
     struct in_addr address;
-    if(count<1 || count>20 || inet_pton(AF_INET,target,&address)!=1)err=ESP_ERR_INVALID_ARG;
+    if(count<1 || count>100 || inet_pton(AF_INET,target,&address)!=1)err=ESP_ERR_INVALID_ARG;
     else if(network_test_ready()) {
         esp_ping_config_t cfg=ESP_PING_DEFAULT_CONFIG();
         cfg.count=count;cfg.interval_ms=1000;cfg.timeout_ms=2000;
+        cfg.task_stack_size=PING_TASK_STACK_BYTES;
         cfg.interface=(uint32_t)esp_netif_get_netif_impl_index(halow_netif);
         ip_addr_set_ip4_u32(&cfg.target_addr,address.s_addr);
         esp_ping_callbacks_t callbacks={.on_ping_end=ping_done};
@@ -421,8 +430,8 @@ void app_main(void) {
             int parsed=sscanf(line,"ping %15s %11s %c",target,count_text,&extra);
             char *end=NULL;
             if(parsed==2){errno=0;count=strtoul(count_text,&end,10);}
-            if(parsed>2 || (parsed==2 && (errno || !end || *end || count<1 || count>20)))
-                puts("Usage: ping [IPv4] [1..20 count]");
+            if(parsed>2 || (parsed==2 && (errno || !end || *end || count<1 || count>100)))
+                puts("Usage: ping [IPv4] [1..100 count]");
             else test_ping(target,(unsigned)count);
         }
         else if(!strcmp(line,"udp") || !strncmp(line,"udp ",4)){
