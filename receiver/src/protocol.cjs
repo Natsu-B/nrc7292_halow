@@ -12,9 +12,9 @@ function parsePacket(b){
   return {codec,flags,sequence:b.readUInt32BE(8),stream:b.readUInt32BE(12),frame:b.readUInt32BE(16),pts:b.readUInt32BE(20),size,index,count,len,dg,payload:b.subarray(36,36+len)};
 }
 class Reassembler {
-  constructor({maxFrames=8,timeoutMs=2000}={}){
+  constructor({maxFrames=8,timeoutMs=5000}={}){
     this.maxFrames=maxFrames;this.timeoutMs=timeoutMs;this.stream=null;this.frames=new Map();this.next=null;this.waitKey=true;
-    this.metrics={packets:0,invalid:0,duplicate:0,outOfOrder:0,completed:0,expired:0,referenceDrops:0,bytes:0};
+    this.metrics={packets:0,invalid:0,duplicate:0,outOfOrder:0,completed:0,expired:0,referenceDrops:0,superseded:0,bytes:0};
     this.seen=new Set();this.highest=null;this.retired=new Set();
   }
   reset(stream){this.frames.clear();this.stream=stream;this.next=null;this.waitKey=true;this.seen.clear();this.highest=null;}
@@ -43,6 +43,16 @@ class Reassembler {
   }
   drain(now){
     const out=[];
+    // A complete independent image can replace older references immediately.
+    // Keep a slow frame's assembly budget without delaying newer live snapshots.
+    let newest=null;
+    for(const [id,f]of this.frames){
+      if(f.got.size===f.count&&(f.codec===2||f.key)&&id!==this.next&&after(id,this.next)&&(newest===null||after(id,newest)))newest=id;
+    }
+    if(newest!==null){
+      for(const id of this.frames.keys())if(id!==newest&&after(newest,id)){this.frames.delete(id);this.metrics.superseded++;}
+      this.next=newest;this.waitKey=true;
+    }
     while(this.frames.size){
       let f=this.frames.get(this.next);
       if(!f){
@@ -77,13 +87,19 @@ function readClip(b){
   return {codec,width,height,duration,frames};
 }
 function telemetry(b){
-  if(b.length!==40||b.toString('ascii',0,4)!=='NRCS'||b[4]!==1||b[5]||b.readUInt16BE(6)!==40||crc32(b.subarray(0,36))!==b.readUInt32BE(36))return null;
-  return {sampleMs:b.readUInt32BE(8),rssi:b.readInt8(12),snr:b.readInt8(13),txMcs:b[14],rxMcs:b[15],duty:!!b[16],connected:!!b[17],queue:b.readUInt16BE(18),hostDrops:b.readUInt32BE(20),radioDrops:b.readUInt32BE(24),sentFrames:b.readUInt32BE(28),skippedFrames:b.readUInt32BE(32)};
+  if(!Buffer.isBuffer(b)||![40,48,56].includes(b.length)||b.toString('ascii',0,4)!=='NRCS')return null;
+  const version=b[4],length=version===1?40:version===2?48:version===3?56:0;
+  if(b.length!==length||b[5]||b.readUInt16BE(6)!==length||crc32(b.subarray(0,length-4))!==b.readUInt32BE(length-4))return null;
+  const result={version,sampleMs:b.readUInt32BE(8),rssi:b.readInt8(12),snr:b.readInt8(13),txMcs:b[14],rxMcs:b[15],duty:!!b[16],connected:!!b[17],queue:b.readUInt16BE(18),hostDrops:b.readUInt32BE(20),radioDrops:b.readUInt32BE(24),sentFrames:b.readUInt32BE(28),skippedFrames:b.readUInt32BE(32)};
+  if(version>=2){result.adaptivePaceBps=b.readUInt32BE(36);result.feedbackAgeMs=b.readUInt32BE(40);}
+  if(version===3){result.width=b.readUInt16BE(44);result.height=b.readUInt16BE(46);result.intervalMs=b.readUInt32BE(48);}
+  return result;
 }
-function feedback({interval,highest,received,lost,jitter=0,goodput,now}){
-  const b=Buffer.alloc(36);b.write('NRFB');b[4]=1;b.writeUInt32BE(interval>>>0,8);b.writeUInt32BE(highest>>>0,12);
+function feedback({interval,highest,received,lost,jitter=0,goodput,now,stream}){
+  const b=Buffer.alloc(stream===undefined?36:40);b.write('NRFB');b[4]=stream===undefined?1:2;b.writeUInt32BE(interval>>>0,8);b.writeUInt32BE(highest>>>0,12);
   b.writeUInt32BE(received>>>0,16);b.writeUInt32BE(lost>>>0,20);b.writeUInt16BE(Math.min(1000,Math.floor(1000*lost/Math.max(1,received+lost))),24);
   b.writeUInt16BE(Math.min(65535,Math.round(jitter)),26);b.writeUInt32BE(goodput>>>0,28);b.writeUInt32BE(now>>>0,32);
+  if(stream!==undefined)b.writeUInt32BE(stream>>>0,36);
   const crc=crc32(b.subarray(8));b[5]=(crc>>>16)&255;b[6]=(crc>>>8)&255;b[7]=crc&255;return b;
 }
 module.exports={crc32,after,parsePacket,Reassembler,readClip,telemetry,feedback};

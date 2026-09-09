@@ -1,9 +1,9 @@
 'use strict';
 const dgram=require('node:dgram');const {EventEmitter}=require('node:events');const {performance}=require('node:perf_hooks');
-const {isIPv4}=require('node:net');const {Reassembler,telemetry,feedback}=require('./protocol.cjs');
+const {isIPv4}=require('node:net');const {Reassembler,parsePacket,telemetry,feedback}=require('./protocol.cjs');
 class UdpReceiver extends EventEmitter{
   constructor(){super();this.socket=null;this.timer=null;this.generation=0;}
-  async start({bind='0.0.0.0',port=50000,source='192.168.50.2',feedbackEnabled=false}={}){
+  async start({bind='0.0.0.0',port=50000,source='192.168.10.20',feedbackEnabled=true}={}){
     if(this.socket)throw new Error('Receiver already running');
     if(!isIPv4(bind)||!isIPv4(source)||!Number.isInteger(port)||port<1024||port>65535)throw new Error('IPv4 and UDP port are required');
     this.reassembler=new Reassembler();this.source=source;this.remote=null;this.radio=null;this.lastRx=null;this.previous={packets:0,bytes:0,highest:null,time:performance.now(),stream:null};
@@ -11,10 +11,12 @@ class UdpReceiver extends EventEmitter{
     s.on('message',(b,r)=>{
       if(gen!==this.generation||r.address!==source)return;
       const now=performance.now();
-      if(b.length===40&&b.toString('ascii',0,4)==='NRCS'){const t=telemetry(b);if(t)this.radio={...t,receivedAt:now};return;}
+      if(b.toString('ascii',0,4)==='NRCS'){const t=telemetry(b);if(t)this.radio={...t,receivedAt:now};return;}
+      const packet=parsePacket(b);
       const before=this.reassembler.metrics.invalid;
       for(const f of this.reassembler.push(b,now))this.emit('frame',f);
-      if(this.reassembler.metrics.invalid===before){this.remote=r;this.lastRx=now;}
+      // Retired streams and malformed fragments must not redirect or revive feedback.
+      if(packet&&packet.stream===this.reassembler.stream&&this.reassembler.metrics.invalid===before){this.remote={...r,stream:packet.stream};this.lastRx=now;}
     });
     await new Promise((resolve,reject)=>{const initial=e=>{this.socket=null;try{s.close();}catch{}reject(e);};s.once('error',initial);s.bind(port,bind,()=>{s.off('error',initial);s.on('error',e=>this.emit('fault',e.message));resolve();});});
     this.timer=setInterval(()=>{
@@ -27,7 +29,9 @@ class UdpReceiver extends EventEmitter{
       // Loss is a sequence-gap estimate, not a definitive RF PER measurement.
       const stats={...m,goodputBps:goodput,lossEstimate:expected?lost/expected:0,lastRxMs:this.lastRx===null?null:Math.round(now-this.lastRx),radio:this.radio,source};
       this.emit('stats',stats);
-      if(feedbackEnabled&&this.remote&&now-this.lastRx<3000){const b=feedback({interval,highest:this.reassembler.highest||0,received,lost,goodput,now:Math.floor(now)});s.send(b,this.remote.port,this.remote.address,()=>{});}
+      // The first interval of a new stream may include old-stream packet counters.
+      // Establish its baseline before reporting delivery to its sender.
+      if(feedbackEnabled&&p.stream===this.reassembler.stream&&this.remote?.stream===this.reassembler.stream&&now-this.lastRx<3000){const b=feedback({interval,highest:this.reassembler.highest??0,received,lost,goodput,now:Math.floor(now),stream:this.reassembler.stream});s.send(b,this.remote.port,this.remote.address,()=>{});}
       this.previous={packets:m.packets-m.duplicate,bytes:m.bytes,highest:this.reassembler.highest,time:now,stream:this.reassembler.stream};
     },1000);
   }

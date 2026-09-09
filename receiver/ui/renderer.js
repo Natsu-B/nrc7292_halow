@@ -3,12 +3,12 @@
 const $=id=>document.getElementById(id),api=window.halow,canvas=$('video');
 const ctx=canvas.getContext('2d',{alpha:false});
 let decoder=null,decoderKey=null,streamId=null,waitKey=true,recording=false,shown=0,inputFrames=0,latestFrame=-1;
-let lastError='',lastErrorAt=0,work=Promise.resolve();
+let lastError='',lastErrorAt=0,work=Promise.resolve(),submitted=0,latestIndependent=0,decoderEpoch=0;
 function log(text){const lines=$('log').textContent.split('\n');lines.push(`${new Date().toLocaleTimeString()}  ${text}`);$('log').textContent=lines.slice(-35).join('\n');$('log').scrollTop=$('log').scrollHeight;}
 function fail(text){const now=Date.now();if(text!==lastError||now-lastErrorAt>4000){log(text);lastError=text;lastErrorAt=now;}}
 function state(text,live=false){$('state').textContent=text;$('state').classList.toggle('live',live);}
 async function call(fn){try{const r=await fn();if(!r.ok)throw new Error(r.error);return r.value;}catch(e){fail(e.message);throw e;}}
-function closeDecoder(){if(decoder&&decoder.state!=='closed')decoder.close();decoder=null;decoderKey=null;waitKey=true;}
+function closeDecoder(){decoderEpoch++;if(decoder&&decoder.state!=='closed')decoder.close();decoder=null;decoderKey=null;waitKey=true;}
 function draw(image,w,h){if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}ctx.drawImage(image,0,0,w,h);$('empty').hidden=true;shown++;document.body.dataset.displayedFrames=String(shown);$('decoded').textContent=`表示 ${shown}`;$('picture').textContent=`${w} × ${h} / frame ${latestFrame}`;}
 function codecFromSps(b){
   for(let i=0;i+7<b.length;i++){
@@ -19,18 +19,21 @@ function codecFromSps(b){
   }
   return null;
 }
-async function acceptFrame(f){
+async function acceptFrame(f,submission){
   try{
+    if(submission<latestIndependent)return;
     inputFrames++;latestFrame=f.frame;
     if(streamId!==f.stream){closeDecoder();streamId=f.stream;}
     const bytes=new Uint8Array(f.data);
     if(f.codec===2){
       closeDecoder();const image=await createImageBitmap(new Blob([bytes],{type:'image/jpeg'}));
-      try{draw(image,image.width,image.height);}finally{image.close();}
+      try{if(submission<latestIndependent)return;draw(image,image.width,image.height);}finally{image.close();}
       $('codec-label').textContent='MJPEG / NRCV';$('decoder').textContent='内蔵 JPEG デコーダ';return;
     }
     if(f.codec!==1)throw new Error('対応していない codec です');
     if(!('VideoDecoder' in window))throw new Error('WebCodecs が利用できません。Electron の指定バージョンで起動してください。');
+    // Each IDR is a fresh decoding point; obsolete queued output must not catch up later.
+    if(f.key&&decoder)closeDecoder();
     if(waitKey&&!f.key)return;
     let codec=f.key?codecFromSps(bytes):decoderKey;
     if(!codec){waitKey=true;throw new Error('H.264 IDR に SPS がありません。Annex B + repeat-headers が必要です。');}
@@ -39,8 +42,10 @@ async function acceptFrame(f){
       if(!f.key)return;
       const config={codec,optimizeForLatency:true};
       const support=await VideoDecoder.isConfigSupported(config);
+      if(submission<latestIndependent)return;
       if(!support.supported)throw new Error(`H.264 ${codec} はこの配布物で非対応です。MJPEG bin で切り分けてください。`);
-      decoder=new VideoDecoder({output:image=>{try{draw(image,image.displayWidth,image.displayHeight);}finally{image.close();}},error:e=>{waitKey=true;fail(`H.264 復号: ${e.message}`);}});
+      const epoch=decoderEpoch;
+      decoder=new VideoDecoder({output:image=>{try{if(epoch===decoderEpoch)draw(image,image.displayWidth,image.displayHeight);}finally{image.close();}},error:e=>{if(epoch===decoderEpoch){waitKey=true;fail(`H.264 復号: ${e.message}`);}}});
       decoder.configure(config);decoderKey=codec;
       $('codec-label').textContent=`H.264 ${codec} / NRCV`;$('decoder').textContent='内蔵 WebCodecs デコーダ';
     }
@@ -50,7 +55,7 @@ async function acceptFrame(f){
   }catch(e){waitKey=true;fail(e.message);}
   finally{api.frameDone();}
 }
-api.on('frame',f=>{work=work.then(()=>acceptFrame(f)).catch(e=>{fail(e.message);api.frameDone();});});
+api.on('frame',f=>{const submission=++submitted;if(f.key||f.codec===2)latestIndependent=submission;work=work.then(()=>acceptFrame(f,submission)).catch(e=>{fail(e.message);api.frameDone();});});
 api.on('gap',()=>{work=work.then(()=>{closeDecoder();}).catch(e=>fail(e.message));});
 api.on('fault',text=>fail(text));
 api.on('stats',s=>{
@@ -58,6 +63,9 @@ api.on('stats',s=>{
   $('loss').textContent=`${(s.lossEstimate*100).toFixed(1)}%`;
   $('age').textContent=s.lastRxMs===null?'最終受信 —':`最終受信 ${s.lastRxMs} ms 前 / 破棄 ${s.expired} / 不正 ${s.invalid}`;
   if(s.radio){$('rssi').textContent=`${s.radio.rssi} dBm`;$('radio').textContent=`MCS ${s.radio.txMcs}/${s.radio.rxMcs} · Duty ${s.radio.duty?'可':'待機'} · Q ${s.radio.queue}`;}
+  const pacing=s.radio?.adaptivePaceBps;
+  $('pacing').hidden=pacing===undefined;
+  if(pacing!==undefined){const age=s.radio.feedbackAgeMs,profile=s.radio.intervalMs===undefined?'':` · ${s.radio.width}×${s.radio.height} / ${(s.radio.intervalMs/1000).toFixed(1)}秒間隔`;$('pacing').textContent=`送出 ${(pacing/1000).toFixed(1)} kbit/s${profile} · レポート ${age===0xffffffff?'未受信':`${age} ms 前`}`;}
 });
 api.on('record-state',s=>{recording=s.recording;$('record').textContent=recording?'録画停止':'録画開始';});
 $('listen').onclick=async()=>{try{await call(()=>api.listen({bind:$('bind').value.trim(),port:Number($('port').value),source:$('source').value.trim(),feedbackEnabled:$('feedback').checked}));closeDecoder();state('UDP 受信中',true);$('source-title').textContent=`${$('source').value} → UDP ${$('port').value}`;log('UDP 待受を開始しました。');}catch{state('開始失敗');}};
