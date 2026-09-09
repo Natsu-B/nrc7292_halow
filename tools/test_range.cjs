@@ -62,7 +62,7 @@ async function main(){
   const transition=next=>{log('phase_end');phase=next;phaseAt=performance.now();log('phase_start');};
   const beginLoss=()=>{
     currentCycle={number:cycles.length+1,baselineRank:profileRank(lastStats?.radio),badWorst:-1,lowestMatched:0,
-      probeAcksRecovery:0,recoveryFrames:0,firstBadFeedbackMs:null,firstLoweringMs:null,lowestObservedMs:null,fastTrial:null,recovery:null,fullRecovery:null};
+      probeAcksRecovery:0,recoveryFrames:0,firstBadFeedbackMs:null,firstLoweringMs:null,lowestObservedMs:null,fastTrial:null,recovery:null,fullRecovery:null,fullVideoRecovery:null};
     cycles.push(currentCycle);transition('synthetic_loss');
   };
   rx.on('fault',message=>{fault=message;log('socket_fault',{message});finish('receiver socket fault');});
@@ -88,6 +88,11 @@ async function main(){
     const profiles=[...new Set(found.matches.map(ref=>ref.profile))];for(const index of profiles)profileFrames[index]=(profileFrames[index]||0)+1;
     if(phase==='synthetic_loss'&&profiles.includes(4))currentCycle.lowestMatched++;
     if(phase==='synthetic_recovery')currentCycle.recoveryFrames++;
+    if(phase==='synthetic_recovery'&&profiles.length===1&&profiles[0]===0&&!currentCycle.fullVideoRecovery){
+      currentCycle.fullVideoRecovery={elapsedMs:Math.round(performance.now()-began),phaseElapsedMs:Math.round(performance.now()-phaseAt),
+        sourceProfile:0,stream:frame.stream,frame:frame.frame,pts:frame.pts,bytes:frame.data.length,sha256:found.hash};
+      log('full_video_recovery',currentCycle.fullVideoRecovery);
+    }
     log('frame_match',{stream:frame.stream,frame:frame.frame,pts:frame.pts,bytes:frame.data.length,sha256:found.hash,profiles,
       references:found.matches.map(({profile,frameIndex,width,height})=>({profile,frameIndex,width,height}))});
   });
@@ -164,24 +169,35 @@ async function main(){
     clearTimeout(deadline);rx.stop();process.off('SIGINT',interrupt);process.off('SIGTERM',interrupt);
   }
   const measured=value=>Number.isFinite(value)&&value>=0;
-  for(const cycle of cycles)cycle.checks={completed:!!cycle.completed,lowestProfileObserved:cycle.badWorst===9,
-    actual120pFrameInBadPhase:cycle.lowestMatched>0,fast120pTrial:cycle.fastTrial!==null,
-    qualityRecoveryWithRealFrames:cycle.recovery!==null,recoveryFrames:cycle.recoveryFrames>0,
-    responseTimesMeasured:measured(cycle.firstBadFeedbackMs)&&measured(cycle.firstLoweringMs)&&measured(cycle.lowestObservedMs)&&
-      measured(cycle.fastTrial?.phaseElapsedMs)&&measured(cycle.recovery?.phaseElapsedMs)};
+  const within=(value,limit)=>measured(value)&&value<=limit;
+  const benchmarkLimits=rapid?{firstLoweringMs:600,trialMs:2000,qualityRecoveryMs:3000,fullRecoveryMs:6000,fullVideoRecoveryMs:7000}:null;
+  for(const cycle of cycles){
+    cycle.checks={completed:!!cycle.completed,lowestProfileObserved:cycle.badWorst===9,
+      actual120pFrameInBadPhase:cycle.lowestMatched>0,fast120pTrial:cycle.fastTrial!==null,
+      qualityRecoveryWithRealFrames:cycle.recovery!==null,recoveryFrames:cycle.recoveryFrames>0,
+      responseTimesMeasured:measured(cycle.firstBadFeedbackMs)&&measured(cycle.firstLoweringMs)&&measured(cycle.lowestObservedMs)&&
+        measured(cycle.fastTrial?.phaseElapsedMs)&&measured(cycle.recovery?.phaseElapsedMs)};
+    if(rapid)Object.assign(cycle.checks,{
+      loweringWithin600ms:within(cycle.firstLoweringMs,benchmarkLimits.firstLoweringMs),
+      trialWithin2000ms:within(cycle.fastTrial?.phaseElapsedMs,benchmarkLimits.trialMs),
+      qualityWithin3000ms:within(cycle.recovery?.phaseElapsedMs,benchmarkLimits.qualityRecoveryMs),
+      fullProfileWithin6000ms:within(cycle.fullRecovery?.phaseElapsedMs,benchmarkLimits.fullRecoveryMs),
+      fullVideoWithin7000ms:within(cycle.fullVideoRecovery?.phaseElapsedMs,benchmarkLimits.fullVideoRecoveryMs)});
+  }
   const all=key=>cycles.length===cycleCount&&cycles.every(cycle=>cycle.checks[key]);
   const checks={actualVideoReceived:matched>0,initialFrames:(phaseFrames.initial_real_feedback||0)>0,
     framesByteExact:mismatched===0&&matched>0,allCyclesCompleted:all('completed'),lowestProfileObserved:all('lowestProfileObserved'),actual120pFrameInBadPhase:all('actual120pFrameInBadPhase'),
     fast120pTrial:all('fast120pTrial'),qualityRecoveryWithRealFrames:all('qualityRecoveryWithRealFrames'),recoveryFrames:all('recoveryFrames'),responseTimesMeasured:all('responseTimesMeasured'),receiverFaultFree:!fault,
     validNrcv:!!rx.reassembler&&rx.reassembler.metrics.invalid===0};
+  if(rapid)for(const name of ['loweringWithin600ms','trialWithin2000ms','qualityWithin3000ms','fullProfileWithin6000ms','fullVideoWithin7000ms'])checks[name]=all(name);
   for(const [name,pass]of Object.entries(checks))if(!pass)failures.push(name);
   const result={result:failures.length?'FAIL':'PASS',label:LABEL,physicalPath:'ESP -> SX native HSPI -> AP-100AH -> PC; near-bench approximately 0.5 m operator-reported',
-    distance3km:'NOT_TESTED',motion100mps:'NOT_TESTED',rapid,cycleCount,cycles,syntheticFeedback:true,syntheticLossOnly:true,recoveryFeedback:'actual received packets and complete frames; no fabricated healthy counters',productionAutomaticFeedback:false,source,bind,port,durations,
+    distance3km:'NOT_TESTED',motion100mps:'NOT_TESTED',rapid,cycleCount,cycles,benchmarkLimits,syntheticFeedback:true,syntheticLossOnly:true,recoveryFeedback:'actual received packets and complete frames; no fabricated healthy counters',productionAutomaticFeedback:false,source,bind,port,durations,
     bundle:{path:bundlePath,bytes:bundleBytes.length,sha256:sha(bundleBytes),profiles:bundle.profiles},checks,failures,fault,
     matchedFrames:matched,mismatchedFrames:mismatched,receivedFrameBytes:receivedBytes,phaseFrames,profileFrames,feedbackSent,probeAcksSent,pendingSends,
     worstObservedProfile:Math.max(-1,...cycles.map(cycle=>cycle.badWorst)),matched120pFramesDuringBad:cycles.reduce((n,cycle)=>n+cycle.lowestMatched,0),
-    fastTrial:currentCycle?.fastTrial??null,recovery:currentCycle?.recovery??null,fullRecovery:currentCycle?.fullRecovery??null,observedProfiles:observed,
-    timingAcceptance:'Each cycle requires finite measured lowering/trial/quality-recovery latency; numeric limits are not applied yet, and rank-0 recovery is recorded without being mandatory',
+    fastTrial:currentCycle?.fastTrial??null,recovery:currentCycle?.recovery??null,fullRecovery:currentCycle?.fullRecovery??null,fullVideoRecovery:currentCycle?.fullVideoRecovery??null,observedProfiles:observed,
+    timingAcceptance:rapid?'Every cycle must satisfy benchmarkLimits, including real byte-matched original-profile video; this is near-bench response acceptance, not motion/range proof':'Finite lowering/trial/quality-recovery latency required; numeric limits and full original-profile recovery are not mandatory in normal mode',
     metrics:rx.reassembler?.metrics??null,lastStats: lastStats?{goodputBps:lastStats.goodputBps,lossEstimate:lastStats.lossEstimate}:null,
     duty:'NRCS samples recorded independently; synthetic loss is not a measurement of RF packet loss or Duty',elapsedMs:Math.round(performance.now()-began)};
   log('result',{result:result.result,checks,failures});fs.closeSync(timeline);
