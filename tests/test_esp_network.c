@@ -1,4 +1,4 @@
-/* Production UDP loop with a virtual clock/telemetry/socket; no RF claim. */
+/* Production UDP/ping commands with virtual SDK/network APIs; no RF claim. */
 #define _GNU_SOURCE
 #include "../esp32/main/app_main.c"
 #include <assert.h>
@@ -6,6 +6,20 @@
 static int64_t mock_time;
 static unsigned packets;
 static bool allow_network;
+static esp_ping_config_t ping_config;
+static esp_ping_callbacks_t ping_callbacks;
+static unsigned ping_starts,ping_deletes;
+int esp_netif_get_netif_impl_index(esp_netif_t *netif){assert(netif==halow_netif);return 3;}
+esp_err_t esp_ping_new_session(const esp_ping_config_t *config,const esp_ping_callbacks_t *callbacks,esp_ping_handle_t *out){
+    ping_config=*config;ping_callbacks=*callbacks;*out=&ping_config;return ESP_OK;
+}
+esp_err_t esp_ping_start(esp_ping_handle_t handle){assert(handle==&ping_config);ping_starts++;return ESP_OK;}
+esp_err_t esp_ping_get_profile(esp_ping_handle_t handle,int profile,void *out,uint32_t size){
+    assert(handle==&ping_config&&size==sizeof(uint32_t));
+    *(uint32_t*)out=profile==ESP_PING_PROF_DURATION?51:ping_config.count;return ESP_OK;
+}
+esp_err_t esp_ping_delete_session(esp_ping_handle_t handle){assert(handle==&ping_config);ping_deletes++;return ESP_OK;}
+UBaseType_t uxTaskGetStackHighWaterMark(TaskHandle_t task){assert(task==NULL);return 1234;}
 int64_t esp_timer_get_time(void){return mock_time;}
 void vTaskDelay(TickType_t ticks){mock_time+=(int64_t)ticks*1000;}
 uint32_t esp_random(void){return 0x12345678U;}
@@ -33,9 +47,23 @@ int main(void){
     test_udp(100000,1);assert(!packets); /* Explicit connected state is required. */
     allow_network=true;test_udp(99999,1);assert(!packets);
     test_udp(100000,1);assert(packets==7);
+    test_ping("192.168.10.250",5);
+    assert(ping_starts==1&&atomic_load(&ping_running));
+    /* Protect the real overflow regression: passing the SDK's default 2560
+     * bytes again must fail this test, even if the application constant changes. */
+    assert(ping_config.task_stack_size>=4096&&ping_config.task_stack_size==PING_TASK_STACK_BYTES);
+    assert(ping_config.interface==3&&ping_config.count==5);
+    test_ping("192.168.10.250",5);assert(ping_starts==1); /* Still asynchronous/busy. */
+    ping_callbacks.on_ping_end(&ping_config,ping_callbacks.cb_args);
+    assert(ping_deletes==1&&!atomic_load(&ping_running));
+    test_ping("192.168.10.250",100);assert(ping_starts==2&&ping_config.count==100);
+    ping_callbacks.on_ping_end(&ping_config,ping_callbacks.cb_args);
+    assert(ping_deletes==2&&!atomic_load(&ping_running));
+    test_ping("192.168.10.250",101);assert(ping_starts==2);
     fclose(stdout);stdout=saved;
     assert(strstr(output,"\"offered\":13,\"sent\":7,\"bytes\":7168"));
     assert(strstr(output,"\"duty_pauses\":1,\"duty_blocked_ms\":300,\"queue_wait_ms\":0,\"telemetry_wait_ms\":200"));
-    free(output);puts("ESP UDP: wire CRC/pattern, pacing, RF gate, sampled Duty and stale telemetry separation PASS (mock)");
+    assert(strstr(output,"\"event\":\"ping_stack\",\"configured_bytes\":5120,\"min_free_after_report_bytes\":1234"));
+    free(output);puts("ESP UDP/ping: wire CRC/pattern, pacing, RF/Duty gates, async ping stack allocation and reported headroom PASS (mock)");
     return 0;
 }
