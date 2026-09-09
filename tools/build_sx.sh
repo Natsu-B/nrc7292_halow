@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Compile an already-prepared SDK tree. Flash size is deliberately mandatory.
 set -euo pipefail
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
 if [[ $# != 3 ]]; then
   echo "Usage: $0 PREPARED_SDK TOOLCHAIN_BIN_DIR 2m|4m" >&2; exit 2
 fi
@@ -13,9 +14,13 @@ done
 export PATH="$TC:$PATH"
 cd "$SDK"
 arm-none-eabi-gcc --version
+# All modifications stay in the prepared SDK copy. Keep native HSPI unchanged.
+arm-none-eabi-objcopy --weaken-symbol=nrc_sf_migration_1m_to_2m lib/modem/libModem.a
 make select target="nrc7292.sdk.release+xip+${FLASH}+stage1_vendor.dat"
-# The vendor makefile invokes its own parallel child make.
-make APP_NAME=L2BRIDGE_HSPI 2>&1 | tee stage1-build.log
+# SDK 1.7 defaults to profile1, which requires flash-map migration. Keep factory.
+make APP_NAME=L2BRIDGE_HSPI CONFIG_FLASH_PROFILE=factory 2>&1 | tee stage1-build.log
+python3 "$ROOT/tests/check_sx_flash_guard.py" \
+  "out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_${FLASH^^}.elf"
 python3 - "$FLASH" <<'PY'
 import hashlib,json,pathlib,struct,sys
 base=pathlib.Path('out/nrc7292/standalone_xip/L2BRIDGE_HSPI')

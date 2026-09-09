@@ -1,0 +1,10 @@
+PING 192.168.10.20 (192.168.10.20) from 192.168.10.250 enp0s31f6: 56(84) bytes of data.
+64 bytes from 192.168.10.20: icmp_seq=1 ttl=64 time=90.3 ms
+64 bytes from 192.168.10.20: icmp_seq=2 ttl=64 time=10.6 ms
+64 bytes from 192.168.10.20: icmp_seq=3 ttl=64 time=11.0 ms
+64 bytes from 192.168.10.20: icmp_seq=4 ttl=64 time=12.5 ms
+64 bytes from 192.168.10.20: icmp_seq=5 ttl=64 time=10.9 ms
+
+--- 192.168.10.20 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4005ms
+rtt min/avg/max/mdev = 10.588/27.050/90.325/31.644 ms

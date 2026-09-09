@@ -1,0 +1,218 @@
+
+$ date --iso-8601=seconds
+2026-09-08T23:14:43+09:00
+
+$ uname -a
+Linux nixos 7.1.5 #1-NixOS SMP PREEMPT_DYNAMIC Fri Jul 24 14:21:27 UTC 2026 x86_64 GNU/Linux
+
+$ nixos-version
+25.11.20260630.b6018f8 (Xantusia)
+
+$ pwd
+/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300
+
+$ lsusb
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 002: ID 27c6:6594 Shenzhen Goodix Technology Co.,Ltd. Goodix USB2.0 MISC
+Bus 003 Device 003: ID 04f2:b806 Chicony Electronics Co., Ltd Integrated Camera
+Bus 003 Device 004: ID 8087:0033 Intel Corp. AX211 Bluetooth
+Bus 003 Device 023: ID 303a:1001 Espressif USB JTAG/serial debug unit
+Bus 003 Device 024: ID 10c4:ea60 Silicon Labs CP210x UART Bridge
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+
+$ lsusb -t
+/:  Bus 003.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/12p, 480M
+    |__ Port 001: Dev 023, If 0, Class=Communications, Driver=cdc_acm, 12M
+    |__ Port 001: Dev 023, If 1, Class=CDC Data, Driver=cdc_acm, 12M
+    |__ Port 001: Dev 023, If 2, Class=Vendor Specific Class, Driver=[none], 12M
+    |__ Port 003: Dev 002, If 0, Class=Vendor Specific Class, Driver=[none], 12M
+    |__ Port 004: Dev 003, If 0, Class=Video, Driver=uvcvideo, 480M
+    |__ Port 004: Dev 003, If 1, Class=Video, Driver=uvcvideo, 480M
+    |__ Port 004: Dev 003, If 2, Class=Application Specific Interface, Driver=[none], 480M
+    |__ Port 006: Dev 024, If 0, Class=Vendor Specific Class, Driver=cp210x, 12M
+    |__ Port 010: Dev 004, If 0, Class=Wireless, Driver=btusb, 12M
+    |__ Port 010: Dev 004, If 1, Class=Wireless, Driver=btusb, 12M
+/:  Bus 004.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/2p, 20000M/x2
+
+$ ls -l /dev/serial/by-id/
+total 0
+lrwxrwxrwx 1 root root 13 Sep  8 23:11 usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 -> ../../ttyACM0
+lrwxrwxrwx 1 root root 13 Sep  8 23:11 usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0 -> ../../ttyUSB0
+
+$ ls -l /dev/ttyACM* /dev/ttyUSB*
+crw-rw---- 1 root dialout 166, 0 Sep  8 23:11 /dev/ttyACM0
+crw-rw---- 1 root dialout 188, 0 Sep  8 23:11 /dev/ttyUSB0
+
+$ ip -br link
+lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP> 
+enp0s31f6        UP             c4:ef:bb:71:cb:1c <BROADCAST,MULTICAST,UP,LOWER_UP> 
+wlp0s20f3        UP             68:c6:ac:a0:5a:00 <BROADCAST,MULTICAST,UP,LOWER_UP> 
+tailscale0       UNKNOWN        <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> 
+
+$ ip -br addr
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp0s31f6        UP             
+wlp0s20f3        UP             192.168.10.136/24 240b:10:2e20:4300:4f2d:3ab8:a1d5:7159/64 240b:10:2e20:4300:2856:5492:4e42:a840/64 fe80::dbc2:2f9c:46df:a25a/64 
+tailscale0       UNKNOWN        100.100.158.18/32 fd7a:115c:a1e0::d701:9ec0/128 fe80::7400:cdfa:394a:deba/64 
+
+$ ip route
+default via 192.168.10.1 dev wlp0s20f3 proto dhcp src 192.168.10.136 metric 600 
+192.168.10.0/24 dev wlp0s20f3 proto kernel scope link src 192.168.10.136 metric 600 
+
+$ ip neigh
+192.168.10.103 dev wlp0s20f3 lladdr 48:78:5e:9f:d4:e4 STALE 
+192.168.10.117 dev wlp0s20f3 lladdr 5c:8a:ae:af:61:8c DELAY 
+192.168.10.1 dev wlp0s20f3 lladdr 08:10:86:52:ca:b8 REACHABLE 
+240b:10:2e20:4300:ce25:9c26:3d49:7287 dev wlp0s20f3 lladdr 5c:8a:ae:af:61:8c REACHABLE 
+240b:10:2e20:4300:c1a0:e522:8c8:2403 dev wlp0s20f3 lladdr 5c:8a:ae:af:61:8c REACHABLE 
+fe80::ca4c:75ff:fe23:7dc7 dev wlp0s20f3 FAILED 
+240b:10:2e20:4300:a10:86ff:fe52:cab8 dev wlp0s20f3 lladdr 08:10:86:52:ca:b8 router DELAY 
+fe80::a10:86ff:fe52:cab8 dev wlp0s20f3 lladdr 08:10:86:52:ca:b8 router REACHABLE 
+fe80::4652:81a5:e435:a217 dev wlp0s20f3 lladdr 5c:8a:ae:af:61:8c REACHABLE 
+
+$ nmcli device
+DEVICE             TYPE      STATE                   CONNECTION     
+wlp0s20f3          wifi      connected               aterm-1f4d8f-a 
+tailscale0         tun       connected (externally)  tailscale0     
+lo                 loopback  connected (externally)  lo             
+enp0s31f6          ethernet  disconnected            --             
+p2p-dev-wlp0s20f3  wifi-p2p  disconnected            --             
+
+$ nmcli connection show
+NAME                   UUID                                  TYPE      DEVICE     
+aterm-1f4d8f-a         d17e958c-767d-4305-9dbf-0174be26d699  wifi      wlp0s20f3  
+tailscale0             f8d7ec41-1653-4677-ab5d-98b494ecff6e  tun       tailscale0 
+lo                     e2a8055b-2947-4f67-86e0-81a6f980bc95  loopback  lo         
+106F3FDEFF1A           13320c4b-b7c1-4195-a502-0a5f4979d716  wifi      --         
+106F3FDEFF1A-1         24b1e630-b68f-44c1-8b8b-b20d11c266db  wifi      --         
+2G58208A313884         ac678f61-6329-4964-875f-17be9a3b673a  wifi      --         
+AKB-guest              4c970886-38f0-4ede-b6d0-2a32f477e5c3  wifi      --         
+BAY-311E               22734353-fdd8-4199-8ec0-07c1bd8ad81e  wifi      --         
+BAY-314                562b76d0-c6b4-406c-9bc7-811403823456  wifi      --         
+BAY-316                8e7b0235-5634-4cf0-834f-04b4fbbc6f0b  wifi      --         
+Buffalo-2G-2E48-WPA3   39ee5070-5063-4460-9afa-7925758895a1  wifi      --         
+Buffalo-6G-2E48-WPA3   d5488da0-5d5f-47a3-9ad5-3853332f63eb  wifi      --         
+Buffalo-A-BE08         614c7d8f-4d0b-4153-a95d-ad44b4045345  wifi      --         
+CrownePlaza            57f62118-c2c8-4cd4-a691-f8ee300d64b7  wifi      --         
+DOUTOR_FREE_Wi-Fi      90686043-90ab-4a09-95b9-c53b02953050  wifi      --         
+Emion_Free_Wi-Fi       c272abff-1a97-4a62-9286-2a3a3c11dee7  wifi      --         
+Fukuracia              b36df1ea-438b-4e98-893b-5e8adf8e9084  wifi      --         
+Fukuracia12F           32b7ffff-b5b7-4bf0-ac2e-acba3858a745  wifi      --         
+GUEST@CYBOZU           121ee31a-5ea4-4cb3-819c-2ab4d1531121  wifi      --         
+HOTEL-FUKURACIA        298ce543-21dc-4c77-98cb-5454176919ad  wifi      --         
+HR02a-3A367F           0255b5c6-22a0-4f02-840e-de19438fd2b7  wifi      --         
+HR02b-3A3680           fefd58cf-4131-4678-a8df-ec4521b61a24  wifi      --         
+Hotspot                7dc49f57-9c19-432b-821f-1b27a19769bb  wifi      --         
+IPA_WIFI5              b0d85276-92f2-4568-9f06-12ba6235931c  wifi      --         
+JP13F                  02fa3eb4-a452-4fec-a833-d442108878c8  wifi      --         
+JR-EAST_FREE_Wi-Fi     1aa5e1c3-0d5d-4de8-9481-67bea204d9d1  wifi      --         
+JR-WEST_FREE_Wi-Fi     eac51331-cce8-418e-947f-908dcce8e118  wifi      --         
+KaitoのiPhone 15       8a28d1e4-1602-4236-8de2-a57996a83c00  wifi      --         
+Kernel-VM-Tsukuba      bfe3c1a0-9328-4ff2-a523-5f96722dc926  wifi      --         
+LINKFOREST_Wi-Fi       e736b32f-9726-4336-88bb-7ece06fb649b  wifi      --         
+MHM-Wifi               2586b387-81b8-4254-944d-10bbfba9ed50  wifi      --         
+OPPO Reno7 A           3d6f6177-6945-499f-88c9-e8a469281f6c  wifi      --         
+Pixel9a                cf70c993-8c56-4a07-a467-07c0f1bda09e  wifi      --         
+Profile 1              dd0dc499-289a-48f4-a0e7-089e200e3eb6  ethernet  --         
+SH365                  5dc888ae-c48c-4763-ac62-af845c9d6806  wifi      --         
+SH365-even             7b83c0fd-3b1c-4d76-bb60-96c054c51f7c  wifi      --         
+SH365_odd              bcff9b3f-3eae-4c93-85ff-23963e63ef95  wifi      --         
+ScienceTokyo           9fe37d73-f57c-417b-8dbc-35df67166783  wifi      --         
+ScienceTokyoX          35de64f1-e9b1-432d-8cdb-13d8b9aaa11b  wifi      --         
+Shinkansen_Free_Wi-Fi  fe7a6418-4a1c-424f-b047-7e3971a06c80  wifi      --         
+UDXG-01                f4228e65-65b4-440a-8fe5-fb34401c6d53  wifi      --         
+UDXG-02                2777f8ff-26ad-4058-843f-824cff388dc0  wifi      --         
+Wired connection 1     8bf644e9-5d3c-3630-b8de-bfe0be7b8e87  ethernet  --         
+sakusaku               a8afb6cd-4d63-4148-85a7-e5506ac5428c  wifi      --         
+seccon-guest           5c3075ea-bbb0-4cd2-8994-7fb4a8216bd7  wifi      --         
+toyoko-inn509          e0edbf8d-99c0-4f65-a342-9e768a0de4b8  wifi      --         
+
+$ id
+uid=1000(hotaru) gid=100(users) groups=100(users),1(wheel),27(dialout),57(networkmanager),67(libvirtd),174(input),988(plugdev)
+
+$ udevadm info -q property -n /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+DEVPATH=/devices/pci0000:00/0000:00:14.0/usb3/3-1/3-1:1.0/tty/ttyACM0
+DEVNAME=/dev/ttyACM0
+MAJOR=166
+MINOR=0
+SUBSYSTEM=tty
+USEC_INITIALIZED=302939037203
+PATH=/nix/store/kg8j7lhks75ldfc9vd4n0bdcay9127vp-udev-path/bin:/nix/store/kg8j7lhks75ldfc9vd4n0bdcay9127vp-udev-path/sbin
+ID_BUS=usb
+ID_MODEL=USB_JTAG_serial_debug_unit
+ID_MODEL_ENC=USB\x20JTAG\x2fserial\x20debug\x20unit
+ID_MODEL_ID=1001
+ID_SERIAL=Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4
+ID_SERIAL_SHORT=90:70:69:10:C7:B4
+ID_VENDOR=Espressif
+ID_VENDOR_ENC=Espressif
+ID_VENDOR_ID=303a
+ID_REVISION=0101
+ID_TYPE=generic
+ID_USB_MODEL=USB_JTAG_serial_debug_unit
+ID_USB_MODEL_ENC=USB\x20JTAG\x2fserial\x20debug\x20unit
+ID_USB_MODEL_ID=1001
+ID_USB_SERIAL=Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4
+ID_USB_SERIAL_SHORT=90:70:69:10:C7:B4
+ID_USB_VENDOR=Espressif
+ID_USB_VENDOR_ENC=Espressif
+ID_USB_VENDOR_ID=303a
+ID_USB_REVISION=0101
+ID_USB_TYPE=generic
+ID_USB_INTERFACES=:020200:0a0200:ffff01:
+ID_USB_INTERFACE_NUM=00
+ID_USB_DRIVER=cdc_acm
+ID_USB_CLASS_FROM_DATABASE=Miscellaneous Device
+ID_USB_PROTOCOL_FROM_DATABASE=Interface Association
+ID_PATH_WITH_USB_REVISION=pci-0000:00:14.0-usbv2-0:1:1.0
+ID_PATH=pci-0000:00:14.0-usb-0:1:1.0
+ID_PATH_TAG=pci-0000_00_14_0-usb-0_1_1_0
+ID_MM_CANDIDATE=1
+DEVLINKS=/dev/serial/by-path/pci-0000:00:14.0-usbv2-0:1:1.0 /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00 /dev/serial/by-path/pci-0000:00:14.0-usb-0:1:1.0
+TAGS=:systemd:
+CURRENT_TAGS=:systemd:
+SERIAL_RW=YES /dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_90:70:69:10:C7:B4-if00
+
+$ udevadm info -q property -n /dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0
+DEVPATH=/devices/pci0000:00/0000:00:14.0/usb3/3-6/3-6:1.0/ttyUSB0/tty/ttyUSB0
+DEVNAME=/dev/ttyUSB0
+MAJOR=188
+MINOR=0
+SUBSYSTEM=tty
+USEC_INITIALIZED=302941983122
+PATH=/nix/store/kg8j7lhks75ldfc9vd4n0bdcay9127vp-udev-path/bin:/nix/store/kg8j7lhks75ldfc9vd4n0bdcay9127vp-udev-path/sbin
+ID_BUS=usb
+ID_MODEL=CP2102N_USB_to_UART_Bridge_Controller
+ID_MODEL_ENC=CP2102N\x20USB\x20to\x20UART\x20Bridge\x20Controller
+ID_MODEL_ID=ea60
+ID_SERIAL=Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3
+ID_SERIAL_SHORT=08db3e3b2974ea11adf500fb6a30b0f3
+ID_VENDOR=Silicon_Labs
+ID_VENDOR_ENC=Silicon\x20Labs
+ID_VENDOR_ID=10c4
+ID_REVISION=0100
+ID_TYPE=generic
+ID_USB_MODEL=CP2102N_USB_to_UART_Bridge_Controller
+ID_USB_MODEL_ENC=CP2102N\x20USB\x20to\x20UART\x20Bridge\x20Controller
+ID_USB_MODEL_ID=ea60
+ID_USB_SERIAL=Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3
+ID_USB_SERIAL_SHORT=08db3e3b2974ea11adf500fb6a30b0f3
+ID_USB_VENDOR=Silicon_Labs
+ID_USB_VENDOR_ENC=Silicon\x20Labs
+ID_USB_VENDOR_ID=10c4
+ID_USB_REVISION=0100
+ID_USB_TYPE=generic
+ID_USB_INTERFACES=:ff0000:
+ID_USB_INTERFACE_NUM=00
+ID_USB_DRIVER=cp210x
+ID_VENDOR_FROM_DATABASE=Silicon Labs
+ID_HARDWARE_WALLET=1
+ID_MODEL_FROM_DATABASE=CP210x UART Bridge
+ID_PATH_WITH_USB_REVISION=pci-0000:00:14.0-usbv2-0:6:1.0
+ID_PATH=pci-0000:00:14.0-usb-0:6:1.0
+ID_PATH_TAG=pci-0000_00_14_0-usb-0_6_1_0
+ID_MM_CANDIDATE=1
+DEVLINKS=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0 /dev/serial/by-path/pci-0000:00:14.0-usb-0:6:1.0-port0 /dev/serial/by-path/pci-0000:00:14.0-usbv2-0:6:1.0-port0
+TAGS=:systemd:
+CURRENT_TAGS=:systemd:
+SERIAL_RW=YES /dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0

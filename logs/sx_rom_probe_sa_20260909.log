@@ -1,0 +1,1 @@
+{"event": "sx_rom_probe", "result": "FAIL", "error": "No valid vendor response before timeout", "received_bytes": 0, "ram_loaded": false, "flash_commands": 0}

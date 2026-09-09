@@ -6,25 +6,29 @@ config STAGE1_RF_ENABLE
     bool "Pre-confirm RF at boot (otherwise type rf-confirm; Duty stays enabled)"
     default n
 config STAGE1_SPI_SCLK
-    int "SCLK GPIO (example only)"
+    int "SCLK GPIO -> EVK GPIO11"
     range 0 48
-    default 12
+    default 9
 config STAGE1_SPI_MOSI
-    int "MOSI GPIO (example only)"
+    int "MOSI GPIO -> EVK GPIO10"
     range 0 48
-    default 11
+    default 7
 config STAGE1_SPI_MISO
-    int "MISO GPIO (example only)"
+    int "MISO GPIO <- EVK GPIO9"
     range 0 48
-    default 13
+    default 8
 config STAGE1_SPI_CS
-    int "CS GPIO (example only)"
+    int "CE0 GPIO -> EVK GPIO8"
     range 0 48
-    default 10
+    default 6
+config STAGE1_SPI_CS_ALT
+    int "CE1 GPIO -> EVK GPIO7"
+    range 0 48
+    default 5
 config STAGE1_SPI_IRQ
     int "EIRQ GPIO (active-high LEVEL); -1 for diagnostic polling"
     range -1 48
-    default -1
+    default 4
 config STAGE1_RESET_GPIO
     int "RESET GPIO, -1 for manual EVK reset"
     range -1 48
@@ -40,16 +44,19 @@ config STAGE1_SPI_CLOCK
     default 5000000
 config STAGE1_SSID
     string "AP-100AH SSID"
-    default "halow-stage1"
+    default "halow_demo_video"
 config STAGE1_PASSWORD
     string "WPA3-SAE password (do not commit sdkconfig)"
     default ""
 config STAGE1_OPEN_NETWORK
     bool "Use OPEN instead of WPA3-SAE (isolated bench only)"
-    default n
+    default y
+    help
+        Matches the attached AP-100AH verified with Standalone firmware.
+        RF still requires the explicit rf-confirm command on each ESP boot.
 config STAGE1_IP
     string "ESP IPv4 (example; match AP/PC subnet)"
-    default "192.168.50.2"
+    default "192.168.10.20"
 config STAGE1_NETMASK
     string "IPv4 netmask"
     default "255.255.255.0"
@@ -58,7 +65,7 @@ config STAGE1_GATEWAY
     default "0.0.0.0"
 config STAGE1_PC_IP
     string "Receiver PC Ethernet IPv4"
-    default "192.168.50.10"
+    default "192.168.10.250"
 config STAGE1_UDP_PORT
     int "Receiver UDP port (NRCV, not RTP)"
     range 1024 65535

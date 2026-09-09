@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 MENU=0
 case "${1:-}" in --menuconfig) MENU=1;; '') ;; *) echo "Usage: $0 [--menuconfig]" >&2; exit 2;; esac
-command -v idf.py >/dev/null || { echo 'BLOCKED: activate ESP-IDF v5.5.2 export.sh first.' >&2; exit 2; }
+command -v idf.py >/dev/null || exec bash "$ROOT/tools/idf_env.sh" bash "$0" "$@"
 cd "$ROOT/esp32"
 idf.py --version
 if [[ -f sdkconfig ]]; then

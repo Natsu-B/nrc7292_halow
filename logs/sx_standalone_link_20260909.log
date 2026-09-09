@@ -1,0 +1,70 @@
+
+# 2026-09-09T18:49:28+0900 port=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0 baud=115200
+
+# TX 'wpa status'
+wpa status
+WPA: Control interface response (172)
+bssid=1c:bc:ec:1b:30:ff
+freq=5190
+ssid=halow_demo_video
+id=0
+mode=station
+pairwise_cipher=NONE
+group_cipher=NONE
+key_mgmt=NONE
+wpa_state=COMPLETED
+address=1c:bc:ec:13:ce:20
+
+OK
+[4] 1965350497 nrc7292_standalone_xip>
+# TX 'wpa scan_results'
+wpa scan_results
+WPA: Control interface response (97)
+bssid / frequency / signal level / flags / ssid
+1c:bc:ec:1b:30:ff	5190	-10	[ESS]	halow_demo_video
+
+OK
+[5] 1967344470 nrc7292_standalone_xip>
+# TX 'ifconfig'
+ifconfig
+wlan0	HWaddr 1C:BC:EC:13:CE:20   MTU:1500
+	inet:192.168.10.20	netmask:255.255.255.0	gateway:251.176.2.0
+
+wlan1	HWaddr 1E:BC:EC:13:CE:20   MTU:1500
+	inet:0.0.0.0	netmask:0.0.0.0	gateway:0.0.0.0
+
+OK
+[6] 1969347983 nrc7292_standalone_xip>
+# TX 'sx help'
+sx help
+Usage: sx [options]
+Options:
+help
+set
+    uart <uart port number> baudrate <baudrate>
+    uart <uart port number> databits <bits>
+    uart <uart port number> parity <parity>
+    uart <uart port number> stop_bit <stop bit>
+    uart <uart port number> flow_control <flow>
+    at uart <uart port number>
+    wlan ssid <ssid>
+    wlan auth-enc <mode>
+    wlan passphrase <passwd>
+    ip addr <ip address> [subnet_mask] [default gateway]
+    dhcpc <on|off>
+    ecable <type> [<address>] <port>
+    duty <window time>
+    default
+show
+    wlan
+    ip
+    config
+    version
+save
+reset
+debug
+    level <verbose|debug|info|error>
+    mask <enable|disable> <uart|at|wlan|ip|config>
+
+OK
+[7] 1971389819 nrc7292_standalone_xip>

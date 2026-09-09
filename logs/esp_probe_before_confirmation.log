@@ -1,0 +1,4 @@
+
+HOST command: probe
+Verify displayed pins/VDDIO/GND, then type wiring-confirm.
+{"event":"probe","error":259}

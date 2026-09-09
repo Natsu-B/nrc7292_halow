@@ -1,0 +1,16 @@
+GUI log: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/logs/sx_flashtool_20260909-085753-694206.log
+SX identity: /dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0 -> /dev/ttyUSB0
+33db5706c1be366c07908eb0093ad5a6c1254778149415bf16971bc12c9c4057  /home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot.bin
+51da4440d881fd77fdb91c11dcc8d19d81ffbfb76f68c2eaff07fc6826886be4  /home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot_xip.bin
+7e93f02fb67a0d6504998a7372dc01cdcaf47c800c70f5b8224844dc85170ccf  /home/hotaru/silex/nrc7292_xip_fw_sx_uart.bin
+The GUI opens with MAC WRITE OFF. Press START manually.
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.fazecast.jSerialComm.SerialPort in an unnamed module (file:/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/.build-sx-flashtool/jSerialComm-2.0.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Default baudrate
+{"event":"sx_gui_original_defaults","time":"2026-09-08T23:57:53.958246300Z","module":"NRC7292","port":"ttyACM0","baudrate":460800,"bootloader":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot.bin","bytes":10680,"sha256":"33db5706c1be366c07908eb0093ad5a6c1254778149415bf16971bc12c9c4057"},"xip_bootloader":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot_xip.bin","bytes":12924,"sha256":"51da4440d881fd77fdb91c11dcc8d19d81ffbfb76f68c2eaff07fc6826886be4"},"xip_firmware":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_standalone_xip_hello_world.bin","bytes":743020,"sha256":"1c44bb092b23283ca32c36542e49b8f3bb91e85aea29a5b221f974fa7dd46b40"},"xip_boot_enabled":true,"xip_firmware_enabled":true,"mac_write_0":false,"mac_write_1":false,"auto_run_after_flash":false}
+Default baudrate
+{"event":"sx_gui_prefilled","time":"2026-09-08T23:57:53.995962960Z","module":"NRC7292","port":"/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0","baudrate":460800,"bootloader":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot.bin","bytes":10680,"sha256":"33db5706c1be366c07908eb0093ad5a6c1254778149415bf16971bc12c9c4057"},"xip_bootloader":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot_xip.bin","bytes":12924,"sha256":"51da4440d881fd77fdb91c11dcc8d19d81ffbfb76f68c2eaff07fc6826886be4"},"xip_firmware":{"path":"/home/hotaru/silex/nrc7292_xip_fw_sx_uart.bin","bytes":855036,"sha256":"7e93f02fb67a0d6504998a7372dc01cdcaf47c800c70f5b8224844dc85170ccf"},"xip_boot_enabled":true,"xip_firmware_enabled":true,"mac_write_0":false,"mac_write_1":false,"auto_run_after_flash":false}
+SX_GUI_READY: DEBUG=true DEEP_DEBUG=false; press START manually

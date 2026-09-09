@@ -356,11 +356,12 @@ typedef struct {
     uint32_t transactions, spi_errors, bad_ack, invalid_status;
     uint32_t tx_slots, rx_slots, bad_header, sequence_gaps;
     uint16_t chip_id;
-    uint32_t sw_id, board_id;
+    uint32_t modem_id, sw_id, board_id;
+    char signature[9];
     int faulted;
 } nrc_hspi_diagnostics_t;
 int nrc_hspi_refresh_status(void);
 int nrc_hspi_get_diagnostics(nrc_hspi_diagnostics_t *out);
+int nrc_hspi_set_eirq_mode(enum HSPI_EIRQ_MODE mode);
 /**********************************************************************************************/
 #endif /* #ifndef __NRC_HSPI_H__ */
-

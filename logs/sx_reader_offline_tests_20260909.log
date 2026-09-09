@@ -1,0 +1,9 @@
+2026-09-09 JST, root verification after removing CRC 0x95
+Command: python3 tests/test_sx_read_factory.py
+............
+----------------------------------------------------------------------
+Ran 12 tests in 0.692s
+
+OK
+
+These are offline host tests. They do not prove target command execution.

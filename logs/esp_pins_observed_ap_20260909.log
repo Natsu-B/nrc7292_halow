@@ -1,0 +1,10 @@
+
+HOST command: pins
+SCLK GPIO9
+MOSI GPIO7
+MISO GPIO8
+EIRQ GPIO4
+CE0 GPIO6
+CE1 GPIO5
+SPI mode 0, 8 bit, MSB first, active-low CS, clock 5000000 Hz; selected CS GPIO6
+EIRQ active-high level; probe always polls. SX reset is manual; no RST wire.

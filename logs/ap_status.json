@@ -1,0 +1,55 @@
+{
+  "observed_at_utc": "2026-09-08T14:45:12Z",
+  "observed_at_jst": "2026-09-08T23:45:12+09:00",
+  "method": "Read-only HTTP GET of actual AP menu/status links; no login attempts, POST, configuration change, reboot or reset",
+  "http": {
+    "address": "http://192.168.10.10",
+    "status": 200,
+    "authenticated": false,
+    "security_configuration_requires_login": true,
+    "wireless_configuration_redirect": "http://192.168.10.10/ssi/public/login/index.htm?id=login&page_url=private/conf/index.htm&page_id=wless&page_sub=0&language=1"
+  },
+  "identity": {
+    "model_reported": "AP-100AH",
+    "firmware_reported": "Ver BB3-5.10 (2024.06.14)",
+    "wireless_mac_bssid": "1c:bc:ec:1b:30:ff",
+    "ethernet_mac_from_parent_pcap": "1c:bc:ec:1b:30:fe",
+    "jp_regional_suffix": "NOT_REPORTED_IN_PUBLIC_UI; physical JP variant supplied by user"
+  },
+  "tcp_ip": {
+    "address": "192.168.10.10",
+    "subnet_mask": "255.255.0.0",
+    "default_gateway": "0.0.0.0",
+    "dhcp_server": "0.0.0.0"
+  },
+  "wireless": {
+    "ssid": "halow_demo_video",
+    "frequency_mhz": 925.5,
+    "bandwidth_mhz": 2,
+    "channel_number": "NOT_REPORTED; use frequency and bandwidth rather than inventing a channel mapping",
+    "security": "UNKNOWN_REQUIRES_LOGIN",
+    "password": "NOT_ACCESSED_OR_LOGGED",
+    "mcs_reported": 7,
+    "link_speed_kbps_reported": 7222,
+    "signal_strength_dbm_reported": -95,
+    "connected_stations": 0,
+    "station_list_rows": 0,
+    "interpretation": "MCS/speed/signal are displayed by AP while station count is zero; they do not prove an SX association or RF path"
+  },
+  "mesh": {
+    "mode": "OFF",
+    "connected_stations": 0
+  },
+  "ethernet": {
+    "link_status_reported": "Ethernet link Up",
+    "ap_web_ui_reachable": true
+  },
+  "sources": [
+    "http://192.168.10.10/ssi/menu.htm?access=&language=",
+    "http://192.168.10.10/ssi/main.js?access=&language=",
+    "http://192.168.10.10/ssi/public/stat/sysst_main.htm?access=&language=",
+    "http://192.168.10.10/ssi/public/stat/stalist_main.htm?access=&language=",
+    "http://192.168.10.10/ssi/private/conf/index.htm?id=wless&sub=0&access=&language="
+  ],
+  "redaction": "Only public identity, radio/status and address fields saved; no raw HTML, authentication material, password or PSK values saved"
+}

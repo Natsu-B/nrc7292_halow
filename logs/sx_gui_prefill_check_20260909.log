@@ -1,0 +1,11 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.fazecast.jSerialComm.SerialPort in an unnamed module (file:/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/.build-sx-flashtool/jSerialComm-2.0.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Default baudrate
+{"event":"sx_gui_original_defaults","time":"2026-09-09T00:00:22.083526614Z","module":"NRC7292","port":"ttyACM0","baudrate":460800,"bootloader":{"path":"/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/firmware/nrc7292_boot.bin","exists":false},"xip_bootloader":{"path":"/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/firmware/nrc7292_boot_xip.bin","exists":false},"xip_firmware":{"path":"/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/firmware/nrc7292_standalone_xip_hello_world.bin","exists":false},"xip_boot_enabled":true,"xip_firmware_enabled":true,"mac_write_0":false,"mac_write_1":false,"auto_run_after_flash":false}
+Default baudrate
+{"event":"sx_gui_prefilled","time":"2026-09-09T00:00:22.126462398Z","module":"NRC7292","port":"/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0","baudrate":460800,"bootloader":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot.bin","bytes":10680,"sha256":"33db5706c1be366c07908eb0093ad5a6c1254778149415bf16971bc12c9c4057"},"xip_bootloader":{"path":"/home/hotaru/silex/_codex_work/flash/FirmwareFlashTool/firmware/nrc7292_boot_xip.bin","bytes":12924,"sha256":"51da4440d881fd77fdb91c11dcc8d19d81ffbfb76f68c2eaff07fc6826886be4"},"xip_firmware":{"path":"/home/hotaru/silex/nrc7292_xip_fw_sx_uart.bin","bytes":855036,"sha256":"7e93f02fb67a0d6504998a7372dc01cdcaf47c800c70f5b8224844dc85170ccf"},"xip_boot_enabled":true,"xip_firmware_enabled":true,"mac_write_0":false,"mac_write_1":false,"auto_run_after_flash":false}
+Default baudrate
+GUI_CHECK PASS: prefilled vendor GUI; START=0 serial_open=0

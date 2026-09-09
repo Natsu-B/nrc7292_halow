@@ -1,0 +1,2 @@
+{"event": "sx_ping_after_gui", "baud": 460800, "result": "FAIL", "error": "No valid vendor response before timeout", "received_bytes": 0, "flash_write_commands": 0, "ram_upload_performed": false}
+{"event": "sx_ping_after_gui", "baud": 115200, "result": "PASS", "received_bytes": 16, "flash_write_commands": 0, "ram_upload_performed": false}

@@ -49,7 +49,7 @@ def prepare(sdk: pathlib.Path, output: pathlib.Path, bdf: pathlib.Path) -> None:
         'void lwif_input(struct nrc_wpa_if* intf, void *buffer, int data_len)',
         '    extern void l2bridge_wifi_rx(uint8_t vif, void *buffer, int length);\n    if (intf != NULL) l2bridge_wifi_rx(intf->vif_id, buffer, data_len);\n    return;')
     # Keep modem/netif ABI initialization; do NOT patch standalone.c to remove it.
-    shutil.copytree(sdk, output, ignore=shutil.ignore_patterns('.git', 'out', '.build-target', '__pycache__'))
+    shutil.copytree(sdk, output, symlinks=True, ignore=shutil.ignore_patterns('.git', 'out', '.build-target', '__pycache__'))
     (output / 'lib/lwip/port/netif/wlif.c').write_text(patched)
     app = output / 'sdk/apps/L2BRIDGE_HSPI'
     shutil.copytree(ROOT / 'sx_newah/L2BRIDGE_HSPI', app)
