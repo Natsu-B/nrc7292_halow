@@ -5,6 +5,7 @@
 #include "nrc7292.h"
 #include "nrc_video_packet.h"
 #include "clip_source.h"
+#include "link_adapt.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_random.h"
@@ -15,6 +16,7 @@
 #include "lwip/inet.h"
 #include "ping/ping_sock.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 #include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,7 +38,15 @@
 static const char *TAG="stage1";
 static nrc7292_handle_t radio;
 static atomic_bool play_requested;
+static atomic_bool desired_link;
 static atomic_uint sent_frames, skipped_frames;
+static atomic_uint adapt_rate, adapt_accepted, adapt_rejected, adapt_feedback_age;
+static atomic_uint adapt_profile,adapt_source,adapt_width,adapt_height,adapt_interval;
+static atomic_uint replay_generation;
+static _Atomic(const char *) adapt_reason="idle";
+static stage1_adapt_t adaptation; /* Only the replay task owns this state. */
+static uint32_t adapt_source_rejected, adapt_last_service, adapt_last_tick;
+static bool adapt_initialized;
 static hvc_clip_t clip;
 static int video_socket=-1;
 static struct sockaddr_in pc;
@@ -44,25 +54,74 @@ static int64_t pace_at;
 static int64_t frame_deadline;
 static nrc_video_packetizer_t packetizer;
 static uint8_t *replay_buffer;
+static size_t replay_capacity;
+static uint8_t frame_profile;
+static unsigned frame_generation;
 static void pause_ms(unsigned ms){vTaskDelay(pdMS_TO_TICKS(ms ? ms : 1));}
 static void be16(uint8_t *p,uint16_t v){p[0]=(uint8_t)(v>>8);p[1]=(uint8_t)v;}
 static void be32(uint8_t *p,uint32_t v){p[0]=(uint8_t)(v>>24);p[1]=(uint8_t)(v>>16);p[2]=(uint8_t)(v>>8);p[3]=(uint8_t)v;}
-/* One small network telemetry packet per second. This is additional RF traffic,
- * so it remains subject to the same native Duty guard as video. */
-static void network_stats(const nrc7292_link_stats_t *s) {
+static bool fresh_link(const nrc7292_link_stats_t *s) {
+    return s->hspi_ready && s->wifi_connected && s->radio_stats_age_ms<=500;
+}
+/* Additional RF traffic remains subject to the same native Duty guard. */
+static void network_stats(const nrc7292_link_stats_t *s,uint32_t now) {
     if(video_socket<0)return;
-    uint8_t feedback[64];
-    /* Phase1 does not change quality on feedback; drain to avoid retaining stale reports. */
-    for(unsigned i=0;i<8;i++)if(recvfrom(video_socket,feedback,sizeof feedback,MSG_DONTWAIT,NULL,NULL)<0)break;
-    if(!atomic_load(&play_requested)||!s->wifi_connected||!s->radio.duty_tx_available||s->host_data_queue_depth>2)return;
-    uint8_t b[40]={0};memcpy(b,"NRCS",4);b[4]=1;be16(b+6,sizeof b);
-    be32(b+8,(uint32_t)(esp_timer_get_time()/1000));b[12]=(uint8_t)s->radio.rssi_average_dbm;
+    if(!atomic_load(&play_requested)||!fresh_link(s)||!s->radio.duty_tx_available||s->host_data_queue_depth>2)return;
+    uint8_t b[56]={0};memcpy(b,"NRCS",4);b[4]=3;be16(b+6,sizeof b);
+    be32(b+8,now);b[12]=(uint8_t)s->radio.rssi_average_dbm;
     b[13]=(uint8_t)s->radio.snr_db;b[14]=s->radio.tx_mcs;b[15]=s->radio.rx_mcs;
     b[16]=s->radio.duty_tx_available;b[17]=s->wifi_connected;be16(b+18,s->host_data_queue_depth);
     be32(b+20,s->host_tx_queue_drops);be32(b+24,s->radio.host_to_radio_drops);
     be32(b+28,atomic_load(&sent_frames));be32(b+32,atomic_load(&skipped_frames));
-    be32(b+36,hvc_crc32(b,36));
+    be32(b+36,adaptation.rate_bps);
+    be32(b+40,adaptation.have_feedback?now-adaptation.last_feedback_rx_ms:UINT32_MAX);
+    be16(b+44,clip.width);be16(b+46,clip.height);
+    be32(b+48,stage1_adapt_interval_ms(&adaptation));
+    be32(b+52,hvc_crc32(b,52));
     (void)sendto(video_socket,b,sizeof b,0,(struct sockaddr*)&pc,sizeof pc);
+}
+static void adapt_publish(uint32_t now) {
+    atomic_store(&adapt_rate,adaptation.rate_bps);
+    atomic_store(&adapt_reason,adaptation.reason);
+    atomic_store(&adapt_accepted,adaptation.accepted_feedback);
+    atomic_store(&adapt_rejected,adaptation.rejected_feedback+adapt_source_rejected);
+    atomic_store(&adapt_feedback_age,adaptation.have_feedback?now-adaptation.last_feedback_rx_ms:UINT32_MAX);
+    atomic_store(&adapt_profile,adaptation.profile);
+    atomic_store(&adapt_interval,stage1_adapt_interval_ms(&adaptation));
+}
+/* Called during both clip timing waits and packet pacing, so a large IDR does
+ * not prevent feedback processing. Remote timestamps are never host clocks. */
+static void adaptation_service(void) {
+    uint32_t now=(uint32_t)(esp_timer_get_time()/1000);
+    if(!adapt_initialized || now-adapt_last_service<50)return;
+    adapt_last_service=now;
+    if(video_socket>=0)for(unsigned i=0;i<8;i++) {
+        uint8_t feedback[64];struct sockaddr_in source={0};socklen_t source_len=sizeof source;
+        ssize_t n=recvfrom(video_socket,feedback,sizeof feedback,MSG_DONTWAIT,(struct sockaddr*)&source,&source_len);
+        if(n<0)break;
+        if(source_len!=sizeof source || source.sin_family!=AF_INET || source.sin_addr.s_addr!=pc.sin_addr.s_addr || source.sin_port!=pc.sin_port)
+            adapt_source_rejected++;
+        else (void)stage1_adapt_feedback(&adaptation,feedback,(size_t)n,now);
+    }
+    if(!atomic_load(&play_requested)) {
+        /* An intentional pause or a separate UDP benchmark supplies no video
+         * feedback. Its silence must not lower the next video profile. */
+        adapt_last_tick=now;adapt_publish(now);return;
+    }
+    if(now-adapt_last_tick>=1000) {
+        nrc7292_link_stats_t s={0};
+        bool valid=nrc7292_get_link_stats(radio,&s)==ESP_OK;
+        uint16_t queue=s.host_data_queue_depth>s.radio.host_to_radio_queue_depth?s.host_data_queue_depth:s.radio.host_to_radio_queue_depth;
+        (void)stage1_adapt_tick(&adaptation,now,s.radio.rssi_average_dbm,valid&&fresh_link(&s),
+            s.radio.duty_tx_available,queue,s.host_tx_queue_drops,s.radio.host_to_radio_drops);
+        adapt_publish(now);
+        printf("{\"event\":\"adapt\",\"bps\":%lu,\"reason\":\"%s\",\"feedback_accepted\":%lu,\"feedback_rejected\":%lu,\"feedback_age_ms\":%lu}\n",
+            (unsigned long)adaptation.rate_bps,adaptation.reason,(unsigned long)atomic_load(&adapt_accepted),
+            (unsigned long)atomic_load(&adapt_rejected),(unsigned long)atomic_load(&adapt_feedback_age));
+        if(valid)network_stats(&s,now);
+        adapt_last_tick=now;
+    }
+    adapt_publish(now);
 }
 static void stats_print(void) {
     nrc7292_link_stats_t s;
@@ -73,67 +132,139 @@ static void stats_print(void) {
         s.wifi_connected,s.hspi_ready,s.radio.rssi_average_dbm,s.radio.tx_mcs,s.radio.rx_mcs,s.radio.duty_tx_available,
         s.host_data_queue_depth,(unsigned long)s.host_tx_queue_drops,(unsigned long)s.radio.host_to_radio_drops,
         atomic_load(&sent_frames),atomic_load(&skipped_frames),(unsigned long)esp_get_free_heap_size(),s.radio.snr_db);
+    printf("{\"event\":\"adapt_status\",\"desired_link\":%d,\"play_requested\":%d,\"bps\":%u,\"reason\":\"%s\",\"feedback_accepted\":%u,\"feedback_rejected\":%u,\"feedback_age_ms\":%u,\"profile\":%u,\"source\":%u,\"width\":%u,\"height\":%u,\"interval_ms\":%u}\n",
+        atomic_load(&desired_link),atomic_load(&play_requested),atomic_load(&adapt_rate),atomic_load(&adapt_reason),
+        atomic_load(&adapt_accepted),atomic_load(&adapt_rejected),atomic_load(&adapt_feedback_age),atomic_load(&adapt_profile),
+        atomic_load(&adapt_source),atomic_load(&adapt_width),atomic_load(&adapt_height),atomic_load(&adapt_interval));
 }
 static int packet_sink(const uint8_t *data,size_t size,void *ctx) {
     (void)ctx;
     for(;;) {
-        if(!atomic_load(&play_requested)||!nrc7292_is_connected(radio)||esp_timer_get_time()>frame_deadline)return -1;
+        adaptation_service();
+        if(!atomic_load(&play_requested)||!nrc7292_is_connected(radio)||esp_timer_get_time()>frame_deadline ||
+           adaptation.profile!=frame_profile || atomic_load(&replay_generation)!=frame_generation)return -1;
         nrc7292_link_stats_t s;
         if(nrc7292_get_link_stats(radio,&s)!=ESP_OK||!s.hspi_ready)return -1;
-        if(s.radio.duty_tx_available && s.host_data_queue_depth<6 && esp_timer_get_time()>=pace_at)break;
+        if(fresh_link(&s) && s.radio.duty_tx_available && s.host_data_queue_depth<6 &&
+           s.radio.host_to_radio_queue_depth<6 && esp_timer_get_time()>=pace_at)break;
         pause_ms(1);
     }
     const ssize_t n=sendto(video_socket,data,size,0,(struct sockaddr*)&pc,sizeof pc);
     if(n!=(ssize_t)size)return -1;
-    pace_at=esp_timer_get_time()+(int64_t)size*8*1000000/CONFIG_STAGE1_PACE_BPS;
+    pace_at=esp_timer_get_time()+(int64_t)size*8*1000000/adaptation.rate_bps;
     return 0;
+}
+/* Capture deadlines use the original source clock, never a shifted playback
+ * epoch. At low rates old pictures expire instead of becoming a video backlog. */
+static int64_t capture_deadline_us(uint64_t captured_ms,unsigned profile,uint32_t interval_ms) {
+    uint32_t age_ms=profile==0?CONFIG_STAGE1_FRAME_LATE_MS:(interval_ms<2000?interval_ms:2000);
+    return (int64_t)(captured_ms+age_ms)*1000;
+}
+static bool frame_fits_deadline(size_t bytes,uint32_t rate,int64_t now,int64_t deadline) {
+    if(!rate || now>=deadline)return false;
+    uint64_t packets=(bytes+NRC_VIDEO_MAX_PAYLOAD_SIZE-1)/NRC_VIDEO_MAX_PAYLOAD_SIZE;
+    uint64_t wire_us=(packets*NRC_VIDEO_DEFAULT_DATAGRAM_SIZE*8U*1000000U+rate-1)/rate;
+    return wire_us<=(uint64_t)(deadline-now);
 }
 static void replay_task(void *arg) {
     (void)arg;
-    uint8_t *frame=replay_buffer; /* allocated before publishing replay_created */
-    bool active=false,wait_key=true;
-    int64_t epoch=0,last_stats=0;
-    uint64_t clip_offset_ms=0;
+    bool active=false,wait_key=true,have_previous=false,original_seek=true;
+    unsigned generation=0,previous_index=0,selected_profile=UINT32_MAX;
+    uint64_t capture_epoch=0,next_emit=0,previous_cycle=0,original_cycle=0;
+    stage1_adapt_init(&adaptation,CONFIG_STAGE1_MIN_BPS,CONFIG_STAGE1_PACE_BPS,(uint32_t)(esp_timer_get_time()/1000));
+    adapt_initialized=true;adapt_publish((uint32_t)(esp_timer_get_time()/1000));
     for(;;) {
-        if(esp_timer_get_time()-last_stats>=1000000){
-            stats_print();nrc7292_link_stats_t s;
-            if(nrc7292_get_link_stats(radio,&s)==ESP_OK)network_stats(&s);
-            last_stats=esp_timer_get_time();
+        adaptation_service();
+        uint64_t now=(uint64_t)esp_timer_get_time()/1000;
+        unsigned requested_generation=atomic_load(&replay_generation);
+        if(generation!=requested_generation) {
+            generation=requested_generation;capture_epoch=now;active=false;
         }
         if(!atomic_load(&play_requested)||!nrc7292_is_connected(radio)) {
             active=false;wait_key=true;pause_ms(20);continue;
         }
-        if(!active) {
-            hvc_clip_rewind(&clip);clip_offset_ms=0;epoch=esp_timer_get_time();pace_at=epoch;
-            nrc_video_packetizer_init(&packetizer,esp_random());active=true;wait_key=true;
+        if(!active || selected_profile!=adaptation.profile) {
+            unsigned source=stage1_adapt_source(&adaptation);
+            if(source>=clip_source_profile_count())source=0; /* Legacy image: IDR-only fallback, actual dimensions reported. */
+            if(clip_source_select(&clip,source)) {
+                ESP_LOGE(TAG,"Video profile unavailable; playback stopped");atomic_store(&play_requested,false);continue;
+            }
+            selected_profile=adaptation.profile;active=true;wait_key=true;have_previous=false;next_emit=now;original_seek=true;
+            pace_at=esp_timer_get_time();
+            nrc_video_packetizer_init(&packetizer,esp_random());
+            stage1_adapt_stream(&adaptation,packetizer.stream_id,(uint32_t)now);
+            atomic_store(&adapt_source,source);atomic_store(&adapt_width,clip.width);atomic_store(&adapt_height,clip.height);
+            printf("{\"event\":\"video_profile\",\"profile\":%u,\"source\":%u,\"width\":%u,\"height\":%u,\"interval_ms\":%lu,\"stream_id\":%lu,\"capture_epoch_ms\":%llu}\n",
+                selected_profile,source,clip.width,clip.height,(unsigned long)stage1_adapt_interval_ms(&adaptation),
+                (unsigned long)packetizer.stream_id,(unsigned long long)capture_epoch);
         }
+        const uint32_t interval=stage1_adapt_interval_ms(&adaptation);
+        if(selected_profile!=0 && now<next_emit){pause_ms(10);continue;}
+        uint64_t elapsed=now-capture_epoch,cycle=elapsed/clip.duration_ms;
         hvc_frame_t f;
-        int r=hvc_clip_next(&clip,frame,clip.max_frame,&f);
-        if(r==1){hvc_clip_rewind(&clip);clip_offset_ms+=clip.duration_ms;continue;}
-        if(r){ESP_LOGE(TAG,"Clip CRC/read error; playback stopped");atomic_store(&play_requested,false);continue;}
-        int64_t due=epoch+(int64_t)(clip_offset_ms+f.pts_ms)*1000;
-        while(esp_timer_get_time()<due && atomic_load(&play_requested)&&nrc7292_is_connected(radio))pause_ms(1);
-        if(!atomic_load(&play_requested))continue;
-        bool key=(f.flags&1U)!=0;
-        if(esp_timer_get_time()>due+(int64_t)CONFIG_STAGE1_FRAME_LATE_MS*1000) {
-            atomic_fetch_add(&skipped_frames,1);wait_key=true;continue;
+        int result;
+        if(selected_profile==0 && !original_seek) {
+            /* Preserve consecutive references during ordinary 250ms lateness.
+             * Seeking every frame would skip P frames behind a large IDR. */
+            result=hvc_clip_next(&clip,replay_buffer,replay_capacity,&f);cycle=original_cycle;
+            if(result==1){hvc_clip_rewind(&clip);original_cycle++;continue;}
+        } else {
+            result=clip_source_latest(&clip,(uint32_t)(elapsed%clip.duration_ms),replay_buffer,replay_capacity,&f);
+            if(selected_profile==0){original_cycle=cycle;original_seek=false;}
         }
-        if(clip.codec==NRC_VIDEO_CODEC_H264 && wait_key && !key){atomic_fetch_add(&skipped_frames,1);continue;}
-        if(clip.codec==NRC_VIDEO_CODEC_H264 && key && !nrc_h264_frame_is_self_contained(frame,f.size)) {
+        if(result==1){pause_ms(10);continue;}
+        if(result){ESP_LOGE(TAG,"Clip CRC/read error; playback stopped");atomic_store(&play_requested,false);continue;}
+        unsigned index=clip.frame_index-1;
+        if(selected_profile!=0 && have_previous && cycle==previous_cycle && index==previous_index){pause_ms(10);continue;}
+        if(selected_profile!=0)next_emit=now+interval; /* No queue of missed update times. */
+        previous_cycle=cycle;previous_index=index;have_previous=true;
+        uint64_t captured=capture_epoch+cycle*clip.duration_ms+f.pts_ms;
+        if(selected_profile==0) {
+            while((uint64_t)esp_timer_get_time()/1000<captured && atomic_load(&play_requested) &&
+                  nrc7292_is_connected(radio) && selected_profile==adaptation.profile) {
+                adaptation_service();pause_ms(1);
+            }
+            if(!atomic_load(&play_requested)||!nrc7292_is_connected(radio)||selected_profile!=adaptation.profile)continue;
+            if((uint64_t)esp_timer_get_time()/1000>captured+CONFIG_STAGE1_FRAME_LATE_MS) {
+                atomic_fetch_add(&skipped_frames,1);wait_key=true;original_seek=true;continue;
+            }
+        }
+        bool key=(f.flags&1U)!=0;
+        if(clip.codec==NRC_VIDEO_CODEC_H264 && ((wait_key || selected_profile!=0)&&!key)) {
+            atomic_fetch_add(&skipped_frames,1);continue;
+        }
+        if(clip.codec==NRC_VIDEO_CODEC_H264 && key && !nrc_h264_frame_is_self_contained(replay_buffer,f.size)) {
             ESP_LOGE(TAG,"IDR missing SPS/PPS; invalid replay clip");atomic_store(&play_requested,false);continue;
         }
-        /* A partially emitted reference frame invalidates following P frames.
-         * Resume only at the next self-contained IDR. Never retransmit old video indefinitely. */
-        frame_deadline=due+(int64_t)CONFIG_STAGE1_FRAME_LATE_MS*1000;
-        int sent=nrc_video_packetize_frame(&packetizer,(nrc_video_codec_t)clip.codec,frame,f.size,
-                                         (uint32_t)(esp_timer_get_time()/1000),key,packet_sink,NULL);
+        frame_deadline=capture_deadline_us(captured,selected_profile,interval);
+        if(!atomic_load(&play_requested)||!nrc7292_is_connected(radio)||
+           generation!=atomic_load(&replay_generation)||selected_profile!=adaptation.profile)continue;
+        int64_t earliest=esp_timer_get_time();if(pace_at>earliest)earliest=pace_at;
+        if(!frame_fits_deadline(f.size,adaptation.rate_bps,earliest,frame_deadline)) {
+            stage1_adapt_congested(&adaptation,(uint32_t)now);wait_key=true;atomic_fetch_add(&skipped_frames,1);continue;
+        }
+        frame_profile=(uint8_t)selected_profile;frame_generation=generation;
+        int sent=nrc_video_packetize_frame(&packetizer,(nrc_video_codec_t)clip.codec,replay_buffer,f.size,
+                                         (uint32_t)captured,key,packet_sink,NULL);
         if(sent==0){wait_key=false;atomic_fetch_add(&sent_frames,1);}
-        else{wait_key=true;atomic_fetch_add(&skipped_frames,1);}
+        else {
+            /* A partial reference frame invalidates dependent P frames. Select
+             * the next current source frame; never retry this old frame. */
+            wait_key=true;atomic_fetch_add(&skipped_frames,1);
+            nrc7292_link_stats_t s;
+            if(atomic_load(&play_requested)&&nrc7292_is_connected(radio)&&selected_profile==adaptation.profile &&
+               generation==atomic_load(&replay_generation)&&nrc7292_get_link_stats(radio,&s)==ESP_OK&&fresh_link(&s))
+                stage1_adapt_congested(&adaptation,(uint32_t)(esp_timer_get_time()/1000));
+        }
     }
 }
 static bool wiring_confirmed=CONFIG_STAGE1_WIRING_CONFIRMED;
 static bool rf_confirmed=CONFIG_STAGE1_RF_ENABLE;
 static bool network_prepared, replay_created;
+static bool reconnect_created;
+static SemaphoreHandle_t network_mutex;
+/* Protected by network_mutex, shared by the CLI and the reconnect task. */
+static struct {uint64_t due_ms;unsigned failures,attempts;} reconnect;
 static int selected_cs=CONFIG_STAGE1_SPI_CS, selected_clock=CONFIG_STAGE1_SPI_CLOCK;
 static bool session_started;
 static esp_netif_t *halow_netif;
@@ -264,6 +395,74 @@ static esp_err_t prepare_network(void) {
     halow_netif=netif;
     return ESP_OK;
 }
+static uint64_t clock_ms(void){return (uint64_t)esp_timer_get_time()/1000U;}
+static void reconnect_reset(void) {reconnect.due_ms=0;reconnect.failures=0;reconnect.attempts=0;}
+/* Caller holds network_mutex. The target's CONNECT is bounded; this path never
+ * reconfigures Wi-Fi, resets HSPI or changes the target's Duty history. */
+static esp_err_t connect_attempt_locked(void) {
+    if(!atomic_load(&desired_link))return ESP_ERR_INVALID_STATE;
+    reconnect.attempts++;
+    esp_err_t err=nrc7292_connect(radio,pdMS_TO_TICKS(5000));
+    unsigned backoff=0;
+    if(atomic_load(&desired_link)) {
+        if(err==ESP_OK){reconnect.failures=0;backoff=1000;}
+        else {
+            static const unsigned waits[]={1000,2000,4000,8000,16000,30000};
+            unsigned index=reconnect.failures<5?reconnect.failures:5;
+            backoff=waits[index];if(reconnect.failures<6)reconnect.failures++;
+        }
+        reconnect.due_ms=clock_ms()+backoff;
+    }
+    printf("{\"event\":\"reconnect\",\"attempt\":%u,\"error\":%d,\"backoff_ms\":%u,\"desired_link\":%d}\n",
+        reconnect.attempts,err,backoff,atomic_load(&desired_link));
+    return err;
+}
+/* Deterministic step, with no delay on ineligible/stale/native-fault state.
+ * Holding the same mutex as manual CONNECT/DISCONNECT excludes overlap. */
+static bool reconnect_step_locked(uint64_t now,const nrc7292_link_stats_t *s) {
+    if(!atomic_load(&desired_link)||!network_prepared)return false;
+    if(!s->hspi_ready || s->radio_stats_age_ms>500)return false;
+    if(s->wifi_connected){reconnect_reset();return false;}
+    if(now<reconnect.due_ms)return false;
+    (void)connect_attempt_locked();return true;
+}
+static void reconnect_task(void *arg) {
+    (void)arg;
+    for(;;) {
+        if(xSemaphoreTake(network_mutex,0)==pdTRUE) {
+            nrc7292_link_stats_t s;
+            if(radio && nrc7292_get_link_stats(radio,&s)==ESP_OK)
+                (void)reconnect_step_locked(clock_ms(),&s);
+            xSemaphoreGive(network_mutex);
+        }
+        pause_ms(250);
+    }
+}
+static esp_err_t ensure_reconnect_task(void) {
+    if(reconnect_created)return ESP_OK;
+    if(xTaskCreate(reconnect_task,"link_reconnect",4096,NULL,4,NULL)!=pdPASS)return ESP_ERR_NO_MEM;
+    reconnect_created=true;return ESP_OK;
+}
+static esp_err_t disconnect_network(void) {
+    /* Clear intent before waiting: an in-flight CONNECT may complete, but no
+     * later retry may start before this explicit DISCONNECT acquires the lock. */
+    atomic_store(&desired_link,false);atomic_store(&play_requested,false);
+    xSemaphoreTake(network_mutex,portMAX_DELAY);
+    reconnect_reset();
+    esp_err_t err=radio?nrc7292_disconnect(radio,pdMS_TO_TICKS(6000)):ESP_ERR_INVALID_STATE;
+    xSemaphoreGive(network_mutex);return err;
+}
+static esp_err_t request_reconnect(void) {
+    xSemaphoreTake(network_mutex,portMAX_DELAY);
+    esp_err_t err=ESP_ERR_INVALID_STATE;
+    if(radio && network_prepared && atomic_load(&desired_link)) {
+        /* Controlled near-bench association-loss test, not a range test. Keep
+         * play/link intent; the ordinary manager performs bounded recovery. */
+        err=nrc7292_disconnect(radio,pdMS_TO_TICKS(6000));
+        if(err==ESP_OK)reconnect_reset();
+    }
+    xSemaphoreGive(network_mutex);return err;
+}
 static bool network_test_ready(void) {
     return rf_confirmed && network_prepared && radio && nrc7292_is_connected(radio) &&
         !atomic_load(&play_requested) && !atomic_load(&ping_running);
@@ -391,7 +590,7 @@ static void test_loopback(unsigned iterations,unsigned size) {
 static void help(void) {
     puts("Commands: pins | wiring-confirm | probe | probe-ce0 | probe-ce1 | diag | eirq | loopback [count] [bytes]");
     puts("          rf-confirm | connect | ping [IPv4] [count] | udp <bps> <seconds>");
-    puts("          start | pause | disconnect | status | help");
+    puts("          start | pause | disconnect | reconnect (controlled recovery test) | status | help");
     puts("Boot does NOT drive SPI or associate. Confirmations are RAM-only; no erase/auto-flash.");
 }
 void app_main(void) {
@@ -400,6 +599,9 @@ void app_main(void) {
     esp_err_t err=nvs_flash_init();
     if(err!=ESP_OK){ESP_LOGE(TAG,"NVS init failed: %s; no automatic erase",esp_err_to_name(err));return;}
     ESP_ERROR_CHECK(esp_netif_init());ESP_ERROR_CHECK(esp_event_loop_create_default());
+    network_mutex=xSemaphoreCreateMutex();
+    if(!network_mutex){ESP_LOGE(TAG,"Network mutex allocation failed");return;}
+    atomic_store(&adapt_feedback_age,UINT32_MAX);
     setvbuf(stdout,NULL,_IONBF,0);show_pins();help();
     char line[128];size_t used=0;bool overflow=false;
     for(;;) {
@@ -450,21 +652,35 @@ void app_main(void) {
                 ESP_LOGI(TAG,"clip codec=%u %ux%u frames=%lu max=%lu bytes",clip.codec,clip.width,clip.height,
                     (unsigned long)clip.frame_count,(unsigned long)clip.max_frame);
             }
+            xSemaphoreTake(network_mutex,portMAX_DELAY);
             err=start_session();if(err==ESP_OK)err=prepare_network();
-            if(err==ESP_OK && !nrc7292_is_connected(radio))err=nrc7292_connect(radio,pdMS_TO_TICKS(30000));
             if(err==ESP_OK && play && !replay_created) {
-                replay_buffer=malloc(clip.max_frame);
+                replay_capacity=clip_source_max_frame();
+                replay_buffer=malloc(replay_capacity);
                 if(!replay_buffer)err=ESP_ERR_NO_MEM;
                 else if(xTaskCreate(replay_task,"clip_replay",6144,NULL,5,NULL)!=pdPASS) {
                     free(replay_buffer);replay_buffer=NULL;err=ESP_ERR_NO_MEM;
                 } else replay_created=true;
             }
-            if(err==ESP_OK && play)atomic_store(&play_requested,true);
-            printf("{\"event\":\"%s\",\"error\":%d}\n",play?"start":"connect",err);
+            if(err==ESP_OK)err=ensure_reconnect_task();
+            if(err==ESP_OK) {
+                /* Set intent before the first attempt. A temporarily absent AP
+                 * must not discard a successful request to play after recovery. */
+                atomic_store(&desired_link,true);
+                if(play){atomic_fetch_add(&replay_generation,1);atomic_store(&play_requested,true);}
+                reconnect_reset();
+                if(!nrc7292_is_connected(radio))err=connect_attempt_locked();
+            }
+            xSemaphoreGive(network_mutex);
+            printf("{\"event\":\"%s\",\"error\":%d,\"desired_link\":%d,\"play_requested\":%d}\n",
+                play?"start":"connect",err,atomic_load(&desired_link),atomic_load(&play_requested));
         } else if(!strcmp(line,"pause")){atomic_store(&play_requested,false);puts("Playback paused; association and Duty history retained.");}
+        else if(!strcmp(line,"reconnect")) {
+            err=request_reconnect();
+            printf("{\"event\":\"reconnect_request\",\"controlled_test\":true,\"error\":%d}\n",err);
+        }
         else if(!strcmp(line,"disconnect")) {
-            atomic_store(&play_requested,false);
-            err=radio?nrc7292_disconnect(radio,pdMS_TO_TICKS(6000)):ESP_ERR_INVALID_STATE;
+            err=disconnect_network();
             printf("{\"event\":\"disconnect\",\"error\":%d}\n",err);
         } else if(line[0])help();
     }
