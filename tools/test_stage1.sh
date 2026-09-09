@@ -26,7 +26,7 @@ if [[ ${TEST_NETWORK:-0} == 1 ]]; then
   python3 "$ROOT/tools/hw_console.py" --port "$ESP_BY_ID" command rf-confirm
   python3 "$ROOT/tools/hw_console.py" --port "$ESP_BY_ID" command connect --event connect --timeout 60 | tee "$LOG_DIR/association.log"
   ping -I "$PC_IP" -c 5 -W 2 "$ESP_IP" | tee "$LOG_DIR/pc_to_esp_ping.log"
-  python3 "$ROOT/tools/hw_console.py" --port "$ESP_BY_ID" command "ping $PC_IP 5" --event ping --timeout 30 \
+  python3 "$ROOT/tools/hw_console.py" --port "$ESP_BY_ID" command "ping $PC_IP 5" --event ping --timeout 30 --after-seconds 2 \
     | tee "$LOG_DIR/esp_to_pc_ping.log"
   "$ROOT/tools/test_udp.sh" 2>&1 | tee "$LOG_DIR/udp.log"
 fi

@@ -6,6 +6,7 @@ import io
 import os
 import pathlib
 import pty
+import select
 import socket
 import shutil
 import subprocess
@@ -21,6 +22,17 @@ spec = importlib.util.spec_from_file_location('hw_console', ROOT / 'tools/hw_con
 hw = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(hw)
 assert hw.event('boot text') is None
+for allowed in ('ESP-ROM:esp32s3-20210327', 'rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)',
+                'W (123) stage1: request timeout', 'CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y'):
+    hw.check_esp_failure(allowed)
+for fatal in ('***ERROR*** A stack overflow in task ping has been detected.',
+              "Guru Meditation Error: Core 0 panic'ed (LoadProhibited).", 'abort() was called at PC 0x123 on core 0',
+              'assert failed: test app.c:12', '\x1b[31mRebooting...\x1b[0m'):
+    try:
+        hw.check_esp_failure(fatal)
+        raise AssertionError('ESP crash accepted')
+    except ValueError:
+        pass
 assert hw.event('prefix {"event":"probe","error":0}') == {'event': 'probe', 'error': 0}
 diag = dict(event='diag', faulted=0, chip_id=0x7292, signature='NRC-HSPI', cs_gpio=6,
             clock_hz=5000000, rx_slot_num=4, tx_slot_num=4, rx_slot_size=512, tx_slot_size=512)
@@ -60,6 +72,29 @@ try:
         assert console.read(.1, 'probe')['error'] == 0
         os.write(master, b'{"event":"diag","old":0}\n')
         assert console.read(.1, 'diag')['old'] == 0
+        # A success event must not mask a later panic during --after-seconds.
+        os.write(master, b'{"event":"ping","sent":5,"received":5,"error":0}\n')
+        hw.passed(console.read(.1, 'ping'), 'ping')
+        os.write(master, b'***ERROR*** A stack overflow in task ping has been detected.\n')
+        try:
+            console.read(.1)
+            raise AssertionError('Post-success panic accepted')
+        except ValueError:
+            pass
+        # Likewise a coalesced success+panic and a stale pre-command reboot fail.
+        os.write(master, b'{"event":"ping","sent":5,"received":5,"error":0}\nRebooting...\n')
+        try:
+            console.read(.1, 'ping')
+            raise AssertionError('Coalesced success+reboot accepted')
+        except ValueError:
+            pass
+        os.write(master, b'Rebooting...\n')
+        try:
+            console.command('pause')
+            raise AssertionError('Old panic was silently drained before new command')
+        except ValueError:
+            pass
+        assert not select.select([master], [], [], 0)[0], 'Command sent after crash'
 finally:
     os.close(master)
     os.close(slave)
@@ -94,6 +129,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as receive, socket.socket(
     receive.bind(('127.0.0.1', 0))
 
     class FakeConsole:
+        def read(self, duration):
+            assert duration == 2
+
         def command(self, text, expected, timeout):
             assert text == 'udp 100000 1' and expected == 'udp'
             for sequence in (0, 2, 2, 1):
@@ -105,6 +143,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as receive, socket.socket(
     actual = test_udp.receive_run(FakeConsole(), receive, '127.0.0.1', 100000, 1, .1)
     assert actual['result'] == 'PASS' and actual['received'] == 3
     assert actual['duplicates'] == 1 and actual['out_of_order'] == 1
+    assert actual['delivery_result'] == 'PASS' and actual['stability_result'] == 'PASS'
+
+    class CrashingConsole(FakeConsole):
+        def read(self, duration):
+            raise ValueError('ESP instability detected: Rebooting...')
+
+    unstable = test_udp.receive_run(CrashingConsole(), receive, '127.0.0.1', 100000, 1, .1)
+    assert unstable['result'] == 'FAIL' and unstable['stability_result'] == 'FAIL'
+    assert unstable['delivery_result'] == 'PASS' and unstable['lost'] == 0
 # A caller-selected external LOG_DIR must appear in the evidence archive.
 with tempfile.TemporaryDirectory() as temporary:
     base = pathlib.Path(temporary)

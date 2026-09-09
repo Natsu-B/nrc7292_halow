@@ -4,11 +4,20 @@ import argparse
 import fcntl
 import json
 import os
+import re
 import select
 import sys
 import termios
 import time
 import tty
+
+
+def check_esp_failure(line):
+    line = re.sub(r'\x1b\[[0-9;]*m', '', line).strip()
+    if (line.startswith(('***ERROR*** A stack overflow in task ', 'Guru Meditation Error:',
+                         'abort() was called at PC ', 'assert failed:', 'Stack smashing protect failure!'))
+            or line == 'Rebooting...'):
+        raise ValueError(f'ESP instability detected: {line}')
 
 
 def event(line):
@@ -83,9 +92,12 @@ class Console:
             matched = None
             while b'\n' in self.pending:
                 line, self.pending = self.pending.split(b'\n', 1)
-                obj = event(line.decode('utf-8', errors='replace').strip())
+                line = line.decode('utf-8', errors='replace').strip()
+                check_esp_failure(line)
+                obj = event(line)
                 if expected and obj and obj.get('event') == expected and matched is None:
                     matched = obj
+            check_esp_failure(self.pending.decode('utf-8', errors='replace'))
             if len(self.pending) > 65536:
                 self.pending = self.pending[-65536:]
             if matched is not None:

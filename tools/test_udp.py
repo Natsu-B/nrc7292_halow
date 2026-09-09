@@ -65,6 +65,7 @@ def receive_run(console, udp, source, bps, seconds, drain_seconds):
     def transmit():
         try:
             completion.append(console.command(f'udp {bps} {seconds}', 'udp', seconds + 45))
+            console.read(2)  # Observe cleanup after success, including the final rate.
         except Exception as exc:
             errors.append(str(exc))
 
@@ -109,11 +110,17 @@ def receive_run(console, udp, source, bps, seconds, drain_seconds):
     thread.join(timeout=.5)
     if thread.is_alive():
         raise TimeoutError('ESP UDP command did not finish')
-    if errors:
+    if errors and not completion:
         raise ValueError(errors[0])
     if not completion:
         raise ValueError('ESP supplied no UDP completion event')
     result = summarize(completion[0], received, corrupt, duplicates, reordered, bps, seconds)
+    result['delivery_result'] = result['result']
+    result['stability_result'] = 'FAIL' if errors else 'PASS'
+    result['stability_observation_seconds'] = 2
+    if errors:
+        result['result'] = 'FAIL'
+        result['stability_error'] = errors[0]
     result['receive_drain_seconds'] = drain_seconds
     result['loss_scope'] = 'end-to-end missing at receive deadline, including delayed/queued packets; not RF PER'
     return result
