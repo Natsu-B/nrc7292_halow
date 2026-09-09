@@ -1,0 +1,24 @@
+4f3
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+
+HOST command: pause
+Playback paused; association and Duty history retained.
+
+HOST command: wiring-confirm
+Wiring acknowledged for this boot. Type probe for native HSPI/HELLO.
+
+HOST command: rf-confirm
+RF acknowledged for this boot. Duty/LBT remains enforced; no association yet.
+
+HOST command: connect
+CS candidate GPIO6/CE0 : PASS
+{"event":"cs_probe","cs_gpio":6,"clock_hz":5000000,"error":0}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":0,"rx_slots":0,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+{"event":"hello","error":0}
+{"event":"connect","error":0}
+
+HOST command: udp 100000 30
+{"event":"udp","run_id":3678413849,"bps":100000,"seconds":30,"elapsed_ms":30000,"offered":367,"sent":367,"bytes":375808,"send_errors":0,"scheduler_skips":0,"duty_skips":0,"queue_skips":0,"telemetry_skips":0,"duty_pauses":0,"duty_blocked_ms":0,"queue_wait_ms":0,"telemetry_wait_ms":0,"duty_measurement":"sampled_target_availability","host_queue_drops":0,"target_queue_drops":0,"error":0}
+{"result": "PASS", "criterion": "all successfully sent datagrams received byte-exactly; no send errors", "requested_bps": 100000, "seconds": 30, "sent": 367, "received": 367, "received_bytes": 375808, "lost": 0, "loss_fraction": 0.0, "corrupt": 0, "unexpected_sequences": 0, "duplicates": 0, "out_of_order": 0, "delivered_bps": 100215.47, "requested_rate_met": true, "duty_blocked_ms": 0, "duty_pauses": 0, "duty_measurement": "sampled_target_availability", "sender": {"event": "udp", "run_id": 3678413849, "bps": 100000, "seconds": 30, "elapsed_ms": 30000, "offered": 367, "sent": 367, "bytes": 375808, "send_errors": 0, "scheduler_skips": 0, "duty_skips": 0, "queue_skips": 0, "telemetry_skips": 0, "duty_pauses": 0, "duty_blocked_ms": 0, "queue_wait_ms": 0, "telemetry_wait_ms": 0, "duty_measurement": "sampled_target_availability", "host_queue_drops": 0, "target_queue_drops": 0, "error": 0}, "receive_drain_seconds": 5.0, "loss_scope": "end-to-end missing at receive deadline, including delayed/queued packets; not RF PER"}

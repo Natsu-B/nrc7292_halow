@@ -1,0 +1,44 @@
+
+HOST command: pins
+SCLK GPIO9
+MOSI GPIO7
+MISO GPIO8
+EIRQ GPIO4
+CE0 GPIO6
+CE1 GPIO5
+SPI mode 0, 8 bit, MSB first, active-low CS, clock 5000000 Hz; selected CS GPIO6
+EIRQ active-high level; probe always polls. SX reset is manual; no RST wire.
+
+HOST command: wiring-confirm
+Wiring acknowledged for this boot. Type probe for native HSPI/HELLO.
+
+HOST command: probe
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":0,"rx_slots":0,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+{"event":"probe","error":0}
+
+HOST command: diag
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":0,"rx_slots":0,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+HSPI 5MHz PASS: GPIO6/CE0; native chip/signature/geometry verified
+
+HOST command: loopback 100 64
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":0,"rx_slots":0,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+{"event":"hello","error":0}
+{"event":"loopback","requested":100,"passed":100,"bytes":64,"elapsed_ms":403,"error":0}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":101,"rx_slots":105,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+
+HOST command: loopback 100 512
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":101,"rx_slots":107,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"loopback","requested":100,"passed":100,"bytes":512,"elapsed_ms":605,"error":0}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":301,"rx_slots":313,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+
+HOST command: loopback 1000 1518
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":301,"rx_slots":315,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"loopback","requested":1000,"passed":1000,"bytes":1518,"elapsed_ms":15865,"error":0}
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":4301,"rx_slots":4473,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+
+HOST command: diag
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":0,"eirq_level":0,"irq_high_count":0,"tx_slots":4301,"rx_slots":4475,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":0,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+HSPI loopback PASS: 100x64, 100x512, 1000x1518; corruption/sequence/SPI errors=0
+EIRQ GPIO4 NOT_TESTED: polling session; run --eirq after polling succeeds

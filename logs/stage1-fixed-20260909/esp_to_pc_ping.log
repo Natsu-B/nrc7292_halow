@@ -1,0 +1,4 @@
+
+HOST command: ping 192.168.10.250 5
+{"event":"ping","target":"192.168.10.250","sent":5,"received":5,"elapsed_ms":50,"error":0}
+{"event":"ping_stack","configured_bytes":5120,"min_free_after_report_bytes":2228}

@@ -1,0 +1,29 @@
+{
+  "result": "PASS",
+  "runtime": "Electron 40.10.3",
+  "first": {
+    "displayed": 440,
+    "completed": "438",
+    "state": "UDP 受信中",
+    "codec": "H.264 avc1.42c016 / NRCV",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "picture": "640 × 360 / frame 439",
+    "source": "192.168.10.20",
+    "bind": "192.168.10.250",
+    "loss": "0.0%",
+    "log": "受信アプリを起動しました。\n\n7:25:54 PM  UDP 待受を開始しました。"
+  },
+  "second": {
+    "displayed": 465,
+    "completed": "458",
+    "state": "UDP 受信中",
+    "codec": "H.264 avc1.42c016 / NRCV",
+    "decoder": "内蔵 WebCodecs デコーダ",
+    "picture": "640 × 360 / frame 464",
+    "source": "192.168.10.20",
+    "bind": "192.168.10.250",
+    "loss": "0.0%",
+    "log": "受信アプリを起動しました。\n\n7:25:54 PM  UDP 待受を開始しました。"
+  },
+  "screenshot": "logs/receiver_360p_live_20260909.png"
+}

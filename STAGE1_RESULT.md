@@ -1,6 +1,6 @@
 # Stage-1 実機結果
 
-更新: 2026-09-09 18:57 JST。StandaloneのRF/AP/Ethernet独立確認がPASS。custom SXも人間によるGUI書込みCompleteを確認。ESPへ実測AP設定のイメージを書込み、CLI/pins確認済み。SA起動完了後にnative HSPI試験へ進む。
+更新: 2026-09-09 19:30 JST。ESP ping taskのstack overflow修正後、HSPI/EIRQ/loopback/IP再検証PASS。UDP100/250/500kbps損失0、360p連続120frame byte一致、Electronで実H.264描画を確認。1MbpsはDuty停止とSX queue dropを伴い未達。mainへのmergeとmainからの再検証へ進む。
 
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
@@ -14,20 +14,25 @@
 | Standalone SX ↔ PC ping | PASS | SX10.20→PC10.250とPC→SX各5/5。PC送信はenp0s31f6に固定 |
 | custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
 | custom SX flash | PASS | 18:54:41にGUI Complete。指定guarded bin、MAC/RF migration skipped。custom boot/HSPIは別判定 |
-| ESP build | PASS | ESP-IDF v5.5.2 / esp32s3、実測AP/Open/IPを反映、365248 bytes |
+| custom SX boot | PASS | native HSPI応答、期待するSW/board ID、HELLOおよびloopbackでアプリ動作確認 |
+| ESP build | PASS | ESP-IDF v5.5.2 / esp32s3、実測AP/Open/IPおよびping stack修正、365456 bytes |
 | ESP flash | PASS | by-idをesptool再照合、書込み後hash一致 |
 | ESP boot | PASS | 実boot log、GPIO表示、console応答 |
-| CE0 GPIO6 probe | NOT_TESTED | GNDとI/Oジャンパー配置確認済み。SXのFW準備を優先、ESPはSPI未開始 |
-| CE1 GPIO5 probe | NOT_TESTED | 同上。両CS同時Low禁止の切替はhost regressionで検証 |
+| CE0 GPIO6 probe | PASS | 5MHz、chip0x7292/modem1/sw0x800/board0x07020902/NRC-HSPI、RX/TX各32×512 |
+| CE1 GPIO5 probe | NOT_TESTED | 第一候補CE0が成功したためfallback未実施、CE1はHighを維持 |
 | HSPI 1MHz | NOT_TESTED | 5MHz両候補失敗時のfallback実装済み |
-| HSPI 5MHz | NOT_TESTED | 電気試験未開始 |
-| EIRQ GPIO4 | NOT_TESTED | input/high-level実装、polling後有効化。実信号未測定 |
-| loopback 1518×1000 | NOT_TESTED | SX custom未書込み |
-| AP association custom FW | NOT_TESTED | SX custom未書込み |
-| IPv4 ping | NOT_TESTED | 無線経路未確立 |
-| UDP 100k | NOT_TESTED | 無線経路未確立 |
-| 360p | NOT_TESTED | 下位層未確立 |
-| merged to main | NO | 必須HSPI probe PASS未達 |
+| HSPI 5MHz | PASS | probe、HELLO、polling/EIRQ loopback実測 |
+| EIRQ GPIO4 | PASS | active-high level、IRQとHigh検出count各1370、loopbackエラー0 |
+| loopback 1518×1000 | PASS | polling 15865ms、EIRQ12068ms。両方1000/1000、corruption/sequence/SPI error0 |
+| AP association custom FW | PASS | SDK blocking connect成功、link=1、RSSI-10、Open認証 |
+| IPv4 ping | PASS | 修正後ESP→PC/PC→ESP各5/5。終了後監視でpanicなし、ping stack最小空き2228 bytes |
+| UDP 100k | PASS | 修正版30秒、367送信/367受信、375808 bytes一致、loss/corruption/send_error/Duty停止0、安定性PASS |
+| UDP 250k | PASS | 30秒916/916、loss/corruption0、Duty停止0 |
+| UDP 500k | PASS | 30秒1832/1832、loss/corruption0、Duty停止0 |
+| UDP 1M | FAIL | 2125送信/1986受信、139 loss=SX queue drop139。Duty停止12574ms、実効542310bps |
+| 360p | PASS | 640×360、同一stream連続120frame byte一致、60秒597frame一致、破損/失効0 |
+| Electron GUI | PASS | 実UDPからH.264をWebCodecsで復号・描画、表示440→465frame。Electron40.10.3 |
+| merged to main | NO | 通信・安定性・360p確認済み。これからmergeしmain再build/reflashを実施 |
 | merge commit | — | merge未実施 |
 
 NOT_TESTEDは未試験を表し、測定した故障とは区別する。Standaloneの無線成功とSPI成功も別々に判定する。
@@ -55,12 +60,17 @@ ESP書込み前のFWはSD/ICMセンサー用だった。診断FWはSPI/RFを起�
 `logs/esp_flash_reprobe.log`の3領域hash照合と`logs/esp_boot_reprobe.log`で最終imageを確認。
 ping/UDPの未接続時拒否は実機で確認済み。疎通成功としては数えない。
 
-現在実flash済ESP bin SHA256（実測AP/Open/IPを反映）:
+以前の実flash済ESP bin SHA256（実測AP/Open/IPを反映）:
 `071a90db9de8999553070a3c486027a3e67027e54fc4d56c3a504f34b0c60cb4`
 
 365248 bytes。`logs/esp_flash_observed_ap_20260909.log`でESP32-S3個体と3領域hash照合を確認。
 build後のcommitによりflash時にproject versionが更新されたため、build直後のhashではなく実flash完了後のbin hashを記録。
 `logs/esp_pins_observed_ap_20260909.log` と `logs/esp_diag_observed_ap_20260909.log` でアプリ応答・実配線表示・SPI未開始を確認。
+
+現在実flash済ESP bin SHA256（ping task stack修正、SNR表示追加）:
+`38b4c37c0d88d4afd53157539eee5b9b197b64d9e34e8e7b093f9947a9c263da`
+
+365456 bytes。`logs/esp_flash_ping_stack_video_20260909.log` で照合。映像partitionへ既存640×360 HVC1 clipも書込み、hash確認済み。
 
 SX custom候補:
 `/home/hotaru/silex/_codex_work/prepared_sx_20260908_guarded/out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin`
@@ -232,3 +242,26 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - 18:52、同じlauncherへguarded custom binを引数指定するHUMAN_ACTION_2を依頼。ESPのネットワーク既定値も実測SSID/Open/10.20/24/PC10.250に合わせてbuild中。JP Duty/LBTは変更しない。
 - `logs/sx_flashtool_20260909-185400-1953056.log`（private）: 人間がguarded custom binを選択したlauncherでSTARTし、18:54:41にComplete。MAC/RF migration skipped。CodexからSXへのflash要求は送っていない。USBは18:56:13に再列挙、SA起動完了の返答待ち。
 - ESP Kconfig実測設定変更はcommit `0285127`。SSID halow_demo_video、OPEN、ESP192.168.10.20/24、PC192.168.10.250、gateway0.0.0.0。同一subnetへの試験にdefault gatewayは不要。build/flash/pins/diagはPASS、SPIはまだ開始していない。
+
+## 2026-09-09 native HSPIとcustom無線/IPの実証
+
+- `logs/esp_boot_same_fd_20260909.log`: ESP専用HardReset後、同じserial fdで全bootを取得。app version0285127-dirty、指定pins、boot時SPI/RF未開始のbannerを確認。SXはresetしていない。
+- custom書込みCompleteとUSB再接続/給電を認識後、chip/signature読取りを実行。`logs/hspi_initial_probe_20260909.log`: CE0/GPIO6 5MHz PASS。期待するNRC7292 IDとnative queue geometryを取得。CE1/1MHz fallbackは不要だった。
+- `logs/hspi_polling_loopback_20260909.log`: HELLO PASS、64×100/512×100/1518×1000すべてerror0。最終TX slots4301/RX4475で、cache表示だけでなく実転送を確認。
+- `logs/hspi_eirq_loopback_20260909.log`: polling成功後にEIRQ有効化。同じ3種loopbackすべてPASS、IRQとHigh検出counter各1370。SPI/ACK/header/sequence/status errorsはいずれも0。custom起動をソフトウェアで確認できたため、人間の完了入力は不要と伝えた。
+- `logs/esp_custom_association_20260909.log` / `logs/esp_custom_status_20260909.log`: ESPから設定/CONNECT、SX側SDKのblocking connectionが成功後にACK。後続link1/RSSI-10、接続直後MCS0/0。MCSは最大速度達成の証拠とはしない。SNRは既存payloadにあるが表示がなかったため、取得成否flag未転送と明記してESP statusへ表示する変更187c058を準備。
+- `logs/esp_to_pc_ping_custom_20260909.log` / `logs/pc_to_esp_ping_custom_20260909.log`: 両方向5/5、loss0。PC側はenp0s31f6に固定。ESPのTTL64とStandaloneのTTL255も区別できた。
+- `logs/udp-real-100k-20260909/`: 100kbps/30秒、367/367、375808bytes完全一致、実測100215.47bps、lost/corrupt/duplicate/out-of-order0、Duty blocked0ms。Duty計測はtarget availabilityのsamplingであり、RF packet error rateとは分ける。
+- UDP開始前にESPのRebooting残片を観測。`logs/esp_ping_stability_20260909.log` でping完了後も20秒受信を続け、ping task stack overflowとsoftware rebootを再現。polling modeでも発生し、EIRQ起因とは扱わない。通信成功イベントだけで安定性PASSとしない。現在ESP修正と試験側panic検出の追加を進めている。
+
+## ping修正後の再検証と360p表示
+
+- ESP ping taskの既定stack2560 bytesでoverflowを再現し、5120 bytesへ明示設定（b7e7dc0）。非同期CLIは維持し、結果出力後のhigh-watermarkを実測。修正版で最小空き2228 bytes。SDK stubと実config引数を検証する回帰testも追加（a645f47）。
+- host側はpanic/stack overflow/abort/Rebootingを検出すると失敗するよう修正（27edcae）。ping・UDP完了後も2秒観測し、UDPの配送結果と安定性結果を分離。`logs/host_tests_ping_stack_stubs_20260909.log` でC12/12、Node12/12、Python/互換/ソース整合性tests全PASS。
+- `logs/stage1-fixed-20260909/`: 修正版でCE0/5MHz probe、EIRQ、3種loopback、custom association、双方向pingを再実行しPASS。ping_stack configured5120/min_free2228。後続UDPと動画を含め、明示的panic/rebootは再発していない。
+- UDP各30秒の結果は同directoryの `udp_100000.json` / `udp_250000.json` / `udp_500000.json` / `udp_1000000.json`。100/250/500kbpsは全送信packetのbyte一致と安定性PASS。1MbpsではDuty停止12574ms、1538送信機会をDutyで見送り、送信済2125packet中139packetをSX queueでdrop。受信欠落139と一致し、corruption0。制限を解除していない。1Mbps delivery FAILにより通しscript全体のexitは1であり、これを全項目PASSとはしない。
+- `logs/video-360p-real-20260909/video_result.json`: 60秒、1379packet、597完成frame。連続する同一streamのframe0..119（120枚）を元HVC1の順序・byteと完全照合。不正/重複/順序異常/失効/reference mismatchは0。
+- 受信H.264: `logs/video-360p-real-20260909/received_360p.h264`、263049 bytes、SHA256 `d6167cdd1046e2874bd440ed26026c0886957929a515fa09b6df2cebbf4cdd7c`。Gitには生成binaryを入れず、evidence archiveに含める。
+- 動画中55sample: RSSI-12dBm、MCS TX4/6/7・RX7、SNR API値27..35dB。SNR取得成功flagはprotocolにないため `snr_validity=unreported` を併記する。target drop139は先の1Mbps負荷試験からの累積で、動画中に増えていない。
+- byte一致確認後、既存Nix Electron40.10.3で実デスクトップにGUIを起動。PC10.250でESP10.20から受信し、H.264 avc1.42c016をWebCodecsで復号。`logs/gui_live_confirmation_20260909.json`で表示440→465frameの増加とdecoder errorなしを確認、`logs/receiver_360p_live_20260909.png`に対象アプリだけを保存。package.json指定44.2.0の配布buildは未試験。
+- GUI既定IPを実測値へ更新（8f1bafb）。1080pは未試験。Stage-1の360pまでを確認し、main統合と再検証を次に行う。

@@ -1,0 +1,4 @@
+
+HOST command: status
+I (172179) stage1: link=1 hspi=1 rssi=-10 mcs=0/0 duty=1 q=0 drop=0/0 frame=0 skip=0 heap=345988
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":1836,"tx_slots":8603,"rx_slots":9682,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":1836,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}

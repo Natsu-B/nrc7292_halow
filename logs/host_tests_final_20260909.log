@@ -1,0 +1,16 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/.native-build
+[1/2] Building C object CMakeFiles/test_esp_network.dir/test_esp_network.c.o
+FAILED: [code=1] CMakeFiles/test_esp_network.dir/test_esp_network.c.o 
+/nix/store/8v97ngkcpfzgghwnnr7fsz33p2x22gy9-gcc-wrapper-14.3.0/bin/cc  -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../components/nrc7292/include -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../components/nrc7292/hspi -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../components/nrc_video_packet/include -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../components/hvc_clip/include -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../sx_newah/L2BRIDGE_HSPI -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/esp_stubs -I/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../esp32/main -std=gnu11 -Wall -Wextra -Werror -Wno-unused-parameter -ffunction-sections -fdata-sections -MD -MT CMakeFiles/test_esp_network.dir/test_esp_network.c.o -MF CMakeFiles/test_esp_network.dir/test_esp_network.c.o.d -o CMakeFiles/test_esp_network.dir/test_esp_network.c.o -c /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/test_esp_network.c
+In file included from /home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/test_esp_network.c:3:
+/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../esp32/main/app_main.c: In function ‘ping_done’:
+/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../esp32/main/app_main.c:282:33: error: implicit declaration of function ‘uxTaskGetStackHighWaterMark’ [-Wimplicit-function-declaration]
+  282 |     unsigned min_free=(unsigned)uxTaskGetStackHighWaterMark(NULL);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../esp32/main/app_main.c: In function ‘test_ping’:
+/home/hotaru/silex/_codex_work/worktrees/stage1-real-hw-20260908-231300/tests/../esp32/main/app_main.c:295:12: error: ‘esp_ping_config_t’ has no member named ‘task_stack_size’
+  295 |         cfg.task_stack_size=PING_TASK_STACK_BYTES;
+      |            ^
+ninja: build stopped: subcommand failed.

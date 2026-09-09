@@ -1,0 +1,111 @@
+
+HOST command: pause
+Playback paused; association and Duty history retained.
+
+HOST command: wiring-confirm
+Wiring acknowledged for this boot. Type probe for native HSPI/HELLO.
+
+HOST command: rf-confirm
+RF acknowledged for this boot. Duty/LBT remains enforced; no association yet.
+
+HOST command: connect
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":4551,"tx_slots":20037,"rx_slots":7490,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":4555,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+{"event":"connect","error":0}
+
+HOST command: start
+I (389098) stage1: clip codec=1 640x360 frames=120 max=9444 bytes
+{"event":"diag","cs_gpio":6,"clock_hz":5000000,"chip_id":29330,"modem_id":1,"sw_id":2048,"board_id":117573890,"signature":"NRC-HSPI","rx_slot_num":32,"tx_slot_num":32,"eirq_enabled":1,"eirq_level":0,"irq_high_count":4554,"tx_slots":20037,"rx_slots":7493,"spi_errors":0,"bad_ack":0,"bad_header":0,"seq_gaps":0,"invalid_status":0,"irq_count":4558,"faulted":0,"rx_slot_size":512,"tx_slot_size":512}
+Active session status: I/O task owns SPI; this command does not synchronously re-read chip identity.
+I (389100) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=0 drop=0/139 frame=0 skip=0 heap=329840 snr_api_db=28 snr_validity=unreported
+{"event":"start","error":0}
+I (390268) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=11 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (391326) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=22 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (392384) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=33 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (393451) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=44 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (394552) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=55 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (395652) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=66 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (396752) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=77 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (397852) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=88 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (398952) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=99 skip=0 heap=328068 snr_api_db=34 snr_validity=unreported
+I (400052) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=110 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (401297) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=121 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (402327) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=132 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (403384) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=143 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (404451) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=154 skip=0 heap=328068 snr_api_db=34 snr_validity=unreported
+I (405552) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=165 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (406652) stage1: link=1 hspi=1 rssi=-12 mcs=6/7 duty=1 q=1 drop=0/139 frame=176 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (407752) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=187 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (408852) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=198 skip=0 heap=328068 snr_api_db=35 snr_validity=unreported
+I (409952) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=209 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (411052) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=220 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (412210) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=231 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (413297) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=241 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (414326) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=252 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (415384) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=263 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (416451) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=274 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (417551) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=285 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (418652) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=296 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (419752) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=307 skip=0 heap=328068 snr_api_db=34 snr_validity=unreported
+I (420852) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=318 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (421952) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=329 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (423052) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=340 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (424210) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=351 skip=0 heap=328068 snr_api_db=34 snr_validity=unreported
+I (425297) stage1: link=1 hspi=1 rssi=-12 mcs=4/7 duty=1 q=1 drop=0/139 frame=361 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (426326) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=372 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (427384) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=383 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (428451) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=394 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (429552) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=405 skip=0 heap=328068 snr_api_db=34 snr_validity=unreported
+I (430652) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=416 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (431752) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=427 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (432852) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=438 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (433952) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=449 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (435052) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=460 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (436210) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=471 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (437297) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=481 skip=0 heap=328068 snr_api_db=30 snr_validity=unreported
+I (438326) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=492 skip=0 heap=328068 snr_api_db=33 snr_validity=unreported
+I (439384) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=503 skip=0 heap=328068 snr_api_db=28 snr_validity=unreported
+I (440451) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=514 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (441552) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=525 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+I (442652) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=536 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (443752) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=547 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (444852) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=558 skip=0 heap=328068 snr_api_db=27 snr_validity=unreported
+I (445952) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=569 skip=0 heap=328068 snr_api_db=32 snr_validity=unreported
+I (447052) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=580 skip=0 heap=328068 snr_api_db=31 snr_validity=unreported
+I (448210) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=1 drop=0/139 frame=591 skip=0 heap=328068 snr_api_db=29 snr_validity=unreported
+{
+  "result": "PASS",
+  "source": "192.168.10.20",
+  "bind": "192.168.10.250",
+  "port": 50000,
+  "width": 640,
+  "height": 360,
+  "criterion": "one complete same-stream cycle with consecutive NRCV frame IDs and byte-exact source frame order",
+  "expectedFrames": 120,
+  "verifiedFrames": 120,
+  "verifiedStream": 3217994998,
+  "firstFrame": 0,
+  "lastFrame": 119,
+  "matchedFrames": 597,
+  "mismatchedFrames": 0,
+  "streamResets": 0,
+  "metrics": {
+    "packets": 1379,
+    "invalid": 0,
+    "duplicate": 0,
+    "outOfOrder": 0,
+    "completed": 597,
+    "expired": 0,
+    "referenceDrops": 0,
+    "bytes": 1930600
+  },
+  "lossEstimate": 0,
+  "duty": "NOT_MEASURED: correlate esp_video.log duty samples; gaps alone are not duty stops",
+  "fault": null,
+  "h264Bytes": 263049,
+  "h264Sha256": "d6167cdd1046e2874bd440ed26026c0886957929a515fa09b6df2cebbf4cdd7c"
+}
+
+HOST command: pause
+Playback paused; association and Duty history retained.
+I (449286) stage1: link=1 hspi=1 rssi=-12 mcs=7/7 duty=1 q=0 drop=0/139 frame=600 skip=1 heap=329704 snr_api_db=31 snr_validity=unreported
