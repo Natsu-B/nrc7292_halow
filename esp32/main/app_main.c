@@ -67,10 +67,12 @@ static void network_stats(const nrc7292_link_stats_t *s) {
 static void stats_print(void) {
     nrc7292_link_stats_t s;
     if(nrc7292_get_link_stats(radio,&s)!=ESP_OK)return;
-    ESP_LOGI(TAG,"link=%d hspi=%d rssi=%d mcs=%u/%u duty=%u q=%u drop=%lu/%lu frame=%u skip=%u heap=%lu",
+    /* Target forwards the SDK SNR value without its getter status; zero can
+     * mean either a measurement or a failed read. Do not invent validity. */
+    ESP_LOGI(TAG,"link=%d hspi=%d rssi=%d mcs=%u/%u duty=%u q=%u drop=%lu/%lu frame=%u skip=%u heap=%lu snr_api_db=%d snr_validity=unreported",
         s.wifi_connected,s.hspi_ready,s.radio.rssi_average_dbm,s.radio.tx_mcs,s.radio.rx_mcs,s.radio.duty_tx_available,
         s.host_data_queue_depth,(unsigned long)s.host_tx_queue_drops,(unsigned long)s.radio.host_to_radio_drops,
-        atomic_load(&sent_frames),atomic_load(&skipped_frames),(unsigned long)esp_get_free_heap_size());
+        atomic_load(&sent_frames),atomic_load(&skipped_frames),(unsigned long)esp_get_free_heap_size(),s.radio.snr_db);
 }
 static int packet_sink(const uint8_t *data,size_t size,void *ctx) {
     (void)ctx;
