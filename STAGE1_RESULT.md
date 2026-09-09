@@ -1,19 +1,20 @@
 # Stage-1 実機結果
 
-更新: 2026-09-09 09:00 JST。人間によるStandalone書込み操作は「Pinging 2nd bootloader failed」で停止。SXはROM PINGへ応答しており、この試行はflash書込み開始前の失敗。GUIの初期選択がESP側になることを再現し、SX by-idと指定imageを選ぶlauncherを準備。SX flash再試行は人間待ち。
+更新: 2026-09-09 18:57 JST。StandaloneのRF/AP/Ethernet独立確認がPASS。custom SXも人間によるGUI書込みCompleteを確認。ESPへ実測AP設定のイメージを書込み、CLI/pins確認済み。SA起動完了後にnative HSPI試験へ進む。
 
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
 | USB ESP32-S3 | PASS | 303a:1001、serial/MAC 90:70:69:10:C7:B4、esptoolでESP32-S3 rev0.2 |
 | USB SX-NEWAH | PASS | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。Download modeでROM PONG 16 bytes、RAM bootloader応答も確認 |
 | Ethernet AP-100AH | PASS | ARPから192.168.10.10 / 1c:bc:ec:1b:30:feを検出、HTTP200、画面にAP-100AHと表示 |
-| SX standalone boot | NOT_CONFIRMED | SA/CN8/USBケーブル確認後の06:22電源再接続を捕捉。115200 8N1のboot出力と改行/help/sf sizeは受信0 byte。現行FW未確定 |
-| SX standalone flash | FAIL | 人間のGUI操作でPinging 2nd bootloader failed。flash erase/programより前の段階で停止 |
-| SX → AP association | NOT_TESTED | Standalone boot未確認 |
+| SX standalone boot | PASS | 指定bin書込み後、nrc7292_standalone_xip CLI/help/sf size応答、1MiB確認 |
+| SX standalone flash | PASS | 18:46:59にGUI Complete。指定3画像のhash一致、MAC/RF migration skipped |
+| SX → AP association | PASS | halow_demo_video、BSSID 1c:bc:ec:1b:30:ff、Open、wpa_state=COMPLETED、scan RSSI -10dBm |
 | AP → PC Ethernet | PASS | 実IP192.168.10.10へのping3/3、0% loss。候補IP失敗はアドレス違いだった |
+| Standalone SX ↔ PC ping | PASS | SX10.20→PC10.250とPC→SX各5/5。PC送信はenp0s31f6に固定 |
 | custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
-| custom SX flash | NOT_DONE | 人間専用操作、依頼手順準備済み |
-| ESP build | PASS | ESP-IDF v5.5.2 / esp32s3、最終339536 bytes |
+| custom SX flash | PASS | 18:54:41にGUI Complete。指定guarded bin、MAC/RF migration skipped。custom boot/HSPIは別判定 |
+| ESP build | PASS | ESP-IDF v5.5.2 / esp32s3、実測AP/Open/IPを反映、365248 bytes |
 | ESP flash | PASS | by-idをesptool再照合、書込み後hash一致 |
 | ESP boot | PASS | 実boot log、GPIO表示、console応答 |
 | CE0 GPIO6 probe | NOT_TESTED | GNDとI/Oジャンパー配置確認済み。SXのFW準備を優先、ESPはSPI未開始 |
@@ -48,11 +49,18 @@ ESP書込み前のFWはSD/ICMセンサー用だった。診断FWはSPI/RFを起�
 最初の実flash済ESP bin SHA256:
 `f254fa6a87cfbb8f9c5866825127ece6d039b0dc6a1387d1c3977b6db3a36382`
 
-現在実flash済ESP bin SHA256（ping/UDP追加、再probeキャッシュ誤PASS修正）:
+以前の実flash済ESP bin SHA256（ping/UDP追加、再probeキャッシュ誤PASS修正）:
 `6eb638c0d5d1bb7fad391a0d1de935bf943772a52e6e1d9c805f05f285250e0d`
 
 `logs/esp_flash_reprobe.log`の3領域hash照合と`logs/esp_boot_reprobe.log`で最終imageを確認。
 ping/UDPの未接続時拒否は実機で確認済み。疎通成功としては数えない。
+
+現在実flash済ESP bin SHA256（実測AP/Open/IPを反映）:
+`071a90db9de8999553070a3c486027a3e67027e54fc4d56c3a504f34b0c60cb4`
+
+365248 bytes。`logs/esp_flash_observed_ap_20260909.log`でESP32-S3個体と3領域hash照合を確認。
+build後のcommitによりflash時にproject versionが更新されたため、build直後のhashではなく実flash完了後のbin hashを記録。
+`logs/esp_pins_observed_ap_20260909.log` と `logs/esp_diag_observed_ap_20260909.log` でアプリ応答・実配線表示・SPI未開始を確認。
 
 SX custom候補:
 `/home/hotaru/silex/_codex_work/prepared_sx_20260908_guarded/out/nrc7292/standalone_xip/L2BRIDGE_HSPI/nrc7292_standalone_xip_L2BRIDGE_HSPI_2M.bin`
@@ -114,7 +122,7 @@ host検証: 12 C tests、12 receiver tests、実parserを使うC→Node互換、
 - `logs/sx_initial_console.log`: SX受信0 byteの試行。
 - `logs/ap_probe.log`: AP候補IPへの有線試行。
 - `logs/ap_status.json`: AP実機HTTPから取得した認証情報を含まない設定/状態。
-- `logs/privileged/`: 人間が実行した特権setupと実Ethernet pcap。初回03:40満了後、08:39:30に再実行済み。現在の自動解除は12:39:30 JST。
+- `logs/privileged/`: 人間が実行した特権setupと実Ethernet pcap。18:47:28および18:55:09に再実行を記録。18:47の解除timerも残るため、受信許可の満了は早い方の22:47:28 JSTを基準にする。
 - `HUMAN_ACTION_1.md`: 最初の確認、Standalone起動/必要時書込み。
 - `HUMAN_ACTION_2.md`: RF独立確認後のcustom書込み。
 
@@ -210,3 +218,17 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - `logs/sx_gui_virtual_check_20260909.log`: 同じPC上の仮想displayでGUIを構築すると、元の初期portが`ttyACM0`（ESP）だった。launcher適用後はSXの固有by-id、Silex指定2ND/XIP bootloader、指定Standalone firmware、MAC0/MAC1 WRITE OFFに一致。STARTは押さず、設定確認後10秒のtimeoutでGUIを終了した。flash/serial通信は未開始。
 - `tools/open_sx_flashtool.sh` と `tools/SxFlashToolLauncher.java` は配布GUIの通信・flash処理を変更せず、初期設定と人間START時の照合を行う。GUI binaryはSHA256固定。通信ログは0600で保存しGit追跡から除外。実SX書込み成功を示す変更ではなく、次の人間操作を正しいポートで再現する準備。
 - 最終版の `--check` と仮想displayの `--gui-check` はPASS。`logs/sx_gui_prefill_check_20260909.log` に実GUI構築・設定一致、START=0、serial_open=0を記録。START直前にmodule/port/3画像のpathとhash/460800/XIP Upload/MAC WRITE OFFを照合する。mainへのmerge条件は引き続き未達。
+
+## 2026-09-09 18:48以降のStandalone RF実証
+
+- 人間が18:46に修正版launcherからStandaloneを書込み。指定の3画像、NRC7292、SX by-id、MAC0/MAC1 WRITE OFFで実行し、GUI Completeまで進行。MAC/RF移行は実際にもskip。機密を含まない要約は `logs/sx_standalone_flash_summary_20260909.txt`。
+- 人間が18:47:28に特権scriptを再実行し、SA起動後 `ready` と返答。新たなアンテナ/GND/電圧確認は要求していない。
+- `logs/sx_standalone_ready_20260909.log`: CLI応答、sf size=1048576、scanでSSID halow_demo_video/BSSID 1c:bc:ec:1b:30:ff/RSSI -10を取得。
+- `logs/sx_standalone_link_20260909.log`: wpa_state=COMPLETED、key_mgmt=NONE、pairwise/group cipher=NONE。Open認証で接続済み。現在のSX IPは192.168.10.20/24で、SSID/auth/IP設定変更や追加resetなしで試験できた。wpa表示freq=5190はそのまま記録し、APの実RF表示925.5MHzとは区別する。
+- `logs/sx_standalone_ping_20260909.log`: SX→PC192.168.10.250、5送信/5受信/0% loss、平均5.19ms。
+- `logs/pc_to_sx_standalone_ping_20260909.log`: PC/enp0s31f6→SX192.168.10.20、5/5、平均21.756ms。`logs/pc_to_ap_ping_20260909.log`: AP10.10へ3/3。
+- `logs/sx_standalone_factory_map_20260909.log`: SYS0xfe000/RF0xff000/FW_INFO0xf5000、工場MAC読取り。FOTAなど容量外のplaceholder表示を実容量とは扱わない。
+- `SX_STANDALONE_RF=PASS`、`AP100AH_ETHERNET=PASS`。これはHSPI実装の成功ではなく、native HSPI/ESP IP/UDP/映像はまだ未試験。
+- 18:52、同じlauncherへguarded custom binを引数指定するHUMAN_ACTION_2を依頼。ESPのネットワーク既定値も実測SSID/Open/10.20/24/PC10.250に合わせてbuild中。JP Duty/LBTは変更しない。
+- `logs/sx_flashtool_20260909-185400-1953056.log`（private）: 人間がguarded custom binを選択したlauncherでSTARTし、18:54:41にComplete。MAC/RF migration skipped。CodexからSXへのflash要求は送っていない。USBは18:56:13に再列挙、SA起動完了の返答待ち。
+- ESP Kconfig実測設定変更はcommit `0285127`。SSID halow_demo_video、OPEN、ESP192.168.10.20/24、PC192.168.10.250、gateway0.0.0.0。同一subnetへの試験にdefault gatewayは不要。build/flash/pins/diagはPASS、SPIはまだ開始していない。

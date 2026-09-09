@@ -1,0 +1,10 @@
+2026-09-09T18:55:09+09:00
+enp0s31f6        UP             192.168.10.250/32 
+-P INPUT ACCEPT
+-A INPUT -i enp0s31f6 -p icmp -m icmp --icmp-type 8 -m comment --comment codex-stage1-20260908 -j ACCEPT
+-A INPUT -i enp0s31f6 -p udp -m udp --dport 50000 -m comment --comment codex-stage1-20260908 -j ACCEPT
+-A INPUT -j ts-input
+-A INPUT -j nixos-fw
+cp210x                 45056  0
+cdc_acm                49152  0
+Capture runs for 90 seconds in a transient service; this terminal is free now.

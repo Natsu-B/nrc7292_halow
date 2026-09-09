@@ -1,0 +1,23 @@
+Source: private logs/sx_flashtool_20260909-184547-1934584.log
+Human START: 2026-09-09 18:46:25 JST
+Module: NRC7292
+Port: /dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0
+Baud after ROM stage: 460800
+2ND bootloader SHA256: 33db5706c1be366c07908eb0093ad5a6c1254778149415bf16971bc12c9c4057
+XIP bootloader SHA256: 51da4440d881fd77fdb91c11dcc8d19d81ffbfb76f68c2eaff07fc6826886be4
+XIP firmware: /home/hotaru/silex/nrc7292_xip_fw_sx_uart.bin
+XIP firmware bytes: 855036
+XIP firmware SHA256: 7e93f02fb67a0d6504998a7372dc01cdcaf47c800c70f5b8224844dc85170ccf
+XIP bootloader upload: ON
+XIP firmware upload: ON
+MAC WRITE 0: OFF
+MAC WRITE 1: OFF
+Auto-run after flash: OFF
+ROM ping, RAM upload, RAM run, second bootloader ping: advanced successfully
+MAC address migration: skipped
+RF cal migration: skipped
+XIP bootloader and firmware upload: advanced successfully
+Firmware metadata update: advanced successfully
+Final vendor operation: Complete (2026-09-09 18:46:59 JST)
+Result: PASS; human programmed SX, Codex did not issue flash commands
+Boot/RF/IP evidence is recorded separately in sx_standalone_* and pc_to_* logs.

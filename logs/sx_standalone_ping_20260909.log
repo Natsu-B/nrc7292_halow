@@ -1,0 +1,21 @@
+
+# 2026-09-09T18:50:16+0900 port=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0 baud=115200
+
+# TX 'ping 192.168.10.250 -c 5'
+ping 192.168.10.250 -c 5
+OK
+[8] 2018229786 nrc7292_standalone_xip>ping: send 192.168.10.250
+ping: recv 192.168.10.250 [1]  5 ms
+ping: send 192.168.10.250
+ping: recv 192.168.10.250 [2]  4 ms
+ping: send 192.168.10.250
+ping: recv 192.168.10.250 [3]  5 ms
+ping: send 192.168.10.250
+ping: recv 192.168.10.250 [4]  4 ms
+ping: send 192.168.10.250
+ping: recv 192.168.10.250 [5]  8 ms
+
+---------------------------- Ping Statistics --------------------------------
+ Target Address : 192.168.10.250
+ 5 packets transmitted, 5 received, 0% packet loss, 5.19 ms average delay
+-----------------------------------------------------------------------------

@@ -1,0 +1,41 @@
+
+# 2026-09-09T18:48:51+0900 port=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_08db3e3b2974ea11adf500fb6a30b0f3-if00-port0 baud=115200
+
+# TX ''
+
+[0] 1928185621 nrc7292_standalone_xip>
+# TX 'help'
+help
+dhcp       - dhcp command
+dhcps      - dhcps command
+help       - display information about CLI commands
+ifconfig   - ifconfig command
+iperf      - iperf command
+nrf        - configure nrf
+nvs        - nvs key value read/write
+phy        - configure phy
+ping       - ping command
+qbuf       - Queue buffer
+read       - read 32-bit value(s) from a memory location
+set        - set various MAC/PHY parameters
+sf         - Serial Flash Test
+show       - displays current configuration and setting
+sx         - sx cmd configuration
+test       - test
+uart       - UART Debug
+wpa        - wpa_supplicant command (vif 0)
+wpb        - wpa_supplicant command(vif 1)
+write      - write a 32-bit value to a memory location
+OK
+[1] 1930247388 nrc7292_standalone_xip>
+# TX 'sf size'
+sf size
+Flash Size: 1048576
+OK
+[2] 1932188030 nrc7292_standalone_xip>
+# TX 'sx show scan results'
+sx show scan results
+0 halow_demo_video 1c:bc:ec:1b:30:ff -10
+
+OK
+[3] 1934193509 nrc7292_standalone_xip>dl : 0 dtim period: 1
