@@ -1,0 +1,34 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.fazecast.jSerialComm.SerialPort in an unnamed module (file:/home/hotaru/silex/_codex_work/vendor_ping/jSerialComm-2.0.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[SETTING BAUDRATE TO 115200]
+[SETTING BAUDRATE TO 115200]
+PING_BEGIN mode=exact baud=115200 timeout_ms=200 bytes_available_before=0 tx=0121100000000000000000ce0203f604
+[1788911546.19] cmd_ping()
+[1788911546.19] query()
+[1788911546.19] write(buf_length=4112,length=16)
+[1788911546.19] read_cmd()
+[1788911546.19] read(offset=0,length=16)
+[1788911546.20] readBytes -> (readlength:16)
+[0x 1]
+[0x22]
+[0x10]
+[0x 0]
+[0x 0]
+[0x 0]
+[0x 0]
+[0x 0]
+[0x 0]
+[0x 0]
+[0x 0]
+[0xcd]
+[0x 2]
+[0x 3]
+[0xf6]
+[0x 4]
+[1788911546.20] ELAPSED TIME = 6 ms
+[1788911546.20]     body_length = 0
+PING_RESULT pass=true elapsed_ms=6 write_count=UNOBSERVABLE read_result=-2 rx_buffer_first16=0122100000000000000000cd0203f604 serial_open=true
+RAM_WRITE_COMMANDS=0 FLASH_WRITE_COMMANDS=0 RUN_COMMANDS=0

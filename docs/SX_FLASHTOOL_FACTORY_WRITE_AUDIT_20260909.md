@@ -7,10 +7,11 @@ root の実機試験では0x95送信後から応答が止まり、RAM pointer復
 0x95は使用禁止・再送しない。先行する44byte読取りとは切り分ける。**
 この文書の監査担当は実機操作をしていないが、root実行結果を末尾へ追記している。
 
-**2026-09-09 08:15 取得データによる判定: RF_CAL の移行はスキップされ、
-version 更新は現在の SYS_CONFIG record と同一の内容を再保存する。
-MAC 移行だけは、handler の実際の読取りアドレスが取得済み sector と異なるため未判定。**
-下記「実機 factory record に基づく判定」に取得値と残る一条件を示す。
+**2026-09-09 08:26 実アドレス取得後の判定: 通常 GUI で MAC0 / MAC1 WRITE OFF とし、
+対応する Silex bootloaders と指定 UART firmware を書く手順は GO。
+MAC / RF_CAL 移行は両方スキップされ、version 更新は現在の SYS_CONFIG record と
+同一の内容を再保存する。**
+下記「実機 factory record に基づく判定」と末尾に取得値・最終条件の実証を示す。
 MAC WRITE OFF は指定した MAC の書込みを止めるが、ツールが先に実行する
 MAC/RF calibration migration を止めない。custom firmware 側の migration guard は
 別処理であり、FlashTool / 2nd bootloader の書込みを防げない。
@@ -390,6 +391,58 @@ CPU mapping の同一性を証明できない。SDK header の `half_addr_sf` �
 RF / SYS record の未取得や CRC 不明を理由とする保留は解消済みで、残るのはこのアドレス
 一条件だけである。別アドレスの読取りを追加する場合は root が判断し、この監査担当は
 target への送信を行わない。
+
+### 実アドレスでの最終確認と GO 判定（08:26）
+
+root が literal `0xffffe000` をそのまま使った限定44-byte読取りを実行した。
+保存先は
+`/home/hotaru/silex/_codex_work/private_sx_backups/20260909-082658-566710/legacy_literal_ffffe000.bin`、
+ログは `logs/sx_legacy_marker_20260909.log`。
+`legacy_marker_nrcnrt=false`、`matches_physical_sys=false`、`pointer_restored=true`。
+保存ファイルの byte 8..13 を監査担当もオフラインで再確認し、marker 不一致を確認した。
+この実アドレスの内容は取得済み SYS prefix と異なり、alias 仮定は採用しない。
+
+したがって MAC migration はスキップされる。既に確認した RF migration スキップ、
+0x46 の同一内容再保存、flash erase/write の非重複と合わせ、**提供 GUI の通常手順で
+MAC0 / MAC1 WRITE OFF を守れば、現在の工場 MAC 値と JP calibration data を保持する**。
+この条件で Silex 対応 bootloaders と指定 Standalone UART firmware を人間が書く手順は GO。
+追加の GUI 改変・移行回避パッチは必要ない。実際の書込み成功や Standalone 起動・RF疎通は
+別途実機で確認する項目であり、この保存値の解析で PASS にしない。
+
+## GUI の `Pinging 2nd bootloader failed.` で止まった場合
+
+人間の初回 GUI 試行でこのエラーが報告された。配布 Java の通常 `uploadXIP` では
+bytecode 331 のこの文字列を例外として 337 で throw し、以降へ進まない。
+先行処理は ROM ping、必要なら 2nd bootloader の RAM upload / RUN、host baud 変更と
+2nd bootloader ping までである。migration `0x44` は 352、version `0x46` は 383、
+array erase / program はさらに後なので、**このエラーで終了した試行は flash array を
+erase / program していない**。RAM 実行後の通常起動処理の監査範囲は前述のとおり。
+
+通常 GUI の baud は cwd の `baudrate.txt` 先頭行、ファイルがなければ 460800。
+460800 以外は accelerated 経路が選ばれるため、上記エラー文字列の経路は通常の
+460800設定と整合する。GUI と成功済み Reader はいずれも RAM upload が4096-byte chunks、
+RUN後待機1秒。GUIの ping timeout は200ms、成功済み Reader は5秒とpacket再同期を使う。
+この違いは候補であり、エラーの原因が確定したとはしない。
+
+配布 GUI の class に `SET Bootloader Args` という field / action は存在しない。
+ファイル選択ラベルは `2ND BOOTLOADER PATH (.bin)` である。別ツールの設定を推測して
+変更せず、同じ配布 launcher と対応binを使う。
+
+追加確認: `_Library.GUI._General.Serial.SerialPortComboBox.refresh()` は refresh のたびに
+`setSelectedIndex(portNames.length - 1)` を呼び、**列挙一覧の最後の port を選ぶ**。
+選択済み SX port を保持しない。したがって人間の操作順は Refresh → by-id 解決先の
+SX port を明示選択 → START とし、port選択後に再度Refreshしない。
+NRC7292 は初期tabだが、module tab を変更すると両bootloader pathを変更しfirmware pathを
+空にするので、module選択の後に最終file指定を行う。
+
+ROM ping 不成立時の通常GUIには、2nd bootloaderへの切替前に `flush()` が65536個のzeroを
+一度に送る分岐もある。`write(int)` は `writeBytes()` の返却byte数を検査しない。
+オフラインfake SerialPortによる再現では要求16bytesに対する返却0 / 7 / -1もtrue扱いに
+なり、flush要求長は65536だった。このため、既にRAM loaderが動いている状態へ通常GUIを
+盲目的に再接続する先行提案は撤回する。これは今回のエラー原因が確定したという意味ではない。
+rootの実機では未改変vendor Javaの115200・200ms ROM pingが6msで成功しており、
+現段階でtimeoutやvendorbinaryを修正する根拠にはしない。まず実際に選択されたportと
+GUIログのROM ping / RAM upload実行有無を確認する。
 
 CPUの一般仕様の一次資料:
 [Newracom NRC7292 brochure](https://newracom.com/hubfs/Products/Product%20Brochure%20%28NRC7292%29%28NEWRACOM%29.pdf?hsLang=en)、

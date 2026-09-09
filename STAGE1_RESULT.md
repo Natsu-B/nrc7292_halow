@@ -1,6 +1,6 @@
 # Stage-1 実機結果
 
-更新: 2026-09-09 08:30 JST。ROM/RAM通信と工場領域取得に成功。この個体のFlashTool移行条件を確認し、MAC WRITE OFFでStandalone書込みへ進める状態。
+更新: 2026-09-09 09:00 JST。人間によるStandalone書込み操作は「Pinging 2nd bootloader failed」で停止。SXはROM PINGへ応答しており、この試行はflash書込み開始前の失敗。GUIの初期選択がESP側になることを再現し、SX by-idと指定imageを選ぶlauncherを準備。SX flash再試行は人間待ち。
 
 | 項目 | 結果 | 実測・根拠 |
 |---|---|---|
@@ -8,6 +8,7 @@
 | USB SX-NEWAH | PASS | 10c4:ea60、CP2102N serial 08db3e3b2974ea11adf500fb6a30b0f3。Download modeでROM PONG 16 bytes、RAM bootloader応答も確認 |
 | Ethernet AP-100AH | PASS | ARPから192.168.10.10 / 1c:bc:ec:1b:30:feを検出、HTTP200、画面にAP-100AHと表示 |
 | SX standalone boot | NOT_CONFIRMED | SA/CN8/USBケーブル確認後の06:22電源再接続を捕捉。115200 8N1のboot出力と改行/help/sf sizeは受信0 byte。現行FW未確定 |
+| SX standalone flash | FAIL | 人間のGUI操作でPinging 2nd bootloader failed。flash erase/programより前の段階で停止 |
 | SX → AP association | NOT_TESTED | Standalone boot未確認 |
 | AP → PC Ethernet | PASS | 実IP192.168.10.10へのping3/3、0% loss。候補IP失敗はアドレス違いだった |
 | custom SX build | PASS | native HSPI、832972 bytes、guarded bin。ARM実link済み |
@@ -94,7 +95,7 @@ mainへmergeしていない。mainからの再build/reflashも未実施。
 - 23:41 pcapに実APのgratuitous ARP。23:42 AP実IPへ有線疎通成功。
 - 30分以降の人間操作: SX SAへの手動切替/起動を待っている。FW完成待ちでの拘束はない。
 
-現在のPC有線IPは `192.168.10.250/32`。APへの `192.168.10.10/32` だけを有線routeに設定。
+現在のPC有線IPは `192.168.10.250/32`。APへの `192.168.10.10/32` と後続SX試験用 `192.168.10.20/32` を有線routeに設定。
 Wi-Fiの `192.168.10.136/24` と競合させず、インターネット経路はWi-Fiのまま。
 
 AP公開画面: firmware `BB3-5.10 (2024.06.14)`、SSID `halow_demo_video`、925.5MHz/2MHz、BSSID `1c:bc:ec:1b:30:ff`、接続STA 0台。
@@ -113,7 +114,7 @@ host検証: 12 C tests、12 receiver tests、実parserを使うC→Node互換、
 - `logs/sx_initial_console.log`: SX受信0 byteの試行。
 - `logs/ap_probe.log`: AP候補IPへの有線試行。
 - `logs/ap_status.json`: AP実機HTTPから取得した認証情報を含まない設定/状態。
-- `logs/privileged/`: 人間が実行した特権setupと実Ethernet pcap。自動解除timerは03:40:25 JSTに設定済み。
+- `logs/privileged/`: 人間が実行した特権setupと実Ethernet pcap。初回03:40満了後、08:39:30に再実行済み。現在の自動解除は12:39:30 JST。
 - `HUMAN_ACTION_1.md`: 最初の確認、Standalone起動/必要時書込み。
 - `HUMAN_ACTION_2.md`: RF独立確認後のcustom書込み。
 
@@ -197,3 +198,15 @@ GND/アンテナは確認済みなので再確認しない。ESPの3.3V電源線
 - Standalone書込み保留を解除し、人間用HUMAN_ACTION_1を更新。Codex自身によるSX flashは未実施。
 - 後続IP試験用に `192.168.10.20/32` の有線host routeをNetworkManager一時profileへ追加。`ip route get`はenp0s31f6/source192.168.10.250。Wi-Fi default routeは維持。
 - 期限切れのネットワーク受信許可は、既存 `tools/prepare_privileged.sh` の再実行を人間作業へまとめた（まだ再実行完了とは記録しない）。
+
+## 2026-09-09 08:39以降のGUI書込み失敗
+
+- 人間が08:39:30に特権scriptを再実行。`logs/privileged/setup-20260909-083930.log`で一時firewallと4時間後の解除timer設定を確認。sudoの追加依頼は不要。
+- 人間から「pinging 2nd bootloader failedとなってGUIが止まった」と報告。このメッセージは通常uploadXIP内で、移行0x44・version更新0x46・flash erase/programより前に出る。今回の失敗をStandalone flash成功と数えない。
+- GUI終了後、`logs/sx_ping_rates_after_gui_20260909.log`: 460800 PINGは受信0 byte、115200 PINGはPONG 16 bytes。2nd loaderの起動未確認だが、ROM通信は正常。RAM転送が実行されたかはGUIログ未取得のため未確定。
+- `logs/sx_vendor_java_ping_20260909.log`: 配布GUIそのもののNewrafc.cmd_ping（200ms timeout）をidentified SX by-idへ実行し、6msでPONG 16 bytes、PASS。PINGのみ、RAM/flash/RUN要求は0。常時発生するJava通信不能やtimeout不足とは断定できない。
+- 静的確認: GUIのRefreshは一覧の最後のポートを自動選択し、以前の選択を保持しない。別接続のESPを選ぶ可能性があるが、今回ユーザーが実際に選んだポートは未取得。原因を誤選択と確定しない。
+- GUIには部分送信の戻り値未確認と65536 zero bytesを送るflushもあるが、今回の原因とは未確定。通信コードの変更は行わず、まずSXポートと指定firmwareの自動選択、GUIログ保存を用意する。
+- `logs/sx_gui_virtual_check_20260909.log`: 同じPC上の仮想displayでGUIを構築すると、元の初期portが`ttyACM0`（ESP）だった。launcher適用後はSXの固有by-id、Silex指定2ND/XIP bootloader、指定Standalone firmware、MAC0/MAC1 WRITE OFFに一致。STARTは押さず、設定確認後10秒のtimeoutでGUIを終了した。flash/serial通信は未開始。
+- `tools/open_sx_flashtool.sh` と `tools/SxFlashToolLauncher.java` は配布GUIの通信・flash処理を変更せず、初期設定と人間START時の照合を行う。GUI binaryはSHA256固定。通信ログは0600で保存しGit追跡から除外。実SX書込み成功を示す変更ではなく、次の人間操作を正しいポートで再現する準備。
+- 最終版の `--check` と仮想displayの `--gui-check` はPASS。`logs/sx_gui_prefill_check_20260909.log` に実GUI構築・設定一致、START=0、serial_open=0を記録。START直前にmodule/port/3画像のpathとhash/460800/XIP Upload/MAC WRITE OFFを照合する。mainへのmerge条件は引き続き未達。
