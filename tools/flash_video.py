@@ -1,26 +1,18 @@
 #!/usr/bin/env python3
-"""Write the HVC1 clip to ESP32-S3 only, after reading/validating its actual partition table.
+"""Write an HVC1 clip or HVB1 bundle to ESP32-S3 after validating the actual partition table.
 No erase-all and no SX flashing. Opens the explicit ESP port; ROM connection can reset the ESP.
 Run in the ESP-IDF Python environment. The application must be stopped during Flash writes.
 """
 from __future__ import annotations
-import argparse, hashlib, pathlib, struct, subprocess, sys, tempfile, zlib
+import argparse, hashlib, importlib.util, pathlib, struct, subprocess, sys, tempfile
+if __package__:
+    from .prepare_video_profiles import validate_clip, validate_video
+else:
+    _spec = importlib.util.spec_from_file_location('_hvb_profiles', pathlib.Path(__file__).with_name('prepare_video_profiles.py'))
+    _profiles = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_profiles)
+    validate_clip, validate_video = _profiles.validate_clip, _profiles.validate_video
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-
-def validate_clip(b: bytes) -> None:
-    if len(b)<32 or b[:4]!=b'HVC1' or struct.unpack_from('<HH',b,4)!=(1,32) or zlib.crc32(b[:28])!=struct.unpack_from('<I',b,28)[0]:
-        raise ValueError('Invalid HVC1 header/CRC')
-    count,duration=struct.unpack_from('<II',b,20)
-    if not count or count>100000 or not duration: raise ValueError('Invalid frame count/duration')
-    at=32;last=-1
-    for i in range(count):
-        if at+16>len(b):raise ValueError('Truncated frame record')
-        n,pts,flags,crc=struct.unpack_from('<IIII',b,at);at+=16
-        if not 0<n<=256*1024 or at+n>len(b) or pts<=last or pts>=duration or flags&~1 or (i==0 and not flags&1):
-            raise ValueError('Invalid frame range/timing/flags')
-        if zlib.crc32(b[at:at+n])!=crc: raise ValueError('Frame CRC mismatch')
-        last=pts;at+=n
-    if at!=len(b):raise ValueError('Unexpected trailing bytes')
 
 def video_partition(b: bytes) -> tuple[int,int]:
     entries=[];md5_checked=False
@@ -54,7 +46,10 @@ def main():
     a=p.parse_args()
     if not a.confirm_stage1_partitions:p.error('Explicit --confirm-stage1-partitions required; actual table is also verified')
     try:
-        b=a.clip.read_bytes();validate_clip(b)
+        b=a.clip.read_bytes();validate_video(b)
+        port=pathlib.Path(a.port)
+        if port.parent != pathlib.Path('/dev/serial/by-id') or not port.exists():
+            raise ValueError('An existing ESP /dev/serial/by-id path is required')
         base=[sys.executable,'-m','esptool','--chip','esp32s3','--port',a.port]
         with tempfile.TemporaryDirectory(prefix='halow-flash-') as tmp:
             table=pathlib.Path(tmp)/'partitions.bin'

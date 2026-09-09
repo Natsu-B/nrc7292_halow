@@ -47,6 +47,8 @@ class CycleVerifier{
 async function main(){
   const source=process.env.ESP_IP,bind=process.env.PC_IP;
   const seconds=Number(process.env.VIDEO_SECONDS||30),port=Number(process.env.UDP_PORT||50000);
+  if(process.env.VIDEO_FEEDBACK!==undefined&&!['0','1'].includes(process.env.VIDEO_FEEDBACK))throw new Error('VIDEO_FEEDBACK must be 0 or 1');
+  const feedbackEnabled=process.env.VIDEO_FEEDBACK!=='0';
   if(!isIPv4(source)||!isIPv4(bind)||source.startsWith('127.')||bind.startsWith('127.'))
     throw new Error('Set ESP_IP and PC_IP to actual bench IPv4 addresses. Local replay is not an RF test.');
   if(!Number.isFinite(seconds)||seconds<=0||seconds>3600)throw new Error('VIDEO_SECONDS must be 1..3600');
@@ -59,14 +61,14 @@ async function main(){
   rx.on('stats',value=>{stats=value;});
   rx.on('frame',frame=>{verified.push(frame);});
   try{
-    await rx.start({source,bind,port,feedbackEnabled:false});
+    await rx.start({source,bind,port,feedbackEnabled});
     fs.writeFileSync(path.join(out,'video.ready'),`${source} -> ${bind}:${port}\n`);
-    console.log(`Listening for ESP NRCV: ${source} -> ${bind}:${port}; ${seconds}s`);
+    console.log(`Listening for ESP NRCV: ${source} -> ${bind}:${port}; ${seconds}s; feedback=${feedbackEnabled}`);
     await new Promise(resolve=>setTimeout(resolve,seconds*1000));
   }finally{rx.stop();}
   const metrics=rx.reassembler.metrics;
   const pass=!fault&&verified.mismatched===0&&metrics.invalid===0&&verified.cycle!==null;
-  const result={result:pass?'PASS':'FAIL',source,bind,port,width:clip.width,height:clip.height,
+  const result={result:pass?'PASS':'FAIL',source,bind,port,feedbackEnabled,width:clip.width,height:clip.height,
     criterion:'one complete same-stream cycle with consecutive NRCV frame IDs and byte-exact source frame order',
     expectedFrames:clip.frames.length,verifiedFrames:verified.cycle?.frames.length??0,
     verifiedStream:verified.cycle?.stream??null,firstFrame:verified.cycle?.firstFrame??null,lastFrame:verified.cycle?.lastFrame??null,

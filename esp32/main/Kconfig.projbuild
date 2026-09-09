@@ -74,6 +74,10 @@ config STAGE1_PACE_BPS
     int "UDP pacing ceiling (bit/s including NRCV padding, NOT RF airtime)"
     range 50000 5000000
     default 400000
+config STAGE1_MIN_BPS
+    int "Adaptive UDP pacing floor (bit/s; bounded by ceiling)"
+    range 50000 STAGE1_PACE_BPS
+    default 50000
 config STAGE1_FRAME_LATE_MS
     int "Maximum permitted frame lateness"
     range 50 1000

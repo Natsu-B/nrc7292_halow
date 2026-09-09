@@ -13,6 +13,7 @@ node "$ROOT/tools/check_c_node.cjs" "$ROOT/assets/test_h264_1080p.bin" "$BUILD/p
 "$ROOT/tools/check_syntax.sh"
 
 python3 "$ROOT/tests/test_flash_tools.py"
+python3 "$ROOT/tests/test_video_profiles.py"
 python3 "$ROOT/tests/test_hw_tools.py"
 python3 "$ROOT/tests/test_find_usb.py"
 python3 "$ROOT/tests/test_sx_console.py"
