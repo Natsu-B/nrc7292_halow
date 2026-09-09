@@ -42,10 +42,14 @@ static atomic_bool desired_link;
 static atomic_uint sent_frames, skipped_frames;
 static atomic_uint adapt_rate, adapt_accepted, adapt_rejected, adapt_feedback_age;
 static atomic_uint adapt_profile,adapt_source,adapt_width,adapt_height,adapt_interval;
+static atomic_uint adapt_probe_acks,adapt_probe_rtt,adapt_probe_age;
 static atomic_uint replay_generation;
 static _Atomic(const char *) adapt_reason="idle";
 static stage1_adapt_t adaptation; /* Only the replay task owns this state. */
 static uint32_t adapt_source_rejected, adapt_last_service, adapt_last_tick;
+static uint32_t adapt_last_probe,adapt_last_log,adapt_logged_rate;
+static unsigned adapt_logged_profile;
+static const char *adapt_logged_reason;
 static bool adapt_initialized;
 static hvc_clip_t clip;
 static int video_socket=-1;
@@ -64,10 +68,11 @@ static bool fresh_link(const nrc7292_link_stats_t *s) {
     return s->hspi_ready && s->wifi_connected && s->radio_stats_age_ms<=500;
 }
 /* Additional RF traffic remains subject to the same native Duty guard. */
-static void network_stats(const nrc7292_link_stats_t *s,uint32_t now) {
-    if(video_socket<0)return;
-    if(!atomic_load(&play_requested)||!fresh_link(s)||!s->radio.duty_tx_available||s->host_data_queue_depth>2)return;
-    uint8_t b[56]={0};memcpy(b,"NRCS",4);b[4]=3;be16(b+6,sizeof b);
+static bool network_stats(const nrc7292_link_stats_t *s,uint32_t now) {
+    if(video_socket<0)return false;
+    if(!atomic_load(&play_requested)||!fresh_link(s)||!s->radio.duty_tx_available||
+       s->host_data_queue_depth>2||s->radio.host_to_radio_queue_depth>2)return false;
+    uint8_t b[60]={0};memcpy(b,"NRCS",4);b[4]=4;be16(b+6,sizeof b);
     be32(b+8,now);b[12]=(uint8_t)s->radio.rssi_average_dbm;
     b[13]=(uint8_t)s->radio.snr_db;b[14]=s->radio.tx_mcs;b[15]=s->radio.rx_mcs;
     b[16]=s->radio.duty_tx_available;b[17]=s->wifi_connected;be16(b+18,s->host_data_queue_depth);
@@ -77,8 +82,9 @@ static void network_stats(const nrc7292_link_stats_t *s,uint32_t now) {
     be32(b+40,adaptation.have_feedback?now-adaptation.last_feedback_rx_ms:UINT32_MAX);
     be16(b+44,clip.width);be16(b+46,clip.height);
     be32(b+48,stage1_adapt_interval_ms(&adaptation));
-    be32(b+52,hvc_crc32(b,52));
-    (void)sendto(video_socket,b,sizeof b,0,(struct sockaddr*)&pc,sizeof pc);
+    be32(b+52,adaptation.stream);be32(b+56,hvc_crc32(b,56));
+    if(sendto(video_socket,b,sizeof b,0,(struct sockaddr*)&pc,sizeof pc)!=(ssize_t)sizeof b)return false;
+    stage1_adapt_probe_sent(&adaptation,now);return true;
 }
 static void adapt_publish(uint32_t now) {
     atomic_store(&adapt_rate,adaptation.rate_bps);
@@ -88,6 +94,9 @@ static void adapt_publish(uint32_t now) {
     atomic_store(&adapt_feedback_age,adaptation.have_feedback?now-adaptation.last_feedback_rx_ms:UINT32_MAX);
     atomic_store(&adapt_profile,adaptation.profile);
     atomic_store(&adapt_interval,stage1_adapt_interval_ms(&adaptation));
+    atomic_store(&adapt_probe_acks,adaptation.probe_acks);
+    atomic_store(&adapt_probe_rtt,adaptation.have_probe_ack?adaptation.probe_rtt_ms:UINT32_MAX);
+    atomic_store(&adapt_probe_age,adaptation.have_probe_ack?now-adaptation.last_probe_ack_ms:UINT32_MAX);
 }
 /* Called during both clip timing waits and packet pacing, so a large IDR does
  * not prevent feedback processing. Remote timestamps are never host clocks. */
@@ -108,17 +117,30 @@ static void adaptation_service(void) {
          * feedback. Its silence must not lower the next video profile. */
         adapt_last_tick=now;adapt_publish(now);return;
     }
-    if(now-adapt_last_tick>=1000) {
+    if(now-adapt_last_tick>=100) {
         nrc7292_link_stats_t s={0};
         bool valid=nrc7292_get_link_stats(radio,&s)==ESP_OK;
         uint16_t queue=s.host_data_queue_depth>s.radio.host_to_radio_queue_depth?s.host_data_queue_depth:s.radio.host_to_radio_queue_depth;
         (void)stage1_adapt_tick(&adaptation,now,s.radio.rssi_average_dbm,valid&&fresh_link(&s),
             s.radio.duty_tx_available,queue,s.host_tx_queue_drops,s.radio.host_to_radio_drops);
         adapt_publish(now);
-        printf("{\"event\":\"adapt\",\"bps\":%lu,\"reason\":\"%s\",\"feedback_accepted\":%lu,\"feedback_rejected\":%lu,\"feedback_age_ms\":%lu}\n",
-            (unsigned long)adaptation.rate_bps,adaptation.reason,(unsigned long)atomic_load(&adapt_accepted),
-            (unsigned long)atomic_load(&adapt_rejected),(unsigned long)atomic_load(&adapt_feedback_age));
-        if(valid)network_stats(&s,now);
+        if(now-adapt_last_log>=1000 || adaptation.rate_bps!=adapt_logged_rate ||
+           adaptation.profile!=adapt_logged_profile || adaptation.reason!=adapt_logged_reason) {
+            printf("{\"event\":\"adapt\",\"now_ms\":%lu,\"bps\":%lu,\"profile\":%u,\"reason\":\"%s\",\"radio_stats_age_ms\":%lu,\"radio_stats_fresh\":%d,\"feedback_accepted\":%lu,\"feedback_rejected\":%lu,\"feedback_age_ms\":%lu,\"probe_acks\":%u,\"probe_rtt_ms\":%u,\"probe_ack_age_ms\":%u}\n",
+                (unsigned long)now,(unsigned long)adaptation.rate_bps,adaptation.profile,adaptation.reason,
+                (unsigned long)(valid?s.radio_stats_age_ms:UINT32_MAX),valid&&fresh_link(&s),
+                (unsigned long)atomic_load(&adapt_accepted),(unsigned long)atomic_load(&adapt_rejected),
+                (unsigned long)atomic_load(&adapt_feedback_age),atomic_load(&adapt_probe_acks),
+                atomic_load(&adapt_probe_rtt),atomic_load(&adapt_probe_age));
+            adapt_last_log=now;adapt_logged_rate=adaptation.rate_bps;
+            adapt_logged_profile=adaptation.profile;adapt_logged_reason=adaptation.reason;
+        }
+        /* Probes run while a ten-second image interval is waiting. They are
+         * small real UDP transmissions and remain subject to all RF gates. */
+        if(now-adapt_last_probe>=200) {
+            adapt_last_probe=now;
+            if(valid && adaptation.stream_ready)(void)network_stats(&s,now);
+        }
         adapt_last_tick=now;
     }
     adapt_publish(now);
@@ -132,10 +154,11 @@ static void stats_print(void) {
         s.wifi_connected,s.hspi_ready,s.radio.rssi_average_dbm,s.radio.tx_mcs,s.radio.rx_mcs,s.radio.duty_tx_available,
         s.host_data_queue_depth,(unsigned long)s.host_tx_queue_drops,(unsigned long)s.radio.host_to_radio_drops,
         atomic_load(&sent_frames),atomic_load(&skipped_frames),(unsigned long)esp_get_free_heap_size(),s.radio.snr_db);
-    printf("{\"event\":\"adapt_status\",\"desired_link\":%d,\"play_requested\":%d,\"bps\":%u,\"reason\":\"%s\",\"feedback_accepted\":%u,\"feedback_rejected\":%u,\"feedback_age_ms\":%u,\"profile\":%u,\"source\":%u,\"width\":%u,\"height\":%u,\"interval_ms\":%u}\n",
+    printf("{\"event\":\"adapt_status\",\"desired_link\":%d,\"play_requested\":%d,\"bps\":%u,\"reason\":\"%s\",\"feedback_accepted\":%u,\"feedback_rejected\":%u,\"feedback_age_ms\":%u,\"profile\":%u,\"source\":%u,\"width\":%u,\"height\":%u,\"interval_ms\":%u,\"probe_acks\":%u,\"probe_rtt_ms\":%u,\"probe_ack_age_ms\":%u}\n",
         atomic_load(&desired_link),atomic_load(&play_requested),atomic_load(&adapt_rate),atomic_load(&adapt_reason),
         atomic_load(&adapt_accepted),atomic_load(&adapt_rejected),atomic_load(&adapt_feedback_age),atomic_load(&adapt_profile),
-        atomic_load(&adapt_source),atomic_load(&adapt_width),atomic_load(&adapt_height),atomic_load(&adapt_interval));
+        atomic_load(&adapt_source),atomic_load(&adapt_width),atomic_load(&adapt_height),atomic_load(&adapt_interval),
+        atomic_load(&adapt_probe_acks),atomic_load(&adapt_probe_rtt),atomic_load(&adapt_probe_age));
 }
 static int packet_sink(const uint8_t *data,size_t size,void *ctx) {
     (void)ctx;
@@ -194,6 +217,7 @@ static void replay_task(void *arg) {
             pace_at=esp_timer_get_time();
             nrc_video_packetizer_init(&packetizer,esp_random());
             stage1_adapt_stream(&adaptation,packetizer.stream_id,(uint32_t)now);
+            adapt_last_probe=(uint32_t)now-200U;adapt_last_tick=(uint32_t)now-100U;
             atomic_store(&adapt_source,source);atomic_store(&adapt_width,clip.width);atomic_store(&adapt_height,clip.height);
             printf("{\"event\":\"video_profile\",\"profile\":%u,\"source\":%u,\"width\":%u,\"height\":%u,\"interval_ms\":%lu,\"stream_id\":%lu,\"capture_epoch_ms\":%llu}\n",
                 selected_profile,source,clip.width,clip.height,(unsigned long)stage1_adapt_interval_ms(&adaptation),
@@ -251,7 +275,10 @@ static void replay_task(void *arg) {
         frame_profile=(uint8_t)selected_profile;frame_generation=generation;
         int sent=nrc_video_packetize_frame(&packetizer,(nrc_video_codec_t)clip.codec,replay_buffer,f.size,
                                          (uint32_t)captured,key,packet_sink,NULL);
-        if(sent==0){wait_key=false;atomic_fetch_add(&sent_frames,1);}
+        if(sent==0){
+            stage1_adapt_video_sent(&adaptation,(uint32_t)(esp_timer_get_time()/1000));
+            wait_key=false;atomic_fetch_add(&sent_frames,1);
+        }
         else {
             /* A partial reference frame invalidates dependent P frames. Select
              * the next current source frame; never retry this old frame. */
@@ -407,14 +434,15 @@ static void reconnect_reset(void) {reconnect.due_ms=0;reconnect.failures=0;recon
 static esp_err_t connect_attempt_locked(void) {
     if(!atomic_load(&desired_link))return ESP_ERR_INVALID_STATE;
     reconnect.attempts++;
-    esp_err_t err=nrc7292_connect(radio,pdMS_TO_TICKS(5000));
+    /* The host adapter reserves 250ms; this gives the SX a 2s CONNECT budget. */
+    esp_err_t err=nrc7292_connect(radio,pdMS_TO_TICKS(2250));
     unsigned backoff=0;
     if(atomic_load(&desired_link)) {
-        if(err==ESP_OK){reconnect.failures=0;backoff=1000;}
+        if(err==ESP_OK){reconnect.failures=0;backoff=250;}
         else {
-            static const unsigned waits[]={1000,2000,4000,8000,16000,30000};
-            unsigned index=reconnect.failures<5?reconnect.failures:5;
-            backoff=waits[index];if(reconnect.failures<6)reconnect.failures++;
+            static const unsigned waits[]={250,500,1000,2000};
+            unsigned index=reconnect.failures<3?reconnect.failures:3;
+            backoff=waits[index];if(reconnect.failures<4)reconnect.failures++;
         }
         reconnect.due_ms=clock_ms()+backoff;
     }
@@ -440,7 +468,7 @@ static void reconnect_task(void *arg) {
                 (void)reconnect_step_locked(clock_ms(),&s);
             xSemaphoreGive(network_mutex);
         }
-        pause_ms(250);
+        pause_ms(100);
     }
 }
 static esp_err_t ensure_reconnect_task(void) {
@@ -607,6 +635,7 @@ void app_main(void) {
     network_mutex=xSemaphoreCreateMutex();
     if(!network_mutex){ESP_LOGE(TAG,"Network mutex allocation failed");return;}
     atomic_store(&adapt_feedback_age,UINT32_MAX);
+    atomic_store(&adapt_probe_rtt,UINT32_MAX);atomic_store(&adapt_probe_age,UINT32_MAX);
     setvbuf(stdout,NULL,_IONBF,0);show_pins();help();
     char line[128];size_t used=0;bool overflow=false;
     for(;;) {

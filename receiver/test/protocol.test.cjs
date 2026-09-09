@@ -1,6 +1,6 @@
 'use strict';
 const {test}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
-const {crc32,after,parsePacket,Reassembler,readClip,telemetry,feedback}=require('../src/protocol.cjs');
+const {crc32,after,parsePacket,Reassembler,readClip,telemetry,feedback,probeAck}=require('../src/protocol.cjs');
 const {packets}=require('./helpers.cjs');
 test('CRC32 standard vector and serial wrap',()=>{assert.equal(crc32(Buffer.from('123456789')),0xcbf43926);assert(after(0,0xffffffff));assert(!after(0xffffffff,0));});
 test('NRCV rejects inconsistent lengths, flags and excessive allocation',()=>{
@@ -62,42 +62,57 @@ test('on-flash real H264 and MJPEG clips validate every CRC',()=>{
   b[b.length-1]^=1;assert.throws(()=>readClip(b),/CRC/);
  }
 });
-test('NRFB feedback keeps the v1 wire layout and binds v2 CRC to the stream, including zero',()=>{
+test('NRFB v1/v2 stay compatible and v3 includes actual completed frames, including zero',()=>{
  const args={interval:1000,highest:0xdeadbeef,received:9,lost:1,jitter:12.6,goodput:500000,now:0x12345678};
  // Fixed vectors cross-checked with Python's independent zlib.crc32.
  const vectors=[
   [{},'4e524642016d073c000003e8deadbeef00000009000000010064000d0007a12012345678'],
+  [{completed:7},'4e524642016d073c000003e8deadbeef00000009000000010064000d0007a12012345678'],
   [{stream:0},'4e52464202a9ecff000003e8deadbeef00000009000000010064000d0007a1201234567800000000'],
   [{stream:0x89abcdef},'4e5246420234f125000003e8deadbeef00000009000000010064000d0007a1201234567889abcdef'],
+  [{stream:0,completed:0},'4e52464203ca1585000003e8deadbeef00000009000000010064000d0007a120123456780000000000000000'],
+  [{stream:0x89abcdef,completed:7},'4e5246420384c427000003e8deadbeef00000009000000010064000d0007a1201234567889abcdef00000007'],
  ];
  for(const [extra,hex]of vectors){const b=feedback({...args,...extra});assert.equal(b.toString('hex'),hex);assert.equal(b.readUIntBE(5,3),crc32(b.subarray(8))&0xffffff);}
- const b=feedback({...args,stream:0x89abcdef});b[39]^=1;assert.notEqual(b.readUIntBE(5,3),crc32(b.subarray(8))&0xffffff);
+ for(const offset of [39,43]){const b=feedback({...args,stream:0x89abcdef,completed:7});b[offset]^=1;assert.notEqual(b.readUIntBE(5,3),crc32(b.subarray(8))&0xffffff);}
+});
+test('NRPA acknowledgement echoes stream and sample tick with its full CRC at zero and wrap',()=>{
+ const vectors=[
+  [{stream:0,sampleMs:0},'4e525041010000140000000000000000e9c1c206'],
+  [{stream:0xffffffff,sampleMs:0xffffffff},'4e52504101000014ffffffffffffffffada7c273'],
+  [{stream:0x12345678,sampleMs:0x89abcdef},'4e525041010000141234567889abcdef939b282f'],
+ ];
+ for(const [args,hex]of vectors){
+  const b=probeAck(args);assert.equal(b.toString('hex'),hex);assert.equal(b.readUInt32BE(16),crc32(b.subarray(0,16)));
+  for(const offset of [8,12]){const bad=Buffer.from(b);bad[offset]^=1;assert.notEqual(bad.readUInt32BE(16),crc32(bad.subarray(0,16)));}
+ }
 });
 function radioPacket(version,age=1234){
- const b=Buffer.alloc(version===1?40:version===2?48:56);b.write('NRCS');b[4]=version;b.writeUInt16BE(b.length,6);
+ const b=Buffer.alloc([0,40,48,56,60][version]);b.write('NRCS');b[4]=version;b.writeUInt16BE(b.length,6);
  b.writeUInt32BE(0x12345678,8);b.writeInt8(-57,12);b.writeInt8(23,13);b[14]=4;b[15]=3;b[16]=1;b[17]=1;
  b.writeUInt16BE(17,18);b.writeUInt32BE(11,20);b.writeUInt32BE(12,24);b.writeUInt32BE(13,28);b.writeUInt32BE(14,32);
  if(version>=2){b.writeUInt32BE(250000,36);b.writeUInt32BE(age,40);}
- if(version===3){b.writeUInt16BE(214,44);b.writeUInt16BE(120,46);b.writeUInt32BE(10000,48);}
+ if(version>=3){b.writeUInt16BE(214,44);b.writeUInt16BE(120,46);b.writeUInt32BE(10000,48);}
+ if(version===4)b.writeUInt32BE(0x89abcdef,52);
  b.writeUInt32BE(crc32(b.subarray(0,b.length-4)),b.length-4);return b;
 }
-test('NRCS v1/v2 remain compatible and v3 exposes current resolution and snapshot interval',()=>{
+test('NRCS v1/v2/v3 remain compatible and v4 identifies the telemetry stream',()=>{
  const expected={sampleMs:0x12345678,rssi:-57,snr:23,txMcs:4,rxMcs:3,duty:true,connected:true,queue:17,hostDrops:11,radioDrops:12,sentFrames:13,skippedFrames:14};
- for(const version of [1,2,3]){
+ for(const version of [1,2,3,4]){
   const decoded=telemetry(radioPacket(version));assert(decoded);
   if('version'in decoded)assert.equal(decoded.version,version);
   const {version:ignored,...fields}=decoded;
-  assert.deepEqual(fields,{...expected,...(version>=2?{adaptivePaceBps:250000,feedbackAgeMs:1234}:{}),...(version===3?{width:214,height:120,intervalMs:10000}:{})});
+  assert.deepEqual(fields,{...expected,...(version>=2?{adaptivePaceBps:250000,feedbackAgeMs:1234}:{}),...(version>=3?{width:214,height:120,intervalMs:10000}:{}),...(version===4?{stream:0x89abcdef}:{})});
  }
  assert.equal(telemetry(radioPacket(2,0xffffffff)).feedbackAgeMs,0xffffffff);
 });
 test('NRCS rejects corrupt fields, CRC, version/length mismatches and trailing bytes',()=>{
- for(const version of [1,2,3]){
+ for(const version of [1,2,3,4]){
   const packet=radioPacket(version);
-  for(const offset of [8,12,32,packet.length-1,...(version>=2?[36,40]:[]),...(version===3?[44,46,48]:[])]){
+  for(const offset of [8,12,32,packet.length-1,...(version>=2?[36,40]:[]),...(version>=3?[44,46,48]:[]),...(version===4?[52]:[])]){
    const bad=Buffer.from(packet);bad[offset]^=1;assert.equal(telemetry(bad),null,`v${version} byte ${offset}`);
   }
-  for(const mutate of [b=>b[0]=0,b=>b[4]=4,b=>b[5]=1,b=>b.writeUInt16BE(version===1?48:40,6)]){
+  for(const mutate of [b=>b[0]=0,b=>b[4]=5,b=>b[5]=1,b=>b.writeUInt16BE(version===1?48:40,6)]){
    const bad=Buffer.from(packet);mutate(bad);bad.writeUInt32BE(crc32(bad.subarray(0,bad.length-4)),bad.length-4);assert.equal(telemetry(bad),null);
   }
   assert.equal(telemetry(packet.subarray(0,-1)),null);assert.equal(telemetry(Buffer.concat([packet,Buffer.alloc(1)])),null);
