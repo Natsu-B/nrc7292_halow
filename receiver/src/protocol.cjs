@@ -87,19 +87,26 @@ function readClip(b){
   return {codec,width,height,duration,frames};
 }
 function telemetry(b){
-  if(!Buffer.isBuffer(b)||![40,48,56].includes(b.length)||b.toString('ascii',0,4)!=='NRCS')return null;
-  const version=b[4],length=version===1?40:version===2?48:version===3?56:0;
+  if(!Buffer.isBuffer(b)||![40,48,56,60].includes(b.length)||b.toString('ascii',0,4)!=='NRCS')return null;
+  const version=b[4],length=version===1?40:version===2?48:version===3?56:version===4?60:0;
   if(b.length!==length||b[5]||b.readUInt16BE(6)!==length||crc32(b.subarray(0,length-4))!==b.readUInt32BE(length-4))return null;
   const result={version,sampleMs:b.readUInt32BE(8),rssi:b.readInt8(12),snr:b.readInt8(13),txMcs:b[14],rxMcs:b[15],duty:!!b[16],connected:!!b[17],queue:b.readUInt16BE(18),hostDrops:b.readUInt32BE(20),radioDrops:b.readUInt32BE(24),sentFrames:b.readUInt32BE(28),skippedFrames:b.readUInt32BE(32)};
   if(version>=2){result.adaptivePaceBps=b.readUInt32BE(36);result.feedbackAgeMs=b.readUInt32BE(40);}
-  if(version===3){result.width=b.readUInt16BE(44);result.height=b.readUInt16BE(46);result.intervalMs=b.readUInt32BE(48);}
+  if(version>=3){result.width=b.readUInt16BE(44);result.height=b.readUInt16BE(46);result.intervalMs=b.readUInt32BE(48);}
+  if(version===4)result.stream=b.readUInt32BE(52);
   return result;
 }
-function feedback({interval,highest,received,lost,jitter=0,goodput,now,stream}){
-  const b=Buffer.alloc(stream===undefined?36:40);b.write('NRFB');b[4]=stream===undefined?1:2;b.writeUInt32BE(interval>>>0,8);b.writeUInt32BE(highest>>>0,12);
+function probeAck({stream,sampleMs}){
+  const b=Buffer.alloc(20);b.write('NRPA');b[4]=1;b.writeUInt16BE(20,6);
+  b.writeUInt32BE(stream>>>0,8);b.writeUInt32BE(sampleMs>>>0,12);b.writeUInt32BE(crc32(b.subarray(0,16)),16);return b;
+}
+function feedback({interval,highest,received,lost,jitter=0,goodput,now,stream,completed}){
+  const version=stream===undefined?1:completed===undefined?2:3;
+  const b=Buffer.alloc(version===1?36:version===2?40:44);b.write('NRFB');b[4]=version;b.writeUInt32BE(interval>>>0,8);b.writeUInt32BE(highest>>>0,12);
   b.writeUInt32BE(received>>>0,16);b.writeUInt32BE(lost>>>0,20);b.writeUInt16BE(Math.min(1000,Math.floor(1000*lost/Math.max(1,received+lost))),24);
   b.writeUInt16BE(Math.min(65535,Math.round(jitter)),26);b.writeUInt32BE(goodput>>>0,28);b.writeUInt32BE(now>>>0,32);
   if(stream!==undefined)b.writeUInt32BE(stream>>>0,36);
+  if(version===3)b.writeUInt32BE(completed>>>0,40);
   const crc=crc32(b.subarray(8));b[5]=(crc>>>16)&255;b[6]=(crc>>>8)&255;b[7]=crc&255;return b;
 }
-module.exports={crc32,after,parsePacket,Reassembler,readClip,telemetry,feedback};
+module.exports={crc32,after,parsePacket,Reassembler,readClip,telemetry,feedback,probeAck};
