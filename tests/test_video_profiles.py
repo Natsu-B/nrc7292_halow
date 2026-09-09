@@ -128,6 +128,12 @@ int main(int argc,char **argv){
     load(argv[2]);assert(clip_source_open(&original)==0 && clip_source_profile_count()==1);
     assert(clip_source_select(&other,1)==-1);
     assert(clip_source_latest(&original,199,buf,sizeof buf,&frame)==0 && frame.pts_ms==100);
+    assert(clip_source_latest_key(&original,600,buf,sizeof buf,&frame)==0);
+    assert(frame.pts_ms==0 && (frame.flags&1) && original.frame_index==1);
+    assert(hvc_clip_next(&original,buf,sizeof buf,&frame)==0 && frame.pts_ms==100);
+    assert(clip_source_latest_key(&original,1600,buf,sizeof buf,&frame)==0);
+    assert(frame.pts_ms==1000 && (frame.flags&1) && original.frame_index==11);
+    assert(hvc_clip_next(&original,buf,sizeof buf,&frame)==0 && frame.pts_ms==1100);
     free(bytes);puts("C clip source bounds/CRC/latest/cursor/context PASS");return 0;
 }
 ''')

@@ -95,7 +95,7 @@ int clip_source_select(hvc_clip_t *clip,unsigned profile) {
     if(!clip || profile>=source_count)return -1;
     return hvc_clip_open(clip,read_flash,&sources[profile],sources[profile].length);
 }
-int clip_source_latest(hvc_clip_t *clip,uint32_t pts_ms,uint8_t *buffer,size_t capacity,hvc_frame_t *frame) {
+static int latest(hvc_clip_t *clip,uint32_t pts_ms,uint8_t *buffer,size_t capacity,hvc_frame_t *frame,bool key_only) {
     if(!clip || !buffer || !frame || !clip->read)return -1;
     uint32_t at=HVC_HEADER_BYTES,chosen=0,chosen_index=0,previous=0;
     for(uint32_t i=0;i<clip->frame_count;i++) {
@@ -106,7 +106,7 @@ int clip_source_latest(hvc_clip_t *clip,uint32_t pts_ms,uint8_t *buffer,size_t c
         if(!n || n>HVC_MAX_FRAME_BYTES || n>clip->capacity-at-sizeof record ||
            flags&~1U || pts>=clip->duration_ms || (i && pts<=previous))return -1;
         if(pts>pts_ms)break;
-        chosen=at;chosen_index=i;
+        if(!key_only || (flags&1U)){chosen=at;chosen_index=i;}
         previous=pts;at+=sizeof record+n;
     }
     if(!chosen)return 1;
@@ -117,4 +117,10 @@ int clip_source_latest(hvc_clip_t *clip,uint32_t pts_ms,uint8_t *buffer,size_t c
         if(next.context==&sources[i] && sources[i].flags && !(frame->flags&1U))return -1;
     if(next.codec==1 && (frame->flags&1U) && !nrc_h264_frame_is_self_contained(buffer,frame->size))return -1;
     *clip=next;return 0;
+}
+int clip_source_latest(hvc_clip_t *clip,uint32_t pts_ms,uint8_t *buffer,size_t capacity,hvc_frame_t *frame) {
+    return latest(clip,pts_ms,buffer,capacity,frame,false);
+}
+int clip_source_latest_key(hvc_clip_t *clip,uint32_t pts_ms,uint8_t *buffer,size_t capacity,hvc_frame_t *frame) {
+    return latest(clip,pts_ms,buffer,capacity,frame,true);
 }

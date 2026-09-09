@@ -12,3 +12,7 @@ int clip_source_select(hvc_clip_t *clip, unsigned profile);
  * Does not wrap timestamps: caller owns the recorded clip's cycle clock. */
 int clip_source_latest(hvc_clip_t *clip, uint32_t pts_ms, uint8_t *buffer,
                        size_t capacity, hvc_frame_t *frame);
+/* Legacy HVC1 sparse-mode fallback: latest keyframe <= pts_ms, with the same
+ * cursor/return contract. Avoids repeatedly selecting dependent P-frames. */
+int clip_source_latest_key(hvc_clip_t *clip, uint32_t pts_ms, uint8_t *buffer,
+                           size_t capacity, hvc_frame_t *frame);

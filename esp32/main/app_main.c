@@ -169,7 +169,7 @@ static bool frame_fits_deadline(size_t bytes,uint32_t rate,int64_t now,int64_t d
 static void replay_task(void *arg) {
     (void)arg;
     bool active=false,wait_key=true,have_previous=false,original_seek=true;
-    unsigned generation=0,previous_index=0,selected_profile=UINT32_MAX;
+    unsigned generation=0,previous_index=0,selected_profile=UINT32_MAX,selected_source=0;
     uint64_t capture_epoch=0,next_emit=0,previous_cycle=0,original_cycle=0;
     stage1_adapt_init(&adaptation,CONFIG_STAGE1_MIN_BPS,CONFIG_STAGE1_PACE_BPS,(uint32_t)(esp_timer_get_time()/1000));
     adapt_initialized=true;adapt_publish((uint32_t)(esp_timer_get_time()/1000));
@@ -190,6 +190,7 @@ static void replay_task(void *arg) {
                 ESP_LOGE(TAG,"Video profile unavailable; playback stopped");atomic_store(&play_requested,false);continue;
             }
             selected_profile=adaptation.profile;active=true;wait_key=true;have_previous=false;next_emit=now;original_seek=true;
+            selected_source=source;
             pace_at=esp_timer_get_time();
             nrc_video_packetizer_init(&packetizer,esp_random());
             stage1_adapt_stream(&adaptation,packetizer.stream_id,(uint32_t)now);
@@ -209,7 +210,11 @@ static void replay_task(void *arg) {
             result=hvc_clip_next(&clip,replay_buffer,replay_capacity,&f);cycle=original_cycle;
             if(result==1){hvc_clip_rewind(&clip);original_cycle++;continue;}
         } else {
-            result=clip_source_latest(&clip,(uint32_t)(elapsed%clip.duration_ms),replay_buffer,replay_capacity,&f);
+            /* A sparse legacy HVC1 source still contains P frames. Selecting
+             * the same P phase every whole-second interval would starve IDRs. */
+            if(selected_profile!=0 && selected_source==0)
+                result=clip_source_latest_key(&clip,(uint32_t)(elapsed%clip.duration_ms),replay_buffer,replay_capacity,&f);
+            else result=clip_source_latest(&clip,(uint32_t)(elapsed%clip.duration_ms),replay_buffer,replay_capacity,&f);
             if(selected_profile==0){original_cycle=cycle;original_seek=false;}
         }
         if(result==1){pause_ms(10);continue;}
