@@ -2,7 +2,13 @@
 
 ESP32-S3をSPI master、SX-NEWAH-EVK上のNRC7292を純正HSPI slaveとして動かす、地上映像伝送試験用ソースです。v0.7.1を基に更新しています。
 
-**この配布物には、ESP32-S3 / NRC7292の書込み用実行bin・ELFはありません。** 実際に生成・検証したのはソース、ホスト試験用実行ファイル、映像データです。ESP/Armコンパイラがなく、取得先の名前解決にも失敗したため、対象MCUのビルドとRF試験は未実施です。`validation/v0.8.0/`に今回のログを収録しました。`validation/baseline_v0.7/`は過去版の記録です。
+2026-09-09にESP/NRC7292のbuildと実機通信を確認し、検証済みの変更をmainへ統合しました。ESP → native HSPI → SX → AP-100AH → Ethernet PCでの映像受信、画質・間隔の自動調整、再接続を確認しています。100m/s飛行・3km通信・実カメラ入力は未検証です。
+
+- [STAGE1_RESULT.md](STAGE1_RESULT.md): USB識別、SX standalone、HSPI/EIRQ/loopback、IP/UDP・360pの基準試験。
+- [RANGE_RESULT.md](RANGE_RESULT.md): 360p→120p、最大10秒間隔への調整と最新フレーム選択。
+- [MOBILITY_RESULT.md](MOBILITY_RESULT.md): 100ms周期の判断、200ms周期の往復確認、悪化・回復の実機応答時間と最新の再現手順。
+
+Gitにはソース、テスト、再現スクリプト、報告と確認済みのログを保存しています。MCUの実行bin/ELF、動画profileの生成物、sdkconfig、SDK/BDF、packet capture、受信動画はGit管理外です。生成したartifactのサイズ・SHA256は各報告とログに記録しています。`validation/v0.8.0/`と`validation/baseline_v0.7/`は実機試験以前の履歴です。
 
 ## 1. 構成と変更点
 
@@ -32,7 +38,7 @@ SX側では、添付Newracom SDK 1.7.0の`hif.c`、`hif_fifo.c`、`hif_hspi.c`�
 
 純正HSPIはslotに分割してバイト列を運びますが、アプリケーションのEthernetフレーム境界を保存するとは限りません。そのため既存の16 byte L2レコードヘッダーを残しました。type/length/sequence/CRCは制御応答の対応付けとデータ整合性確認にも使います。裸のEthernetフレームをMOSIへ流す実装ではありません。
 
-映像用NRCVとPC Receiverのコード、映像assetsはv0.7.1から変更していません。PC側の再書換えを必要とするwire-format変更はありません。ただし新しいHSPI loopbackにはSX側もv0.8.0が必要です。
+NRCV映像packetの形式を維持し、PC Receiverには最新フレームの優先とNRCS v4 / NRPA / NRFB v3による往復確認・受信feedbackを追加しました。自動調整には更新済みのESP firmwareと本repoのReceiverを使用してください。HSPI loopbackにはSX側もv0.8.0のnative HSPI firmwareが必要です。
 
 ## 2. ビルド前の確認
 
@@ -52,7 +58,7 @@ bash tools/build_esp32.sh --menuconfig
 
 通常の再ビルドは`bash tools/build_esp32.sh`だけです。既存sdkconfigを勝手に消したり、別ターゲットからS3へ変更したりしません。
 
-GPIO例はSCLK=12、MOSI=11、MISO=13、CS=10、初期5 MHzです。EIRQとRSTは配線未確認なので既定値を−1にしています。**接続済みのGPIO番号を確認して設定してください。** EIRQを設定した場合はactive-high levelを使います。RSTはモジュール端子ではHigh=Resetですが、EVK上の接続経路に反転がないか確認します。
+確認済み配線はSCLK=GPIO9、MOSI=GPIO7、MISO=GPIO8、EIRQ=GPIO4、CE0=GPIO6、CE1=GPIO5、初期5 MHz・Mode 0です。CE0失敗時はCE1を独立に試し、同時assertを禁止します。EIRQはactive-high levelです。RSTはESPへ接続しておらず、SXのreset/power-cycleは人間が行います。
 
 コンソールの既定値はS3の内蔵USB Serial/JTAGです。USB-UARTブリッジ側を使うボードでは、ESP-IDFのコンソール設定をそのUARTへ変更してください。
 
@@ -109,7 +115,7 @@ out/nrc7292/standalone_xip/L2BRIDGE_HSPI/
 
 4 MiBでは末尾が`4M`です。ビルドスクリプトはARM ELFと実binの存在を確認し、`stage1-artifact-manifest.json`を生成します。
 
-今回、添付SilexドライバからBDFを取り出し、SDKへの適用処理までは試験しました。ただし、このBDFとSDK 1.7、Silexの既存ブートローダー、FlashTool、EVKの組合せは実機未検証です。互換性・RF認証条件の確認を省略できません。BDF・ライブラリ・ツールチェーンは再配布していません。
+SDK 1.7を使ったSX native HSPI firmwareのbuild・人間によるflash・実機動作を確認しました。実際のbuild条件、factory領域を保護する適用方法とartifactのSHA256は [docs/SX_NATIVE_BUILD_20260908.md](docs/SX_NATIVE_BUILD_20260908.md) と [STAGE1_RESULT.md](STAGE1_RESULT.md) を参照してください。BDF・ライブラリ・ツールチェーンは再配布していません。
 
 ### 書込みは人間が行う
 
