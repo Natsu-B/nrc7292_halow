@@ -13,7 +13,7 @@
     "dist:mac": "electron-builder --mac zip"
   },
   "devDependencies": {
-    "electron": "44.2.0",
+    "electron": "44.9.1",
     "electron-builder": "26.0.12"
   },
   "build": {
